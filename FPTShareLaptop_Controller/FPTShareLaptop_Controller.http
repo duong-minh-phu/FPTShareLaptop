@@ -1,0 +1,6 @@
+@FPTShareLaptop_Controller_HostAddress = http://localhost:5229
+
+GET {{FPTShareLaptop_Controller_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
