@@ -1,11 +1,5 @@
 ﻿using BusinessObjects.Models;
-using ClassLibrary1.Interface;
-using BusinessObjects.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Service.IService;
 
 namespace Service.Service
 {
