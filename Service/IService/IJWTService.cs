@@ -11,7 +11,7 @@ namespace Service.IService
     {
         Task<string> GenerateJWT(int userId);
         string GenerateRefreshToken();
-        object decodeToken(string jwtToken, string nameClaim, bool isInt = false);
+        string decodeToken(string jwtToken, string nameClaim);
     }
 
 }

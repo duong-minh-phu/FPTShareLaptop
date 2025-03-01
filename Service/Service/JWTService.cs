@@ -21,18 +21,11 @@ namespace Service.Service
             _userRepository = userRepository;
         }
 
-        public object decodeToken(string jwtToken, string nameClaim, bool isInt = false)
+        public string decodeToken(string jwtToken, string nameClaim)
         {
-            Claim? claim = _tokenHandler.ReadJwtToken(jwtToken)
-                                        .Claims
-                                        .FirstOrDefault(c => c.Type.Equals(nameClaim, StringComparison.OrdinalIgnoreCase));
+            Claim? claim = _tokenHandler.ReadJwtToken(jwtToken).Claims.FirstOrDefault(selector => selector.Type.ToString().Equals(nameClaim));
 
-            if (claim == null)
-            {
-                throw new ArgumentException($"Invalid or missing claim: {nameClaim}");
-            }
-
-            return isInt && int.TryParse(claim.Value, out int result) ? result : claim.Value;
+            return claim != null ? claim.Value : "Error!!!";
         }
 
 

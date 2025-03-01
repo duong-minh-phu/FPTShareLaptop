@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.AuthenticationDTO
+namespace DataAccess.PasswordDTO
 {
-    internal class UserRegisterRequestDTO
+    public class ForgotPasswordReqModel
     {
+        public required string Email { get; set; }
     }
 }

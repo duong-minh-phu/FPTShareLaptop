@@ -14,11 +14,17 @@ namespace Service.Utils.DecodeTokenHandler
         }
         public TokenModel decode(string token)
         {
-            var roleName = (string) _jWTService.decodeToken(token, ClaimsIdentity.DefaultRoleClaimType);
-            var userId = (int) _jWTService.decodeToken(token, "userid");
-            var fullName = (string) _jWTService.decodeToken(token, "fullname");
-            var email = (string) _jWTService.decodeToken(token, "email");
-
+            var roleName = _jWTService.decodeToken(token, ClaimsIdentity.DefaultRoleClaimType);
+            var userIdString = _jWTService.decodeToken(token, "userid");
+            var fullName = _jWTService.decodeToken(token, "fullname");
+            var email = _jWTService.decodeToken(token, "email");
+            
+            int userId = 0;
+            if (!int.TryParse(userIdString, out userId))
+            {
+                // Nếu userId không hợp lệ, có thể log hoặc xử lý lỗi ở đây
+                throw new Exception("Invalid userId format in token.");
+            }
             return new TokenModel(userId, email ,fullName, roleName);
         }
     }
