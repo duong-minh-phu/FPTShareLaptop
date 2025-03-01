@@ -66,6 +66,8 @@ namespace Service.Service
 
         public IGenericRepository<Student> Student => Repository<Student>();
 
+        public IGenericRepository<RefreshToken> RefreshToken => Repository<RefreshToken>();
+
         public async Task<int> SaveAsync()
         {
             return await _context.SaveChangesAsync();

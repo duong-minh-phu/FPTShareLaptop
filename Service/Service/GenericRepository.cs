@@ -65,6 +65,15 @@ namespace Service.Service
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
+        public async Task<RefreshToken> GetByTokenAsync(string refreshToken)
+        {
+            return await _context.Set<RefreshToken>()
+                .Include(rt => rt.User) // Lấy luôn User
+                .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
+        }
+
+
+
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
