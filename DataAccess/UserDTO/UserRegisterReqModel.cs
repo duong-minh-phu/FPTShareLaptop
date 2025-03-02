@@ -8,10 +8,10 @@ namespace DataAccess.UserDTO
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public string RoleName { get; set; } = "Student"; 
+        public string RoleId { get; set; } 
         public string StudentCode { get; set; }
-        public string DateOfBirth { get; set; } // Định dạng dd/MM/yyyy
-        public string EnrollmentDate { get; set; } // Định dạng dd/MM/yyyy
+        public string DateOfBirth { get; set; } 
+        public string EnrollmentDate { get; set; } 
     }
 
     public class SponsorRegisterReqModel
@@ -19,7 +19,7 @@ namespace DataAccess.UserDTO
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public string RoleName { get; set; } = "Sponsor"; 
+        public string RoleId { get; set; }
         public string ContactPhone { get; set; }
         public string ContactEmail { get; set; }
         public string Address { get; set; }

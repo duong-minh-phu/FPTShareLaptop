@@ -41,6 +41,8 @@ public partial class Sep490Context : DbContext
 
     public virtual DbSet<ProductImage> ProductImages { get; set; }
 
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<Shipment> Shipments { get; set; }
@@ -65,7 +67,7 @@ public partial class Sep490Context : DbContext
     {
         modelBuilder.Entity<BorrowDetail>(entity =>
         {
-            entity.HasKey(e => e.BorrowDetailId).HasName("PK__BorrowDe__2D67016697BACAAB");
+            entity.HasKey(e => e.BorrowDetailId).HasName("PK__BorrowDe__2D670166C7ED2C05");
 
             entity.Property(e => e.BorrowDetailId).HasColumnName("BorrowDetailID");
             entity.Property(e => e.ConditionOnReturn).HasMaxLength(255);
@@ -78,12 +80,12 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Request).WithMany(p => p.BorrowDetails)
                 .HasForeignKey(d => d.RequestId)
-                .HasConstraintName("FK__BorrowDet__Reque__59FA5E80");
+                .HasConstraintName("FK__BorrowDet__Reque__59063A47");
         });
 
         modelBuilder.Entity<BorrowHistory>(entity =>
         {
-            entity.HasKey(e => e.HistoryId).HasName("PK__BorrowHi__4D7B4ADDD85792F4");
+            entity.HasKey(e => e.HistoryId).HasName("PK__BorrowHi__4D7B4ADDBB8B10A3");
 
             entity.ToTable("BorrowHistory");
 
@@ -97,12 +99,12 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Student).WithMany(p => p.BorrowHistories)
                 .HasForeignKey(d => d.StudentId)
-                .HasConstraintName("FK__BorrowHis__Stude__5CD6CB2B");
+                .HasConstraintName("FK__BorrowHis__Stude__5BE2A6F2");
         });
 
         modelBuilder.Entity<BorrowRequest>(entity =>
         {
-            entity.HasKey(e => e.RequestId).HasName("PK__BorrowRe__33A8519A3D52F625");
+            entity.HasKey(e => e.RequestId).HasName("PK__BorrowRe__33A8519A5258F0F2");
 
             entity.Property(e => e.RequestId).HasColumnName("RequestID");
             entity.Property(e => e.ApprovalDate).HasColumnType("datetime");
@@ -115,12 +117,12 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Student).WithMany(p => p.BorrowRequests)
                 .HasForeignKey(d => d.StudentId)
-                .HasConstraintName("FK__BorrowReq__Stude__571DF1D5");
+                .HasConstraintName("FK__BorrowReq__Stude__5629CD9C");
         });
 
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__Categori__19093A2B7B3EF612");
+            entity.HasKey(e => e.CategoryId).HasName("PK__Categori__19093A2B7649EA71");
 
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
             entity.Property(e => e.CategoryName).HasMaxLength(255);
@@ -128,20 +130,15 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<CategoryItem>(entity =>
         {
-            entity.HasKey(e => e.CategoryItemId).HasName("PK__Category__E04E110025DAB891");
+            entity.HasKey(e => e.CategoryItemId).HasName("PK__Category__E04E11001262DA70");
 
             entity.Property(e => e.CategoryItemId).HasColumnName("CategoryItemID");
-            entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
             entity.Property(e => e.CategoryItemName).HasMaxLength(255);
-
-            entity.HasOne(d => d.Category).WithMany(p => p.CategoryItems)
-                .HasForeignKey(d => d.CategoryId)
-                .HasConstraintName("FK__CategoryI__Categ__4CA06362");
         });
 
         modelBuilder.Entity<Commitment>(entity =>
         {
-            entity.HasKey(e => e.CommitmentId).HasName("PK__Commitme__5360E8971900FC29");
+            entity.HasKey(e => e.CommitmentId).HasName("PK__Commitme__5360E89755D2767C");
 
             entity.Property(e => e.CommitmentId).HasColumnName("CommitmentID");
             entity.Property(e => e.SignedDate)
@@ -153,16 +150,16 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Sponsor).WithMany(p => p.Commitments)
                 .HasForeignKey(d => d.SponsorId)
-                .HasConstraintName("FK__Commitmen__Spons__7F2BE32F");
+                .HasConstraintName("FK__Commitmen__Spons__7E37BEF6");
 
             entity.HasOne(d => d.Student).WithMany(p => p.Commitments)
                 .HasForeignKey(d => d.StudentId)
-                .HasConstraintName("FK__Commitmen__Stude__7E37BEF6");
+                .HasConstraintName("FK__Commitmen__Stude__7D439ABD");
         });
 
         modelBuilder.Entity<DonationForm>(entity =>
         {
-            entity.HasKey(e => e.DonationFormId).HasName("PK__Donation__263B91D320035CEE");
+            entity.HasKey(e => e.DonationFormId).HasName("PK__Donation__263B91D34A5C58E5");
 
             entity.Property(e => e.DonationFormId).HasColumnName("DonationFormID");
             entity.Property(e => e.CreatedAt)
@@ -175,12 +172,12 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Sponsor).WithMany(p => p.DonationForms)
                 .HasForeignKey(d => d.SponsorId)
-                .HasConstraintName("FK__DonationF__Spons__47DBAE45");
+                .HasConstraintName("FK__DonationF__Spons__440B1D61");
         });
 
         modelBuilder.Entity<Feedback>(entity =>
         {
-            entity.HasKey(e => e.FeedbackId).HasName("PK__Feedback__6A4BEDF64B567BDD");
+            entity.HasKey(e => e.FeedbackId).HasName("PK__Feedback__6A4BEDF6930B23B9");
 
             entity.Property(e => e.FeedbackId).HasColumnName("FeedbackID");
             entity.Property(e => e.Comments).HasMaxLength(255);
@@ -191,12 +188,12 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Student).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.StudentId)
-                .HasConstraintName("FK__Feedbacks__Stude__60A75C0F");
+                .HasConstraintName("FK__Feedbacks__Stude__5EBF139D");
         });
 
         modelBuilder.Entity<LaptopCondition>(entity =>
         {
-            entity.HasKey(e => e.ConditionId).HasName("PK__LaptopCo__37F5C0EF94CE5CE2");
+            entity.HasKey(e => e.ConditionId).HasName("PK__LaptopCo__37F5C0EF49338230");
 
             entity.Property(e => e.ConditionId).HasColumnName("ConditionID");
             entity.Property(e => e.BorrowDetailId).HasColumnName("BorrowDetailID");
@@ -206,12 +203,12 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.BorrowDetail).WithMany(p => p.LaptopConditions)
                 .HasForeignKey(d => d.BorrowDetailId)
-                .HasConstraintName("FK__LaptopCon__Borro__797309D9");
+                .HasConstraintName("FK__LaptopCon__Borro__787EE5A0");
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BAFA37FC2EE");
+            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BAF33A61BDA");
 
             entity.Property(e => e.OrderId).HasColumnName("OrderID");
             entity.Property(e => e.OrderDate)
@@ -222,12 +219,12 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Orders__UserId__6EF57B66");
+                .HasConstraintName("FK__Orders__UserId__6B24EA82");
         });
 
         modelBuilder.Entity<OrderItem>(entity =>
         {
-            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderIte__57ED06A16BA4ED33");
+            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderIte__57ED06A1457F5FEA");
 
             entity.Property(e => e.OrderItemId).HasColumnName("OrderItemID");
             entity.Property(e => e.OrderId).HasColumnName("OrderID");
@@ -236,16 +233,16 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__OrderItem__Order__71D1E811");
+                .HasConstraintName("FK__OrderItem__Order__6E01572D");
 
             entity.HasOne(d => d.Product).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK__OrderItem__Produ__72C60C4A");
+                .HasConstraintName("FK__OrderItem__Produ__6EF57B66");
         });
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6ED3F52E223");
+            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6EDC37A3715");
 
             entity.Property(e => e.ProductId).HasColumnName("ProductID");
             entity.Property(e => e.BatteryLife).HasMaxLength(255);
@@ -269,16 +266,16 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)
-                .HasConstraintName("FK__Products__Catego__68487DD7");
+                .HasConstraintName("FK__Products__Catego__6754599E");
 
             entity.HasOne(d => d.Shop).WithMany(p => p.Products)
                 .HasForeignKey(d => d.ShopId)
-                .HasConstraintName("FK__Products__ShopID__6754599E");
+                .HasConstraintName("FK__Products__ShopID__66603565");
         });
 
         modelBuilder.Entity<ProductImage>(entity =>
         {
-            entity.HasKey(e => e.ImageId).HasName("PK__ProductI__7516F4ECC06506E1");
+            entity.HasKey(e => e.ImageId).HasName("PK__ProductI__7516F4EC17491D44");
 
             entity.Property(e => e.ImageId).HasColumnName("ImageID");
             entity.Property(e => e.ImageUrl)
@@ -288,14 +285,34 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Product).WithMany(p => p.ProductImages)
                 .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK__ProductIm__Produ__6B24EA82");
+                .HasConstraintName("FK__ProductIm__Produ__71D1E811");
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(e => e.RefreshTokenId).HasName("PK__RefreshT__F5845E5965DEED16");
+
+            entity.Property(e => e.RefreshTokenId).HasColumnName("RefreshTokenID");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ExpiredAt).HasColumnType("datetime");
+            entity.Property(e => e.RevokedAt).HasColumnType("datetime");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.Token).HasMaxLength(255);
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+
+            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__RefreshTo__UserI__02FC7413");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE3A5DC52245");
+            entity.HasKey(e => e.RoleId).HasName("PK__Roles__8AFACE3AFAFD9F36");
 
-            entity.HasIndex(e => e.RoleName, "UQ__Roles__8A2B61602838A494").IsUnique();
+            entity.HasIndex(e => e.RoleName, "UQ__Roles__8A2B6160C8061085").IsUnique();
 
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
             entity.Property(e => e.RoleName).HasMaxLength(50);
@@ -303,7 +320,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<Shipment>(entity =>
         {
-            entity.HasKey(e => e.ShipmentId).HasName("PK__Shipment__5CAD378D87DA4B61");
+            entity.HasKey(e => e.ShipmentId).HasName("PK__Shipment__5CAD378D0E043BFB");
 
             entity.Property(e => e.ShipmentId).HasColumnName("ShipmentID");
             entity.Property(e => e.ActualDeliveryDate).HasColumnType("datetime");
@@ -316,12 +333,14 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Order).WithMany(p => p.Shipments)
                 .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__Shipments__Order__76969D2E");
+                .HasConstraintName("FK__Shipments__Order__75A278F5");
         });
 
         modelBuilder.Entity<Shop>(entity =>
         {
-            entity.HasKey(e => e.ShopId).HasName("PK__Shops__67C556293403C135");
+            entity.HasKey(e => e.ShopId).HasName("PK__Shops__67C556295828AD3A");
+
+            entity.HasIndex(e => e.UserId, "UQ__Shops__1788CCAD617F6D01").IsUnique();
 
             entity.Property(e => e.ShopId).HasColumnName("ShopID");
             entity.Property(e => e.ContactInfo).HasMaxLength(255);
@@ -332,21 +351,20 @@ public partial class Sep490Context : DbContext
             entity.Property(e => e.ShopName).HasMaxLength(255);
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.TaxCode).HasMaxLength(50);
+            entity.Property(e => e.UserId).HasColumnName("UserID");
 
-            entity.HasOne(d => d.User).WithMany(p => p.Shops)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Shops__UserId__6477ECF3");
+            entity.HasOne(d => d.User).WithOne(p => p.Shop)
+                .HasForeignKey<Shop>(d => d.UserId)
+                .HasConstraintName("FK__Shops__UserID__6383C8BA");
         });
 
         modelBuilder.Entity<Sponsor>(entity =>
         {
-            entity.HasKey(e => e.SponsorId).HasName("PK__Sponsors__3B609EF56C43BD58");
+            entity.HasKey(e => e.SponsorId).HasName("PK__Sponsors__3B609EF597691825");
 
-            entity.HasIndex(e => e.UserId, "UQ__Sponsors__1788CCAD4F651AEB").IsUnique();
+            entity.HasIndex(e => e.UserId, "UQ__Sponsors__1788CCAD8CB196AF").IsUnique();
 
-            entity.Property(e => e.SponsorId)
-                .ValueGeneratedNever()
-                .HasColumnName("SponsorID");
+            entity.Property(e => e.SponsorId).HasColumnName("SponsorID");
             entity.Property(e => e.Address).HasMaxLength(255);
             entity.Property(e => e.ContactEmail).HasMaxLength(255);
             entity.Property(e => e.ContactPhone).HasMaxLength(20);
@@ -354,13 +372,12 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.User).WithOne(p => p.Sponsor)
                 .HasForeignKey<Sponsor>(d => d.UserId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK__Sponsors__UserID__440B1D61");
+                .HasConstraintName("FK__Sponsors__UserID__403A8C7D");
         });
 
         modelBuilder.Entity<SponsorItem>(entity =>
         {
-            entity.HasKey(e => e.ItemId).HasName("PK__SponsorI__727E83EB2EAC3AFE");
+            entity.HasKey(e => e.ItemId).HasName("PK__SponsorI__727E83EB2B92D3B1");
 
             entity.Property(e => e.ItemId).HasColumnName("ItemID");
             entity.Property(e => e.BatteryLife).HasMaxLength(255);
@@ -385,16 +402,16 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.CategoryItem).WithMany(p => p.SponsorItems)
                 .HasForeignKey(d => d.CategoryItemId)
-                .HasConstraintName("FK__SponsorIt__Categ__5070F446");
+                .HasConstraintName("FK__SponsorIt__Categ__4BAC3F29");
 
             entity.HasOne(d => d.DonationForm).WithMany(p => p.SponsorItems)
                 .HasForeignKey(d => d.DonationFormId)
-                .HasConstraintName("FK__SponsorIt__Donat__4F7CD00D");
+                .HasConstraintName("FK__SponsorIt__Donat__4AB81AF0");
         });
 
         modelBuilder.Entity<SponsorItemImage>(entity =>
         {
-            entity.HasKey(e => e.ImageId).HasName("PK__SponsorI__7516F4EC2A2AACAD");
+            entity.HasKey(e => e.ImageId).HasName("PK__SponsorI__7516F4ECA4F8F817");
 
             entity.Property(e => e.ImageId).HasColumnName("ImageID");
             entity.Property(e => e.ImageUrl)
@@ -404,32 +421,29 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Item).WithMany(p => p.SponsorItemImages)
                 .HasForeignKey(d => d.ItemId)
-                .HasConstraintName("FK__SponsorIt__ItemI__534D60F1");
+                .HasConstraintName("FK__SponsorIt__ItemI__4E88ABD4");
         });
 
         modelBuilder.Entity<Student>(entity =>
         {
-            entity.HasKey(e => e.StudentId).HasName("PK__Students__32C52A791DB2777B");
+            entity.HasKey(e => e.StudentId).HasName("PK__Students__32C52A79F8AF2D6D");
 
-            entity.HasIndex(e => e.UserId, "UQ__Students__1788CCADAEFCC361").IsUnique();
+            entity.HasIndex(e => e.UserId, "UQ__Students__1788CCAD98B3FEE8").IsUnique();
 
-            entity.Property(e => e.StudentId)
-                .ValueGeneratedNever()
-                .HasColumnName("StudentID");
+            entity.Property(e => e.StudentId).HasColumnName("StudentID");
             entity.Property(e => e.StudentCode).HasMaxLength(50);
             entity.Property(e => e.UserId).HasColumnName("UserID");
 
             entity.HasOne(d => d.User).WithOne(p => p.Student)
                 .HasForeignKey<Student>(d => d.UserId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK__Students__UserID__403A8C7D");
+                .HasConstraintName("FK__Students__UserID__52593CB8");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C09C6DD10");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C10621162");
 
-            entity.HasIndex(e => e.Email, "UQ__Users__A9D105343C4D7FF0").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Users__A9D1053477893375").IsUnique();
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")

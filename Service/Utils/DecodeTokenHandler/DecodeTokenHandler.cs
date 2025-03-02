@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using DataAccess.TokenDTO;
 using Service.IService;
+using Service.Service;
 
 namespace Service.Utils.DecodeTokenHandler
 {
@@ -15,16 +16,13 @@ namespace Service.Utils.DecodeTokenHandler
         public TokenModel decode(string token)
         {
             var roleName = _jWTService.decodeToken(token, ClaimsIdentity.DefaultRoleClaimType);
-            var userIdString = _jWTService.decodeToken(token, "userid");
-            var fullName = _jWTService.decodeToken(token, "fullname");
-            var email = _jWTService.decodeToken(token, "email");
-            
-            int userId = 0;
-            if (!int.TryParse(userIdString, out userId))
+            var userIdString = _jWTService.decodeToken(token, ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdString, out int userId))
             {
-                // Nếu userId không hợp lệ, có thể log hoặc xử lý lỗi ở đây
-                throw new Exception("Invalid userId format in token.");
+                throw new Exception("Invalid userId format in JWT token");
             }
+            var fullName = _jWTService.decodeToken(token, "fullname");
+            var email = _jWTService.decodeToken(token, "email");          
             return new TokenModel(userId, email ,fullName, roleName);
         }
     }

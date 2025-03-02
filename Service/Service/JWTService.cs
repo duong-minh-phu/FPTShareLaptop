@@ -23,11 +23,14 @@ namespace Service.Service
 
         public string decodeToken(string jwtToken, string nameClaim)
         {
-            Claim? claim = _tokenHandler.ReadJwtToken(jwtToken).Claims.FirstOrDefault(selector => selector.Type.ToString().Equals(nameClaim));
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwtToken);
 
-            return claim != null ? claim.Value : "Error!!!";
+            var claim = token.Claims.FirstOrDefault(c =>
+                c.Type == nameClaim || c.Type == ClaimTypes.NameIdentifier);
+
+            return claim?.Value ?? throw new Exception($"Claim '{nameClaim}' not found in token.");
         }
-
 
 
 

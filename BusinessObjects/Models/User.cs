@@ -23,9 +23,11 @@ public partial class User
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+
     public virtual Role? Role { get; set; }
 
-    public virtual ICollection<Shop> Shops { get; set; } = new List<Shop>();
+    public virtual Shop? Shop { get; set; }
 
     public virtual Sponsor? Sponsor { get; set; }
 

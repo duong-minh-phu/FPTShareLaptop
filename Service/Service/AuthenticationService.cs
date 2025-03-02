@@ -1,12 +1,9 @@
-﻿using System.Globalization;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Net;
 using BusinessObjects.Models;
 using DataAccess.PasswordDTO;
 using DataAccess.UserDTO;
-using Org.BouncyCastle.Crypto.Generators;
 using Service.IService;
-using Service.Service;
 using Service.Utils.CustomException;
 using Service.Utils.Security;
 
@@ -119,18 +116,25 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<object> GetUserInfor(string token)
     {
-        var userId = _jwtService.decodeToken(token, "userId");
-        var user = await _unitOfWork.Users.GetByIdAsync(userId, includeProperties: new Expression<Func<User, object>>[] { u => u.Role, u => u.Student, u => u.Sponsor });
+        var userIdStr = _jwtService.decodeToken(token, "userId");
+
+        // Nếu userIdStr là null hoặc không phải số, ném lỗi
+        if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
+        {
+            throw new Exception($"Invalid user ID format: {userIdStr}");
+        }
+
+        var user = await _unitOfWork.Users.GetByIdAsync(userId,
+            includeProperties: new Expression<Func<User, object>>[] { u => u.Role, u => u.Student, u => u.Sponsor });
 
         if (user == null)
-            throw new ApiException(HttpStatusCode.NotFound, "Email not found.");
+            throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
         switch (user.Role?.RoleName)
         {
             case "Student":
                 if (user.Student == null)
                     throw new Exception("Student profile not found.");
-
                 return new StudentProfileModel
                 {
                     UserId = user.UserId,
@@ -140,15 +144,14 @@ public class AuthenticationService : IAuthenticationService
                     ProfilePicture = user.ProfilePicture,
                     Status = user.Status,
                     CreatedAt = user.CreatedAt,
-                    StudentCode = user.Student.StudentCode,  // Sửa lỗi tại đây
-                    DateOfBirth = user.Student.DateOfBirth,  // Sửa lỗi tại đây
-                    EnrollmentDate = user.Student.EnrollmentDate  // Sửa lỗi tại đây
+                    StudentCode = user.Student.StudentCode,
+                    DateOfBirth = user.Student.DateOfBirth,
+                    EnrollmentDate = user.Student.EnrollmentDate
                 };
 
             case "Sponsor":
                 if (user.Sponsor == null)
                     throw new Exception("Sponsor profile not found.");
-
                 return new SponsorProfileModel
                 {
                     UserId = user.UserId,
@@ -158,15 +161,16 @@ public class AuthenticationService : IAuthenticationService
                     ProfilePicture = user.ProfilePicture,
                     Status = user.Status,
                     CreatedAt = user.CreatedAt,
-                    ContactPhone = user.Sponsor.ContactPhone,  // Sửa lỗi tại đây
-                    ContactEmail = user.Sponsor.ContactEmail,  // Sửa lỗi tại đây
-                    Address = user.Sponsor.Address  // Sửa lỗi tại đây
+                    ContactPhone = user.Sponsor.ContactPhone,
+                    ContactEmail = user.Sponsor.ContactEmail,
+                    Address = user.Sponsor.Address
                 };
 
             default:
                 throw new Exception("Invalid user role.");
         }
     }
+
 
     private string GenerateTemporaryPassword()
     {
@@ -208,8 +212,8 @@ public class AuthenticationService : IAuthenticationService
         {
             UserId = user.UserId,
             StudentCode = studentRegisterReqModel.StudentCode,
-            DateOfBirth = DateOnly.ParseExact(studentRegisterReqModel.DateOfBirth, "dd/MM/yyyy", null),
-            EnrollmentDate = DateOnly.ParseExact(studentRegisterReqModel.EnrollmentDate, "dd/MM/yyyy", null)
+            DateOfBirth = user.Student.DateOfBirth,  
+            EnrollmentDate = user.Student.EnrollmentDate
         };
 
         await _unitOfWork.Student.AddAsync(student);
@@ -245,7 +249,8 @@ public class AuthenticationService : IAuthenticationService
             Email = sponsorRegisterReqModel.Email,
             Password = PasswordHasher.HashPassword(sponsorRegisterReqModel.Password),
             RoleId = sponsorRole.RoleId,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            Status = "Active"
         };
 
         await _unitOfWork.Users.AddAsync(user);
