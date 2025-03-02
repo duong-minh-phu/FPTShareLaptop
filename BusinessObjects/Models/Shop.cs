@@ -7,9 +7,9 @@ public partial class Shop
 {
     public int ShopId { get; set; }
 
-    public string? TaxCode { get; set; }
-
     public int? UserId { get; set; }
+
+    public string? TaxCode { get; set; }
 
     public string? ShopName { get; set; }
 
