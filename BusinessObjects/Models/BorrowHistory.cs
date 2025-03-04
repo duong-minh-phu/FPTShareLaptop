@@ -17,11 +17,7 @@ public partial class BorrowHistory
 
     public DateTime? ReturnDate { get; set; }
 
-    public string Status { get; set; }
+    public string? Status { get; set; }
 
-    public virtual BorrowDetail BorrowDetail { get; set; }
-
-    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
-
-    public virtual Student Student { get; set; }
+    public virtual Student? Student { get; set; }
 }

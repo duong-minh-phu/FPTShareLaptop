@@ -1,11 +1,5 @@
 ﻿using BusinessObjects.Models;
-using ClassLibrary1.Interface;
-using BusinessObjects.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Service.IService;
 
 namespace Service.Service
 {
@@ -71,6 +65,8 @@ namespace Service.Service
         public IGenericRepository<SponsorItemImage> SponsorItemImage => Repository<SponsorItemImage>();
 
         public IGenericRepository<Student> Student => Repository<Student>();
+
+        public IGenericRepository<RefreshToken> RefreshToken => Repository<RefreshToken>();
 
         public async Task<int> SaveAsync()
         {

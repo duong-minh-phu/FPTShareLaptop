@@ -1,12 +1,7 @@
 ﻿using BusinessObjects.Models;
-using ClassLibrary1.Interface;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Service.IService;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Service
 {
@@ -69,6 +64,15 @@ namespace Service.Service
                 .Include(u => u.Role)  // Eager load Role
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
+
+        public async Task<RefreshToken> GetByTokenAsync(string refreshToken)
+        {
+            return await _context.Set<RefreshToken>()
+                .Include(rt => rt.User) // Lấy luôn User
+                .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
+        }
+
+
 
         public async Task AddAsync(T entity)
         {

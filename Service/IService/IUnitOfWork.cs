@@ -28,6 +28,7 @@ namespace Service.IService
         IGenericRepository<SponsorItemImage> SponsorItemImage { get; }
         IGenericRepository<Student> Student { get; }
         IGenericRepository<User> Users { get; }
+        IGenericRepository<RefreshToken> RefreshToken { get; }
 
         Task<int> SaveAsync();
     }

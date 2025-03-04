@@ -7,7 +7,7 @@ public partial class CategoryItem
 {
     public int CategoryItemId { get; set; }
 
-    public string CategoryItemName { get; set; }
+    public string? CategoryItemName { get; set; }
 
     public virtual ICollection<SponsorItem> SponsorItems { get; set; } = new List<SponsorItem>();
 }
