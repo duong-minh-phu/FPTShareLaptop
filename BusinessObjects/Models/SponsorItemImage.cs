@@ -9,7 +9,7 @@ public partial class SponsorItemImage
 
     public int? ItemId { get; set; }
 
-    public string ImageUrl { get; set; }
+    public string? ImageUrl { get; set; }
 
-    public virtual SponsorItem Item { get; set; }
+    public virtual SponsorItem? Item { get; set; }
 }

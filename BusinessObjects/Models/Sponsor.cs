@@ -9,13 +9,15 @@ public partial class Sponsor
 
     public int? UserId { get; set; }
 
-    public string ContactPhone { get; set; }
+    public string? ContactPhone { get; set; }
 
-    public string ContactEmail { get; set; }
+    public string? ContactEmail { get; set; }
 
-    public string Address { get; set; }
+    public string? Address { get; set; }
+
+    public virtual ICollection<Commitment> Commitments { get; set; } = new List<Commitment>();
 
     public virtual ICollection<DonationForm> DonationForms { get; set; } = new List<DonationForm>();
 
-    public virtual User User { get; set; }
+    public virtual User? User { get; set; }
 }

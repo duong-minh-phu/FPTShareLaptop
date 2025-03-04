@@ -17,11 +17,11 @@ public partial class BorrowDetail
 
     public DateTime? ReturnedDate { get; set; }
 
-    public string ConditionOnReturn { get; set; }
+    public string? ConditionOnReturn { get; set; }
 
-    public string Status { get; set; }
+    public string? Status { get; set; }
 
-    public virtual ICollection<BorrowHistory> BorrowHistories { get; set; } = new List<BorrowHistory>();
+    public virtual ICollection<LaptopCondition> LaptopConditions { get; set; } = new List<LaptopCondition>();
 
-    public virtual BorrowRequest Request { get; set; }
+    public virtual BorrowRequest? Request { get; set; }
 }

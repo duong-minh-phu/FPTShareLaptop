@@ -17,6 +17,8 @@ namespace Service.IService
     params Expression<Func<T, object>>[] includeProperties);
         Task<T> GetByIdAsync(object id, params Expression<Func<T, object>>[] includeProperties);
         Task<User> GetByEmailAsync(string email);
+        Task<RefreshToken?> GetByTokenAsync(string refreshToken);
+
         Task AddAsync(T entity);
         void Update(T entity);
         void Delete(T entity);

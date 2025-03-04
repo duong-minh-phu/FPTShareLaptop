@@ -17,9 +17,7 @@ public partial class Feedback
 
     public int? Rating { get; set; }
 
-    public string Comments { get; set; }
+    public string? Comments { get; set; }
 
-    public virtual BorrowHistory History { get; set; }
-
-    public virtual Student Student { get; set; }
+    public virtual Student? Student { get; set; }
 }

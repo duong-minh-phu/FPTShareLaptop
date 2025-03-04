@@ -15,11 +15,9 @@ public partial class BorrowRequest
 
     public DateTime? ApprovalDate { get; set; }
 
-    public string RequestStatus { get; set; }
+    public string? RequestStatus { get; set; }
 
     public virtual ICollection<BorrowDetail> BorrowDetails { get; set; } = new List<BorrowDetail>();
 
-    public virtual SponsorItem SponsorLaptop { get; set; }
-
-    public virtual Student Student { get; set; }
+    public virtual Student? Student { get; set; }
 }
