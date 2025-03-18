@@ -7,13 +7,13 @@ using BusinessObjects.Enums;
 
 namespace DataAccess.DonationFormDTO
 {
-    public class UpdateDonationFormReqModel
+    public class UpdateDonateFormReqModel
     {
-        public string? ItemName { get; set; }
+        public string ItemName { get; set; }
 
-        public string? ItemDescription { get; set; }
+        public string ItemDescription { get; set; }
 
-        public int? Quantity { get; set; }
+        public int Quantity { get; set; }
        
     }
 }

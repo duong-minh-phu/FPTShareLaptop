@@ -27,28 +27,28 @@ namespace Service.Service
         // Specific repositories (for strongly-typed usage if needed)
         public IGenericRepository<Category> Categories => Repository<Category>();
         public IGenericRepository<Order> Orders => Repository<Order>();
-        public IGenericRepository<OrderItem> OrderItems => Repository<OrderItem>();
+        public IGenericRepository<OrderDetail> OrderDetails => Repository<OrderDetail>();
         public IGenericRepository<Product> Products => Repository<Product>();
         public IGenericRepository<ProductImage> ProductImages => Repository<ProductImage>();
         public IGenericRepository<Role> Roles => Repository<Role>();
         public IGenericRepository<Shop> Shops => Repository<Shop>();
         public IGenericRepository<User> Users => Repository<User>();
 
-        public IGenericRepository<BorrowDetail> BorrowDetail => Repository<BorrowDetail>();
+        public IGenericRepository<BorrowContract> BorrowContract => Repository<BorrowContract>();
 
         public IGenericRepository<BorrowHistory> BorrowHistory => Repository<BorrowHistory>();
 
         public IGenericRepository<BorrowRequest> BorrowRequest => Repository<BorrowRequest>();
 
-        public IGenericRepository<CategoryItem> CategoryItem => Repository<CategoryItem>();
+        public IGenericRepository<Category> Category => Repository<Category>();
 
-        public IGenericRepository<DonationForm> DonationForm => Repository<DonationForm>();
+        public IGenericRepository<DonateForm> DonateForm => Repository<DonateForm>();
 
-        public IGenericRepository<Feedback> Feedback => Repository<Feedback>();
+        public IGenericRepository<FeedbackBorrow> FeedbackBorrow => Repository<FeedbackBorrow>();
 
         public IGenericRepository<Order> Order => Repository<Order>();
 
-        public IGenericRepository<OrderItem> OrderItem => Repository<OrderItem>();
+        public IGenericRepository<OrderDetail> OrderDetail => Repository<OrderDetail>();
 
         public IGenericRepository<Product> Product => Repository<Product>();
 
@@ -58,11 +58,10 @@ namespace Service.Service
 
         public IGenericRepository<Shop> Shop => Repository<Shop>();
 
-        public IGenericRepository<Sponsor> Sponsor => Repository<Sponsor>();
 
-        public IGenericRepository<SponsorItem> SponsorItem => Repository<SponsorItem>();
+        public IGenericRepository<DonateItem>DonateItem => Repository<DonateItem>();
 
-        public IGenericRepository<SponsorItemImage> SponsorItemImage => Repository<SponsorItemImage>();
+        public IGenericRepository<ItemImage> ItemImage => Repository<ItemImage>();
 
         public IGenericRepository<Student> Student => Repository<Student>();
 

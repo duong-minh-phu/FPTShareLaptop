@@ -7,17 +7,25 @@ public partial class BorrowRequest
 {
     public int RequestId { get; set; }
 
-    public int? StudentId { get; set; }
+    public int? UserId { get; set; }
 
-    public int? SponsorLaptopId { get; set; }
+    public int? ItemId { get; set; }
 
-    public DateTime? RequestDate { get; set; }
+    public string? Status { get; set; }
 
-    public DateTime? ApprovalDate { get; set; }
+    public DateTime? StartDate { get; set; }
 
-    public string? RequestStatus { get; set; }
+    public DateTime? EndDate { get; set; }
 
-    public virtual ICollection<BorrowDetail> BorrowDetails { get; set; } = new List<BorrowDetail>();
+    public DateTime? CreatedDate { get; set; }
 
-    public virtual Student? Student { get; set; }
+    public DateTime? UpdateDate { get; set; }
+
+    public virtual ICollection<BorrowContract> BorrowContracts { get; set; } = new List<BorrowContract>();
+
+    public virtual ICollection<BorrowHistory> BorrowHistories { get; set; } = new List<BorrowHistory>();
+
+    public virtual DonateItem? Item { get; set; }
+
+    public virtual User? User { get; set; }
 }

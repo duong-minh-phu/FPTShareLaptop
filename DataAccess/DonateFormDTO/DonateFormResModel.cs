@@ -7,14 +7,14 @@ using BusinessObjects.Enums;
 
 namespace DataAccess.DonationFormDTO
 {
-    public class DonationFormResModel
+    public class DonateFormResModel
     {
         public int DonationFormId { get; set; }
 
         public int SponsorId { get; set; }
 
         public string ItemName { get; set; } = string.Empty;
-        public string? ItemDescription { get; set; }
+        public string ItemDescription { get; set; }
 
         public int Quantity { get; set; }
 

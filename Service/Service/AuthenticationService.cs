@@ -47,12 +47,7 @@ public class AuthenticationService : IAuthenticationService
         await _unitOfWork.SaveAsync();
 
         return new UserLoginResModel
-        {
-            UserId = user.UserId,
-            FullName = user.FullName,
-            Email = user.Email,
-            RoleName = user.Role.RoleName,
-            ProfilePicture = user.ProfilePicture,
+        {         
             Token = token,
             RefreshToken = refreshToken,
             TokenExpiration = newRefreshToken.ExpiredAt
@@ -114,62 +109,43 @@ public class AuthenticationService : IAuthenticationService
     }
 
 
-    public async Task<object> GetUserInfor(string token)
+    public async Task<UserProfileModel> GetUserInfor(string token)
     {
         var userIdStr = _jwtService.decodeToken(token, "userId");
 
-        // Nếu userIdStr là null hoặc không phải số, ném lỗi
         if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
         {
             throw new Exception($"Invalid user ID format: {userIdStr}");
         }
 
         var user = await _unitOfWork.Users.GetByIdAsync(userId,
-            includeProperties: new Expression<Func<User, object>>[] { u => u.Role, u => u.Student, u => u.Sponsor });
+            includeProperties: new Expression<Func<User, object>>[] { u => u.Role, u => u.Student });
 
         if (user == null)
             throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
-        switch (user.Role?.RoleName)
+        return new UserProfileModel
         {
-            case "Student":
-                if (user.Student == null)
-                    throw new Exception("Student profile not found.");
-                return new StudentProfileModel
-                {
-                    UserId = user.UserId,
-                    FullName = user.FullName,
-                    Email = user.Email,
-                    RoleName = user.Role.RoleName,
-                    ProfilePicture = user.ProfilePicture,
-                    Status = user.Status,
-                    CreatedAt = user.CreatedAt,
-                    StudentCode = user.Student.StudentCode,
-                    DateOfBirth = user.Student.DateOfBirth,
-                    EnrollmentDate = user.Student.EnrollmentDate
-                };
+            UserId = user.UserId,
+            FullName = user.FullName,
+            Email = user.Email,
+            RoleName = user.Role.RoleName,
+            Avatar = user.Avatar,
+            PhoneNumber = user.PhoneNumber,
+            Address = user.Address,
+            Dob = user.Dob,
+            Gender = user.Gender,
+            CreatedAt = user.CreatedAt,
 
-            case "Sponsor":
-                if (user.Sponsor == null)
-                    throw new Exception("Sponsor profile not found.");
-                return new SponsorProfileModel
-                {
-                    UserId = user.UserId,
-                    FullName = user.FullName,
-                    Email = user.Email,
-                    RoleName = user.Role.RoleName,
-                    ProfilePicture = user.ProfilePicture,
-                    Status = user.Status,
-                    CreatedAt = user.CreatedAt,
-                    ContactPhone = user.Sponsor.ContactPhone,
-                    ContactEmail = user.Sponsor.ContactEmail,
-                    Address = user.Sponsor.Address
-                };
+            // Chỉ có giá trị nếu là Student
+            StudentCode = user.Student?.StudentCode,
+            IdentityCard = user.Student?.IdentityCard,
+            EnrollmentDate = user.Student?.EnrollmentDate,
 
-            default:
-                throw new Exception("Invalid user role.");
-        }
+            // Nếu sau này cần thêm Sponsor, có thể bỏ các trường của Sponsor vào đây (nếu có)
+        };
     }
+
 
 
     private string GenerateTemporaryPassword()
@@ -181,28 +157,27 @@ public class AuthenticationService : IAuthenticationService
     }
 
 
-    public async Task<UserRegisterResModel> RegisterStudent(StudentRegisterReqModel studentRegisterReqModel)
+    public async Task<UserRegisterResModel> RegisterStudent(UserRegisterReqModel userRegisterReqModel)
     {
-        var existingUser = await _unitOfWork.Users.GetByEmailAsync(studentRegisterReqModel.Email);
+        var existingUser = await _unitOfWork.Users.GetByEmailAsync(userRegisterReqModel.Email);
         if (existingUser != null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
         }
 
-        var role = await _unitOfWork.Role.GetAllAsync();
-        var studentRole = role.FirstOrDefault(r => r.RoleName == "Student");
-        if (studentRole == null)
-        {
-            throw new ApiException(HttpStatusCode.BadRequest, "Invalid role.");
-        }
-
         var user = new User
         {
-            FullName = studentRegisterReqModel.FullName,
-            Email = studentRegisterReqModel.Email,
-            Password = PasswordHasher.HashPassword(studentRegisterReqModel.Password),
-            RoleId = studentRole.RoleId,
-            CreatedAt = DateTime.UtcNow
+            FullName = userRegisterReqModel.FullName,
+            Email = userRegisterReqModel.Email,
+            Password = PasswordHasher.HashPassword(userRegisterReqModel.Password),
+            RoleId = 3, 
+            CreatedAt = DateTime.UtcNow,
+            Dob = userRegisterReqModel.Dob,
+            Address = userRegisterReqModel.Address,
+            PhoneNumber = userRegisterReqModel.PhoneNumber,
+            Gender = userRegisterReqModel.Gender,
+            Avatar = userRegisterReqModel.Avatar,
+            Status = "Active"
         };
 
         await _unitOfWork.Users.AddAsync(user);
@@ -211,9 +186,10 @@ public class AuthenticationService : IAuthenticationService
         var student = new Student
         {
             UserId = user.UserId,
-            StudentCode = studentRegisterReqModel.StudentCode,
-            DateOfBirth = user.Student.DateOfBirth,  
-            EnrollmentDate = user.Student.EnrollmentDate
+            StudentId = user.UserId,
+            StudentCode = userRegisterReqModel.StudentCode,
+            IdentityCard = userRegisterReqModel.IdentityCard,
+            EnrollmentDate = userRegisterReqModel.EnrollmentDate
         };
 
         await _unitOfWork.Student.AddAsync(student);
@@ -223,7 +199,7 @@ public class AuthenticationService : IAuthenticationService
         {
             UserId = user.UserId,
             Email = user.Email,
-            Role = studentRole.RoleName,
+            RoleName = "Student",
             Message = "Student registered successfully."
         };
     }
@@ -248,31 +224,27 @@ public class AuthenticationService : IAuthenticationService
             FullName = sponsorRegisterReqModel.FullName,
             Email = sponsorRegisterReqModel.Email,
             Password = PasswordHasher.HashPassword(sponsorRegisterReqModel.Password),
-            RoleId = sponsorRole.RoleId,
+            RoleId = 3,
             CreatedAt = DateTime.UtcNow,
+            Dob = sponsorRegisterReqModel.Dob,
+            Address = sponsorRegisterReqModel.Address,
+            PhoneNumber = sponsorRegisterReqModel.PhoneNumber,
+            Gender = sponsorRegisterReqModel.Gender,
+            Avatar = sponsorRegisterReqModel.Avatar,
             Status = "Active"
         };
 
         await _unitOfWork.Users.AddAsync(user);
-        await _unitOfWork.SaveAsync();
-
-        var sponsor = new Sponsor
-        {
-            UserId = user.UserId,
-            ContactPhone = sponsorRegisterReqModel.ContactPhone,
-            ContactEmail = sponsorRegisterReqModel.ContactEmail,
-            Address = sponsorRegisterReqModel.Address
-        };
-
-        await _unitOfWork.Sponsor.AddAsync(sponsor);
-        await _unitOfWork.SaveAsync();
+        await _unitOfWork.SaveAsync();      
 
         return new UserRegisterResModel
         {
             UserId = user.UserId,
             Email = user.Email,
-            Role = sponsorRole.RoleName,
+            RoleName = sponsorRole.RoleName,
             Message = "Sponsor registered successfully."
         };
     }
+
+   
 }
