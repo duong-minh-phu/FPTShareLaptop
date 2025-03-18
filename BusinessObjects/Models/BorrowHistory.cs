@@ -5,19 +5,27 @@ namespace BusinessObjects.Models;
 
 public partial class BorrowHistory
 {
-    public int HistoryId { get; set; }
+    public int BorrowHistoryId { get; set; }
 
-    public int? StudentId { get; set; }
+    public int? RequestId { get; set; }
 
-    public int? LaptopId { get; set; }
+    public int? ItemId { get; set; }
 
-    public int? BorrowDetailId { get; set; }
+    public int? UserId { get; set; }
 
     public DateTime? BorrowDate { get; set; }
 
     public DateTime? ReturnDate { get; set; }
 
-    public string? Status { get; set; }
+    public virtual ICollection<FeedbackBorrow> FeedbackBorrows { get; set; } = new List<FeedbackBorrow>();
 
-    public virtual Student? Student { get; set; }
+    public virtual DonateItem? Item { get; set; }
+
+    public virtual ICollection<ItemCondition> ItemConditions { get; set; } = new List<ItemCondition>();
+
+    public virtual ICollection<ReportDamage> ReportDamages { get; set; } = new List<ReportDamage>();
+
+    public virtual BorrowRequest? Request { get; set; }
+
+    public virtual User? User { get; set; }
 }
