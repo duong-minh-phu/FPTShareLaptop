@@ -9,11 +9,11 @@ namespace FPTShareLaptop_Controller.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DonationFormController : ControllerBase
+    public class DonateFormController : ControllerBase
     {
-        private readonly IDonationFormService _donationFormService;
+        private readonly IDonateFormService _donationFormService;
 
-        public DonationFormController(IDonationFormService donationFormService)
+        public DonateFormController(IDonateFormService donationFormService)
         {
             _donationFormService = donationFormService;
         }
@@ -58,7 +58,7 @@ namespace FPTShareLaptop_Controller.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> CreateDonation([FromBody] CreateDonationFormReqModel request)
+        public async Task<IActionResult> CreateDonation([FromBody] CreateDonateFormReqModel request)
         {
             await _donationFormService.CreateDonationAsync(request);
 
@@ -74,7 +74,7 @@ namespace FPTShareLaptop_Controller.Controllers
 
         [HttpPut]
         [Route("update/{id}")]
-        public async Task<IActionResult> UpdateDonation(int id, [FromBody] UpdateDonationFormReqModel request)
+        public async Task<IActionResult> UpdateDonation(int id, [FromBody] UpdateDonateFormReqModel request)
         {
             await _donationFormService.UpdateDonationAsync(id, request);
 

@@ -11,17 +11,11 @@ public partial class Student
 
     public string? StudentCode { get; set; }
 
-    public DateOnly? DateOfBirth { get; set; }
+    public string? IdentityCard { get; set; }
 
-    public DateOnly? EnrollmentDate { get; set; }
+    public DateTime? EnrollmentDate { get; set; }
 
-    public virtual ICollection<BorrowHistory> BorrowHistories { get; set; } = new List<BorrowHistory>();
-
-    public virtual ICollection<BorrowRequest> BorrowRequests { get; set; } = new List<BorrowRequest>();
-
-    public virtual ICollection<Commitment> Commitments { get; set; } = new List<Commitment>();
-
-    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+    public string? Status { get; set; }
 
     public virtual User? User { get; set; }
 }

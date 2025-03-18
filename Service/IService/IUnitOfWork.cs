@@ -8,24 +8,22 @@ using System.Threading.Tasks;
 namespace Service.IService
 {
     public interface IUnitOfWork : IDisposable
-    {
-        IGenericRepository<BorrowDetail> BorrowDetail { get; }
+    {        
         IGenericRepository<BorrowHistory> BorrowHistory { get; }
         IGenericRepository<BorrowRequest> BorrowRequest { get; }
         IGenericRepository<Category> Categories { get; }
-        IGenericRepository<CategoryItem> CategoryItem { get; }
-        IGenericRepository<DonationForm> DonationForm { get; }
-        IGenericRepository<Feedback> Feedback { get; }
+        IGenericRepository<Category> Category { get; }
+        IGenericRepository<DonateForm> DonateForm { get; }
+        IGenericRepository<FeedbackBorrow> FeedbackBorrow { get; }
 
         IGenericRepository<Order> Order { get; }
-        IGenericRepository<OrderItem> OrderItem { get; }
+        IGenericRepository<OrderDetail> OrderDetail { get; }
         IGenericRepository<Product> Product { get; }
         IGenericRepository<ProductImage> ProductImage { get; }
         IGenericRepository<Role> Role { get; }
-        IGenericRepository<Shop> Shop { get; }
-        IGenericRepository<Sponsor> Sponsor { get; }
-        IGenericRepository<SponsorItem> SponsorItem { get; }
-        IGenericRepository<SponsorItemImage> SponsorItemImage { get; }
+        IGenericRepository<Shop> Shop { get; }        
+        IGenericRepository<DonateItem> DonateItem { get; }
+        IGenericRepository<ItemImage> ItemImage { get; }
         IGenericRepository<Student> Student { get; }
         IGenericRepository<User> Users { get; }
         IGenericRepository<RefreshToken> RefreshToken { get; }

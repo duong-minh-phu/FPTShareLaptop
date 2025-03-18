@@ -23,7 +23,7 @@ namespace FPTShareLaptop_Controller.Controllers
 
         [HttpPost]
         [Route("register/student")]
-        public async Task<IActionResult> RegisterStudent([FromBody] StudentRegisterReqModel studentRegisterReqModel)
+        public async Task<IActionResult> RegisterStudent([FromBody] UserRegisterReqModel studentRegisterReqModel)
         {
            
                 await _authenticationService.RegisterStudent(studentRegisterReqModel);

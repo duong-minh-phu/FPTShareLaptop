@@ -23,7 +23,7 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IDonationFormService, DonationFormService>();
+builder.Services.AddScoped<IDonateFormService, DonationFormService>();
 builder.Services.AddAutoMapper(typeof(Program));
 
 

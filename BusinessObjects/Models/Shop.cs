@@ -9,17 +9,23 @@ public partial class Shop
 
     public int? UserId { get; set; }
 
-    public string? TaxCode { get; set; }
-
     public string? ShopName { get; set; }
 
-    public string? ShopLocation { get; set; }
+    public string? ShopAddress { get; set; }
 
-    public string? ContactInfo { get; set; }
+    public string? ShopPhone { get; set; }
 
-    public DateTime? RegistrationDate { get; set; }
+    public string? BusinessLicense { get; set; }
+
+    public string? BankName { get; set; }
+
+    public string? BankNumber { get; set; }
 
     public string? Status { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
+    public DateTime? UpdatedDate { get; set; }
 
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 
