@@ -11,7 +11,7 @@ public partial class BorrowRequest
 
     public int ItemId { get; set; }
 
-    public string Status { get; set; }
+    public string Status { get; set; } = null!;
 
     public DateTime StartDate { get; set; }
 
@@ -25,7 +25,7 @@ public partial class BorrowRequest
 
     public virtual ICollection<BorrowHistory> BorrowHistories { get; set; } = new List<BorrowHistory>();
 
-    public virtual DonateItem? Item { get; set; }
+    public virtual DonateItem Item { get; set; } = null!;
 
-    public virtual User? User { get; set; }
+    public virtual User User { get; set; } = null!;
 }
