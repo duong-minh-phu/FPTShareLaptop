@@ -15,7 +15,7 @@ public partial class FeedbackBorrow
 
     public DateTime FeedbackDate { get; set; }
 
-    public int? Rating { get; set; }
+    public int Rating { get; set; }
 
     public string Comments { get; set; } = null!;
 
