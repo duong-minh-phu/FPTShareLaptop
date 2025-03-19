@@ -7,19 +7,19 @@ public partial class FeedbackBorrow
 {
     public int FeedbackBorrowId { get; set; }
 
-    public int? BorrowHistoryId { get; set; }
+    public int BorrowHistoryId { get; set; }
 
-    public int? ItemId { get; set; }
+    public int ItemId { get; set; }
 
-    public int? UserId { get; set; }
+    public int UserId { get; set; }
 
-    public DateTime? FeedbackDate { get; set; }
+    public DateTime FeedbackDate { get; set; }
 
-    public int? Rating { get; set; }
+    public int Rating { get; set; }
 
-    public string? Comments { get; set; }
+    public string Comments { get; set; }
 
-    public bool? IsAnonymous { get; set; }
+    public bool IsAnonymous { get; set; }
 
     public virtual BorrowHistory? BorrowHistory { get; set; }
 

@@ -7,19 +7,19 @@ public partial class BorrowRequest
 {
     public int RequestId { get; set; }
 
-    public int? UserId { get; set; }
+    public int UserId { get; set; }
 
-    public int? ItemId { get; set; }
+    public int ItemId { get; set; }
 
-    public string? Status { get; set; }
+    public string Status { get; set; }
 
-    public DateTime? StartDate { get; set; }
+    public DateTime StartDate { get; set; }
 
-    public DateTime? EndDate { get; set; }
+    public DateTime EndDate { get; set; }
 
-    public DateTime? CreatedDate { get; set; }
+    public DateTime CreatedDate { get; set; }
 
-    public DateTime? UpdateDate { get; set; }
+    public DateTime UpdateDate { get; set; }
 
     public virtual ICollection<BorrowContract> BorrowContracts { get; set; } = new List<BorrowContract>();
 

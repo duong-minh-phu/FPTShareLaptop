@@ -72,7 +72,10 @@ namespace Service.Service
                 .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
         }
 
-
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.AnyAsync(predicate);
+        }
 
         public async Task AddAsync(T entity)
         {

@@ -1,7 +1,9 @@
-﻿using BusinessObjects.Enums;
+﻿using System.Net;
+using BusinessObjects.Enums;
 using BusinessObjects.Models;
 using DataAccess.DonationFormDTO;
 using Service.IService;
+using Service.Utils.CustomException;
 
 namespace Service.Service
 {
@@ -14,7 +16,7 @@ namespace Service.Service
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<DonateFormResModel>> GetAllDonationsAsync()
+        public async Task<List<DonateFormResModel>> GetAllDonationsAsync()
         {
             var donations = await _unitOfWork.DonateForm.GetAllAsync();
             return donations.Select(d => new DonateFormResModel
@@ -54,7 +56,7 @@ namespace Service.Service
                 ItemName = request.ItemName,
                 ItemDescription = request.ItemDescription,
                 DonateQuantity = request.Quantity,
-                Status = DonationStatus.Pending.ToString(),
+                Status = DonateStatus.Pending.ToString(),
                 CreatedDate = DateTime.UtcNow
             };
 
@@ -66,7 +68,7 @@ namespace Service.Service
         public async Task UpdateDonationAsync(int id, UpdateDonateFormReqModel request)
         {
             var donation = await _unitOfWork.DonateForm.GetByIdAsync(id);
-            if (donation == null) throw new Exception("Donation not found");
+            if (donation == null) throw new ApiException(HttpStatusCode.BadRequest, "Donation not found");
 
             donation.ItemName = request.ItemName;
             donation.ItemDescription = request.ItemDescription;
@@ -79,9 +81,9 @@ namespace Service.Service
         public async Task SoftDeleteDonationAsync(int id)
         {
             var donation = await _unitOfWork.DonateForm.GetByIdAsync(id);
-            if (donation == null) throw new Exception("Donation not found");
+            if (donation == null) throw new ApiException(HttpStatusCode.BadRequest, "Donation not found");
 
-            donation.Status = DonationStatus.Rejected.ToString();
+            donation.Status = DonateStatus.Rejected.ToString();
             _unitOfWork.DonateForm.Update(donation);
             await _unitOfWork.SaveAsync();
         }

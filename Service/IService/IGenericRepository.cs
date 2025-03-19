@@ -12,13 +12,13 @@ namespace Service.IService
     public interface IGenericRepository<T> where T : class
     {
         Task<IEnumerable<T>> GetAllAsync(
-    Expression<Func<T, bool>> filter = null,
-    Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
-    params Expression<Func<T, object>>[] includeProperties);
+            Expression<Func<T, bool>> filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+            params Expression<Func<T, object>>[] includeProperties);
         Task<T> GetByIdAsync(object id, params Expression<Func<T, object>>[] includeProperties);
         Task<User> GetByEmailAsync(string email);
         Task<RefreshToken?> GetByTokenAsync(string refreshToken);
-
+        Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
         Task AddAsync(T entity);
         void Update(T entity);
         void Delete(T entity);

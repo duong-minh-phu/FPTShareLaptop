@@ -320,6 +320,7 @@ public partial class Sep490Context : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("ImageURL");
             entity.Property(e => e.RefundDate).HasColumnType("datetime");
+            entity.Property(e => e.Status).HasMaxLength(20);
 
             entity.HasOne(d => d.BorrowHistory).WithMany(p => p.ItemConditions)
                 .HasForeignKey(d => d.BorrowHistoryId)

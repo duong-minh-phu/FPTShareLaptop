@@ -7,25 +7,23 @@ public partial class BorrowContract
 {
     public int ContractId { get; set; }
 
-    public int? RequestId { get; set; }
+    public int RequestId { get; set; }
 
-    public int? ItemId { get; set; }
+    public int ItemId { get; set; }
 
-    public int? UserId { get; set; }
+    public int UserId { get; set; }
 
-    public string? Status { get; set; }
+    public string Status { get; set; }
 
-    public DateTime? ContractDate { get; set; }
+    public DateTime ContractDate { get; set; }
 
-    public string? Terms { get; set; }
+    public string Terms { get; set; }
 
-    public bool? IsSigned { get; set; }
+    public string ConditionBorrow { get; set; }
 
-    public string? ConditionBorrow { get; set; }
+    public decimal ItemValue { get; set; }
 
-    public decimal? ItemValue { get; set; }
-
-    public DateTime? ExpectedReturnDate { get; set; }
+    public DateTime ExpectedReturnDate { get; set; }
 
     public virtual ICollection<CompensationTransaction> CompensationTransactions { get; set; } = new List<CompensationTransaction>();
 

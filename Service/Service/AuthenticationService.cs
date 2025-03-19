@@ -111,12 +111,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<UserProfileModel> GetUserInfor(string token)
     {
-        var userIdStr = _jwtService.decodeToken(token, "userId");
-
-        if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
-        {
-            throw new Exception($"Invalid user ID format: {userIdStr}");
-        }
+        var userId = _jwtService.decodeToken(token, "userId");
 
         var user = await _unitOfWork.Users.GetByIdAsync(userId,
             includeProperties: new Expression<Func<User, object>>[] { u => u.Role, u => u.Student });
@@ -138,9 +133,9 @@ public class AuthenticationService : IAuthenticationService
             CreatedAt = user.CreatedAt,
 
             // Chỉ có giá trị nếu là Student
-            StudentCode = user.Student?.StudentCode,
-            IdentityCard = user.Student?.IdentityCard,
-            EnrollmentDate = user.Student?.EnrollmentDate,
+            StudentCode = user.Student.StudentCode,
+            IdentityCard = user.Student.IdentityCard,
+            EnrollmentDate = user.Student.EnrollmentDate,
 
             // Nếu sau này cần thêm Sponsor, có thể bỏ các trường của Sponsor vào đây (nếu có)
         };
