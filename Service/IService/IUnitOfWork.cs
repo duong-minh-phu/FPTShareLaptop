@@ -26,6 +26,9 @@ namespace Service.IService
         IGenericRepository<ItemImage> ItemImage { get; }
         IGenericRepository<Student> Student { get; }
         IGenericRepository<User> Users { get; }
+        IGenericRepository<ReportDamage> ReportDamage { get; }
+        IGenericRepository<CompensationTransaction> CompensationTransaction { get; }
+        IGenericRepository<DepositTransaction> DepositTransaction { get; }
         IGenericRepository<RefreshToken> RefreshToken { get; }
 
         Task<int> SaveAsync();
