@@ -30,6 +30,8 @@ namespace Service.IService
         IGenericRepository<CompensationTransaction> CompensationTransaction { get; }
         IGenericRepository<DepositTransaction> DepositTransaction { get; }
         IGenericRepository<RefreshToken> RefreshToken { get; }
+        IGenericRepository<ItemCondition> ItemCondition { get; }
+        IGenericRepository<BorrowContract> BorrowContract { get; }
 
         Task<int> SaveAsync();
     }

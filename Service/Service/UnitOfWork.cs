@@ -70,6 +70,8 @@ namespace Service.Service
         public IGenericRepository<DepositTransaction> DepositTransaction => Repository<DepositTransaction>();
         public IGenericRepository<CompensationTransaction> CompensationTransaction => Repository<CompensationTransaction>();
 
+        public IGenericRepository<ItemCondition> ItemCondition => Repository<ItemCondition>();
+
         public async Task<int> SaveAsync()
         {
             return await _context.SaveChangesAsync();
