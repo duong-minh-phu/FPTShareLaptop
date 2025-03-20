@@ -92,7 +92,7 @@ public partial class Sep490Context : DbContext
     {
         modelBuilder.Entity<BorrowContract>(entity =>
         {
-            entity.HasKey(e => e.ContractId).HasName("PK__BorrowCo__C90D34692526AC4C");
+            entity.HasKey(e => e.ContractId).HasName("PK__BorrowCo__C90D346917988447");
 
             entity.ToTable("BorrowContract");
 
@@ -105,20 +105,23 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Item).WithMany(p => p.BorrowContracts)
                 .HasForeignKey(d => d.ItemId)
-                .HasConstraintName("FK__BorrowCon__ItemI__5DCAEF64");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BorrowCon__ItemI__787EE5A0");
 
             entity.HasOne(d => d.Request).WithMany(p => p.BorrowContracts)
                 .HasForeignKey(d => d.RequestId)
-                .HasConstraintName("FK__BorrowCon__Reque__5CD6CB2B");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BorrowCon__Reque__797309D9");
 
             entity.HasOne(d => d.User).WithMany(p => p.BorrowContracts)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__BorrowCon__UserI__5EBF139D");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BorrowCon__UserI__7A672E12");
         });
 
         modelBuilder.Entity<BorrowHistory>(entity =>
         {
-            entity.HasKey(e => e.BorrowHistoryId).HasName("PK__BorrowHi__1F7C51B59DFD7D5B");
+            entity.HasKey(e => e.BorrowHistoryId).HasName("PK__BorrowHi__1F7C51B5CBA1744C");
 
             entity.ToTable("BorrowHistory");
 
@@ -127,20 +130,23 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Item).WithMany(p => p.BorrowHistories)
                 .HasForeignKey(d => d.ItemId)
-                .HasConstraintName("FK__BorrowHis__ItemI__66603565");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BorrowHis__ItemI__7B5B524B");
 
             entity.HasOne(d => d.Request).WithMany(p => p.BorrowHistories)
                 .HasForeignKey(d => d.RequestId)
-                .HasConstraintName("FK__BorrowHis__Reque__656C112C");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BorrowHis__Reque__7C4F7684");
 
             entity.HasOne(d => d.User).WithMany(p => p.BorrowHistories)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__BorrowHis__UserI__6754599E");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BorrowHis__UserI__7D439ABD");
         });
 
         modelBuilder.Entity<BorrowRequest>(entity =>
         {
-            entity.HasKey(e => e.RequestId).HasName("PK__BorrowRe__33A8517AECF6D4E7");
+            entity.HasKey(e => e.RequestId).HasName("PK__BorrowRe__33A8517A0DE007C2");
 
             entity.ToTable("BorrowRequest");
 
@@ -152,16 +158,18 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Item).WithMany(p => p.BorrowRequests)
                 .HasForeignKey(d => d.ItemId)
-                .HasConstraintName("FK__BorrowReq__ItemI__59FA5E80");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BorrowReq__ItemI__7E37BEF6");
 
             entity.HasOne(d => d.User).WithMany(p => p.BorrowRequests)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__BorrowReq__UserI__59063A47");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BorrowReq__UserI__7F2BE32F");
         });
 
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__Category__19093A0B09B92009");
+            entity.HasKey(e => e.CategoryId).HasName("PK__Category__19093A0B7393D271");
 
             entity.ToTable("Category");
 
@@ -170,7 +178,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<CompensationTransaction>(entity =>
         {
-            entity.HasKey(e => e.CompensationId).HasName("PK__Compensa__14AB97598997E2C5");
+            entity.HasKey(e => e.CompensationId).HasName("PK__Compensa__14AB975984956D03");
 
             entity.ToTable("CompensationTransaction");
 
@@ -181,24 +189,28 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Contract).WithMany(p => p.CompensationTransactions)
                 .HasForeignKey(d => d.ContractId)
-                .HasConstraintName("FK__Compensat__Contr__6E01572D");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Compensat__Contr__00200768");
 
             entity.HasOne(d => d.DepositTransaction).WithMany(p => p.CompensationTransactions)
                 .HasForeignKey(d => d.DepositTransactionId)
-                .HasConstraintName("FK__Compensat__Depos__70DDC3D8");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Compensat__Depos__01142BA1");
 
             entity.HasOne(d => d.ReportDamage).WithMany(p => p.CompensationTransactions)
                 .HasForeignKey(d => d.ReportDamageId)
-                .HasConstraintName("FK__Compensat__Repor__6FE99F9F");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Compensat__Repor__02084FDA");
 
             entity.HasOne(d => d.User).WithMany(p => p.CompensationTransactions)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Compensat__UserI__6EF57B66");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Compensat__UserI__02FC7413");
         });
 
         modelBuilder.Entity<DepositTransaction>(entity =>
         {
-            entity.HasKey(e => e.DepositId).HasName("PK__DepositT__AB60DF7142BE6EBF");
+            entity.HasKey(e => e.DepositId).HasName("PK__DepositT__AB60DF718A23F8FA");
 
             entity.ToTable("DepositTransaction");
 
@@ -208,16 +220,18 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Contract).WithMany(p => p.DepositTransactions)
                 .HasForeignKey(d => d.ContractId)
-                .HasConstraintName("FK__DepositTr__Contr__619B8048");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DepositTr__Contr__03F0984C");
 
             entity.HasOne(d => d.User).WithMany(p => p.DepositTransactions)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__DepositTr__UserI__628FA481");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DepositTr__UserI__04E4BC85");
         });
 
         modelBuilder.Entity<DonateForm>(entity =>
         {
-            entity.HasKey(e => e.DonateFormId).HasName("PK__DonateFo__4F919634ED4CE3C1");
+            entity.HasKey(e => e.DonateFormId).HasName("PK__DonateFo__4F91963439895CC2");
 
             entity.ToTable("DonateForm");
 
@@ -229,12 +243,13 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.DonateForms)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__DonateFor__UserI__4F7CD00D");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DonateFor__UserI__05D8E0BE");
         });
 
         modelBuilder.Entity<DonateItem>(entity =>
         {
-            entity.HasKey(e => e.ItemId).HasName("PK__DonateIt__727E838B415B73C2");
+            entity.HasKey(e => e.ItemId).HasName("PK__DonateIt__727E838B04BF8DF2");
 
             entity.ToTable("DonateItem");
 
@@ -255,16 +270,18 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.DonateForm).WithMany(p => p.DonateItems)
                 .HasForeignKey(d => d.DonateFormId)
-                .HasConstraintName("FK__DonateIte__Donat__534D60F1");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DonateIte__Donat__06CD04F7");
 
             entity.HasOne(d => d.User).WithMany(p => p.DonateItems)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__DonateIte__UserI__52593CB8");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__DonateIte__UserI__07C12930");
         });
 
         modelBuilder.Entity<FeedbackBorrow>(entity =>
         {
-            entity.HasKey(e => e.FeedbackBorrowId).HasName("PK__Feedback__ACD684AD68E3AE49");
+            entity.HasKey(e => e.FeedbackBorrowId).HasName("PK__Feedback__ACD684ADF17CB323");
 
             entity.ToTable("FeedbackBorrow");
 
@@ -273,20 +290,23 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.BorrowHistory).WithMany(p => p.FeedbackBorrows)
                 .HasForeignKey(d => d.BorrowHistoryId)
-                .HasConstraintName("FK__FeedbackB__Borro__7A672E12");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__FeedbackB__Borro__08B54D69");
 
             entity.HasOne(d => d.Item).WithMany(p => p.FeedbackBorrows)
                 .HasForeignKey(d => d.ItemId)
-                .HasConstraintName("FK__FeedbackB__ItemI__7B5B524B");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__FeedbackB__ItemI__09A971A2");
 
             entity.HasOne(d => d.User).WithMany(p => p.FeedbackBorrows)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__FeedbackB__UserI__7C4F7684");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__FeedbackB__UserI__0A9D95DB");
         });
 
         modelBuilder.Entity<FeedbackProduct>(entity =>
         {
-            entity.HasKey(e => e.FeedbackProductId).HasName("PK__Feedback__7C6D4B9C3A13E627");
+            entity.HasKey(e => e.FeedbackProductId).HasName("PK__Feedback__7C6D4B9C1CDDEA62");
 
             entity.ToTable("FeedbackProduct");
 
@@ -295,20 +315,23 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.OrderItem).WithMany(p => p.FeedbackProducts)
                 .HasForeignKey(d => d.OrderItemId)
-                .HasConstraintName("FK__FeedbackP__Order__1BC821DD");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__FeedbackP__Order__0B91BA14");
 
             entity.HasOne(d => d.Product).WithMany(p => p.FeedbackProducts)
                 .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK__FeedbackP__Produ__1CBC4616");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__FeedbackP__Produ__0C85DE4D");
 
             entity.HasOne(d => d.User).WithMany(p => p.FeedbackProducts)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__FeedbackP__UserI__1DB06A4F");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__FeedbackP__UserI__0D7A0286");
         });
 
         modelBuilder.Entity<ItemCondition>(entity =>
         {
-            entity.HasKey(e => e.ConditionId).HasName("PK__ItemCond__37F5C0CF8D5C11A8");
+            entity.HasKey(e => e.ConditionId).HasName("PK__ItemCond__37F5C0CF6EF0353D");
 
             entity.ToTable("ItemCondition");
 
@@ -320,31 +343,37 @@ public partial class Sep490Context : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("ImageURL");
             entity.Property(e => e.RefundDate).HasColumnType("datetime");
+            entity.Property(e => e.Status).HasMaxLength(20);
 
             entity.HasOne(d => d.BorrowHistory).WithMany(p => p.ItemConditions)
                 .HasForeignKey(d => d.BorrowHistoryId)
-                .HasConstraintName("FK__ItemCondi__Borro__76969D2E");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ItemCondi__Borro__0E6E26BF");
 
             entity.HasOne(d => d.Contract).WithMany(p => p.ItemConditions)
                 .HasForeignKey(d => d.ContractId)
-                .HasConstraintName("FK__ItemCondi__Contr__74AE54BC");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ItemCondi__Contr__0F624AF8");
 
             entity.HasOne(d => d.Item).WithMany(p => p.ItemConditions)
                 .HasForeignKey(d => d.ItemId)
-                .HasConstraintName("FK__ItemCondi__ItemI__73BA3083");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ItemCondi__ItemI__10566F31");
 
             entity.HasOne(d => d.Report).WithMany(p => p.ItemConditions)
                 .HasForeignKey(d => d.ReportId)
-                .HasConstraintName("FK__ItemCondi__Repor__778AC167");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ItemCondi__Repor__114A936A");
 
             entity.HasOne(d => d.User).WithMany(p => p.ItemConditions)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__ItemCondi__UserI__75A278F5");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ItemCondi__UserI__123EB7A3");
         });
 
         modelBuilder.Entity<ItemImage>(entity =>
         {
-            entity.HasKey(e => e.ItemImageId).HasName("PK__ItemImag__09AE3297C7A40AB4");
+            entity.HasKey(e => e.ItemImageId).HasName("PK__ItemImag__09AE3297C943D61C");
 
             entity.ToTable("ItemImage");
 
@@ -355,12 +384,13 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Item).WithMany(p => p.ItemImages)
                 .HasForeignKey(d => d.ItemId)
-                .HasConstraintName("FK__ItemImage__ItemI__5629CD9C");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ItemImage__ItemI__1332DBDC");
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Order__C3905BCF4EEFBAC2");
+            entity.HasKey(e => e.OrderId).HasName("PK__Order__C3905BCFC7BE4383");
 
             entity.ToTable("Order");
 
@@ -373,12 +403,13 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Order__UserId__7F2BE32F");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Order__UserId__14270015");
         });
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderDet__57ED0681D8407904");
+            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderDet__57ED068197E77178");
 
             entity.ToTable("OrderDetail");
 
@@ -386,16 +417,18 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__OrderDeta__Order__02084FDA");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__OrderDeta__Order__151B244E");
 
             entity.HasOne(d => d.Product).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK__OrderDeta__Produ__02FC7413");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__OrderDeta__Produ__160F4887");
         });
 
         modelBuilder.Entity<Payment>(entity =>
         {
-            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__9B556A382673280C");
+            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__9B556A381CC0F031");
 
             entity.ToTable("Payment");
 
@@ -409,16 +442,18 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Order).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__Payment__OrderId__07C12930");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Payment__OrderId__17036CC0");
 
             entity.HasOne(d => d.PaymentMethod).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.PaymentMethodId)
-                .HasConstraintName("FK__Payment__Payment__08B54D69");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Payment__Payment__17F790F9");
         });
 
         modelBuilder.Entity<PaymentMethod>(entity =>
         {
-            entity.HasKey(e => e.PaymentMethodId).HasName("PK__PaymentM__DC31C1D39010B036");
+            entity.HasKey(e => e.PaymentMethodId).HasName("PK__PaymentM__DC31C1D30956F19D");
 
             entity.ToTable("PaymentMethod");
 
@@ -429,7 +464,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ProductId).HasName("PK__Product__B40CC6CDB32CECB3");
+            entity.HasKey(e => e.ProductId).HasName("PK__Product__B40CC6CD4FB12993");
 
             entity.ToTable("Product");
 
@@ -449,16 +484,18 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)
-                .HasConstraintName("FK__Product__Categor__48CFD27E");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Product__Categor__18EBB532");
 
             entity.HasOne(d => d.Shop).WithMany(p => p.Products)
                 .HasForeignKey(d => d.ShopId)
-                .HasConstraintName("FK__Product__ShopId__49C3F6B7");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Product__ShopId__19DFD96B");
         });
 
         modelBuilder.Entity<ProductImage>(entity =>
         {
-            entity.HasKey(e => e.ProductImageId).HasName("PK__ProductI__07B2B1B8A9E90C2B");
+            entity.HasKey(e => e.ProductImageId).HasName("PK__ProductI__07B2B1B8B53058E3");
 
             entity.ToTable("ProductImage");
 
@@ -469,12 +506,13 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Product).WithMany(p => p.ProductImages)
                 .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK__ProductIm__Produ__4CA06362");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ProductIm__Produ__1AD3FDA4");
         });
 
         modelBuilder.Entity<RefreshToken>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__RefreshT__3214EC07D9816131");
+            entity.HasKey(e => e.Id).HasName("PK__RefreshT__3214EC07666126E6");
 
             entity.ToTable("RefreshToken");
 
@@ -494,7 +532,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<RefundTransaction>(entity =>
         {
-            entity.HasKey(e => e.RefundId).HasName("PK__RefundTr__725AB920D6AEB5B8");
+            entity.HasKey(e => e.RefundId).HasName("PK__RefundTr__725AB9206F4CE20E");
 
             entity.ToTable("RefundTransaction");
 
@@ -504,20 +542,23 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Order).WithMany(p => p.RefundTransactions)
                 .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__RefundTra__Order__17036CC0");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__RefundTra__Order__1CBC4616");
 
             entity.HasOne(d => d.Payment).WithMany(p => p.RefundTransactions)
                 .HasForeignKey(d => d.PaymentId)
-                .HasConstraintName("FK__RefundTra__Payme__17F790F9");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__RefundTra__Payme__1DB06A4F");
 
             entity.HasOne(d => d.Wallet).WithMany(p => p.RefundTransactions)
                 .HasForeignKey(d => d.WalletId)
-                .HasConstraintName("FK__RefundTra__Walle__18EBB532");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__RefundTra__Walle__1EA48E88");
         });
 
         modelBuilder.Entity<ReportDamage>(entity =>
         {
-            entity.HasKey(e => e.ReportId).HasName("PK__ReportDa__D5BD4805C08F6AAC");
+            entity.HasKey(e => e.ReportId).HasName("PK__ReportDa__D5BD4805FE35FEEC");
 
             entity.ToTable("ReportDamage");
 
@@ -532,16 +573,18 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.BorrowHistory).WithMany(p => p.ReportDamages)
                 .HasForeignKey(d => d.BorrowHistoryId)
-                .HasConstraintName("FK__ReportDam__Borro__6B24EA82");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ReportDam__Borro__1F98B2C1");
 
             entity.HasOne(d => d.Item).WithMany(p => p.ReportDamages)
                 .HasForeignKey(d => d.ItemId)
-                .HasConstraintName("FK__ReportDam__ItemI__6A30C649");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ReportDam__ItemI__208CD6FA");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE1A3FCF8785");
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE1A82643C9B");
 
             entity.ToTable("Role");
 
@@ -550,7 +593,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<SettlementTransaction>(entity =>
         {
-            entity.HasKey(e => e.SettlementId).HasName("PK__Settleme__7712545A740EB8ED");
+            entity.HasKey(e => e.SettlementId).HasName("PK__Settleme__7712545AE2BDB33C");
 
             entity.ToTable("SettlementTransaction");
 
@@ -561,20 +604,23 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.ManagerWallet).WithMany(p => p.SettlementTransactionManagerWallets)
                 .HasForeignKey(d => d.ManagerWalletId)
-                .HasConstraintName("FK__Settlemen__Manag__14270015");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Settlemen__Manag__2180FB33");
 
             entity.HasOne(d => d.Order).WithMany(p => p.SettlementTransactions)
                 .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__Settlemen__Order__123EB7A3");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Settlemen__Order__22751F6C");
 
             entity.HasOne(d => d.ShopWallet).WithMany(p => p.SettlementTransactionShopWallets)
                 .HasForeignKey(d => d.ShopWalletId)
-                .HasConstraintName("FK__Settlemen__ShopW__1332DBDC");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Settlemen__ShopW__236943A5");
         });
 
         modelBuilder.Entity<Shipment>(entity =>
         {
-            entity.HasKey(e => e.ShipmentId).HasName("PK__Shipment__5CAD37ED456A5D1B");
+            entity.HasKey(e => e.ShipmentId).HasName("PK__Shipment__5CAD37ED443B6200");
 
             entity.ToTable("Shipment");
 
@@ -587,16 +633,17 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Order).WithMany(p => p.Shipments)
                 .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__Shipment__OrderI__208CD6FA");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Shipment__OrderI__245D67DE");
         });
 
         modelBuilder.Entity<Shop>(entity =>
         {
-            entity.HasKey(e => e.ShopId).HasName("PK__Shop__67C557C9DEE21C2E");
+            entity.HasKey(e => e.ShopId).HasName("PK__Shop__67C557C9EDDC186B");
 
             entity.ToTable("Shop");
 
-            entity.HasIndex(e => e.UserId, "UQ__Shop__1788CC4D7AB770C2").IsUnique();
+            entity.HasIndex(e => e.UserId, "UQ__Shop__1788CC4D481238AD").IsUnique();
 
             entity.Property(e => e.BankName).HasMaxLength(100);
             entity.Property(e => e.BankNumber).HasMaxLength(100);
@@ -610,16 +657,17 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.User).WithOne(p => p.Shop)
                 .HasForeignKey<Shop>(d => d.UserId)
-                .HasConstraintName("FK__Shop__UserId__403A8C7D");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Shop__UserId__25518C17");
         });
 
         modelBuilder.Entity<Student>(entity =>
         {
-            entity.HasKey(e => e.StudentId).HasName("PK__Student__32C52B99A5D48135");
+            entity.HasKey(e => e.StudentId).HasName("PK__Student__32C52B9922F2B476");
 
             entity.ToTable("Student");
 
-            entity.HasIndex(e => e.UserId, "UQ__Student__1788CC4D198D303E").IsUnique();
+            entity.HasIndex(e => e.UserId, "UQ__Student__1788CC4DFEBDC4B6").IsUnique();
 
             entity.Property(e => e.EnrollmentDate).HasColumnType("datetime");
             entity.Property(e => e.IdentityCard).HasMaxLength(50);
@@ -628,12 +676,13 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.User).WithOne(p => p.Student)
                 .HasForeignKey<Student>(d => d.UserId)
-                .HasConstraintName("FK__Student__UserId__440B1D61");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Student__UserId__2645B050");
         });
 
         modelBuilder.Entity<TrackingInfo>(entity =>
         {
-            entity.HasKey(e => e.TrackingId).HasName("PK__Tracking__3C19EDF1E0EAC690");
+            entity.HasKey(e => e.TrackingId).HasName("PK__Tracking__3C19EDF1898E7BE2");
 
             entity.ToTable("TrackingInfo");
 
@@ -643,16 +692,18 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.Order).WithMany(p => p.TrackingInfos)
                 .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__TrackingI__Order__236943A5");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__TrackingI__Order__2739D489");
 
             entity.HasOne(d => d.Shipment).WithMany(p => p.TrackingInfos)
                 .HasForeignKey(d => d.ShipmentId)
-                .HasConstraintName("FK__TrackingI__Shipm__245D67DE");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__TrackingI__Shipm__282DF8C2");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C5E8616AD");
+            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4CEDD80FCB");
 
             entity.ToTable("User");
 
@@ -679,21 +730,21 @@ public partial class Sep490Context : DbContext
                     r => r.HasOne<Role>().WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__Account_R__RoleI__3C69FB99"),
+                        .HasConstraintName("FK__Account_R__RoleI__76969D2E"),
                     l => l.HasOne<User>().WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__Account_R__UserI__3B75D760"),
+                        .HasConstraintName("FK__Account_R__UserI__778AC167"),
                     j =>
                     {
-                        j.HasKey("UserId", "RoleId").HasName("PK__Account___AF2760ADDC72158F");
+                        j.HasKey("UserId", "RoleId").HasName("PK__Account___AF2760AD9C5C2069");
                         j.ToTable("Account_Role");
                     });
         });
 
         modelBuilder.Entity<Wallet>(entity =>
         {
-            entity.HasKey(e => e.WalletId).HasName("PK__Wallet__84D4F90E2138CB00");
+            entity.HasKey(e => e.WalletId).HasName("PK__Wallet__84D4F90E3E50FFA5");
 
             entity.ToTable("Wallet");
 
@@ -704,12 +755,13 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Wallets)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Wallet__UserId__0B91BA14");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Wallet__UserId__2A164134");
         });
 
         modelBuilder.Entity<WalletTransaction>(entity =>
         {
-            entity.HasKey(e => e.TransactionId).HasName("PK__WalletTr__55433A6B7E04F240");
+            entity.HasKey(e => e.TransactionId).HasName("PK__WalletTr__55433A6BCC985518");
 
             entity.ToTable("WalletTransaction");
 
@@ -720,11 +772,13 @@ public partial class Sep490Context : DbContext
 
             entity.HasOne(d => d.RelatedPayment).WithMany(p => p.WalletTransactions)
                 .HasForeignKey(d => d.RelatedPaymentId)
-                .HasConstraintName("FK__WalletTra__Relat__0F624AF8");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__WalletTra__Relat__2B0A656D");
 
             entity.HasOne(d => d.Wallet).WithMany(p => p.WalletTransactions)
                 .HasForeignKey(d => d.WalletId)
-                .HasConstraintName("FK__WalletTra__Walle__0E6E26BF");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__WalletTra__Walle__2BFE89A6");
         });
 
         OnModelCreatingPartial(modelBuilder);

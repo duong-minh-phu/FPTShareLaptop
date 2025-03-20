@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace BusinessObjects.Enums
 {
-    public enum DonationStatus
+    public enum BorrowRequestStatus
     {
-        Pending,   
-        Approved,   
-        Rejected,      
+        Pending,    
+        Approved,  
+        Rejected
     }
+
 }

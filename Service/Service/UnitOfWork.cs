@@ -67,6 +67,8 @@ namespace Service.Service
 
         public IGenericRepository<RefreshToken> RefreshToken => Repository<RefreshToken>();
 
+        public IGenericRepository<ItemCondition> ItemCondition => Repository<ItemCondition>();
+
         public async Task<int> SaveAsync()
         {
             return await _context.SaveChangesAsync();

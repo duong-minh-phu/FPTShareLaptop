@@ -18,6 +18,6 @@ namespace DataAccess.UserDTO
         // Thêm trường StudentCode, IdentityCard, EnrollmentDate vào UserProfile luôn
         public string? StudentCode { get; set; }
         public string? IdentityCard { get; set; }
-        public DateTime? EnrollmentDate { get; set; }
+        public DateTime EnrollmentDate { get; set; }
     }
 }

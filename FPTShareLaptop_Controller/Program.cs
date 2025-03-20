@@ -24,6 +24,10 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IDonateFormService, DonationFormService>();
+builder.Services.AddScoped<IBorrowRequestService, BorrowRequestService>();
+builder.Services.AddScoped<IItemConditionService, ItemConditionService>();
+builder.Services.AddScoped<IBorrowContractService, BorrowContractService>();
+builder.Services.AddScoped<IFeedbackBorrowService, FeedbackBorrowService>();
 builder.Services.AddAutoMapper(typeof(Program));
 
 
