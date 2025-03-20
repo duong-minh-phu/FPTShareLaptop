@@ -27,6 +27,8 @@ namespace Service.IService
         IGenericRepository<Student> Student { get; }
         IGenericRepository<User> Users { get; }
         IGenericRepository<RefreshToken> RefreshToken { get; }
+        IGenericRepository<ItemCondition> ItemCondition { get; }
+        IGenericRepository<BorrowContract> BorrowContract { get; }
 
         Task<int> SaveAsync();
     }

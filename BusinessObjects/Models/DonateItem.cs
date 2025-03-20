@@ -7,31 +7,31 @@ public partial class DonateItem
 {
     public int ItemId { get; set; }
 
-    public string? ItemName { get; set; }
+    public string ItemName { get; set; } = null!;
 
-    public string? ItemImage { get; set; }
+    public string ItemImage { get; set; } = null!;
 
-    public DateTime? CreatedDate { get; set; }
+    public DateTime CreatedDate { get; set; }
 
-    public DateTime? UpdatedDate { get; set; }
+    public DateTime UpdatedDate { get; set; }
 
-    public string? Cpu { get; set; }
+    public string Cpu { get; set; } = null!;
 
-    public string? Ram { get; set; }
+    public string Ram { get; set; } = null!;
 
-    public string? Storage { get; set; }
+    public string Storage { get; set; } = null!;
 
-    public string? ScreenSize { get; set; }
+    public string ScreenSize { get; set; } = null!;
 
-    public string? ConditionItem { get; set; }
+    public string ConditionItem { get; set; } = null!;
 
-    public int? TotalBorrowedCount { get; set; }
+    public int TotalBorrowedCount { get; set; }
 
-    public string? Status { get; set; }
+    public string Status { get; set; } = null!;
 
-    public int? UserId { get; set; }
+    public int UserId { get; set; }
 
-    public int? DonateFormId { get; set; }
+    public int DonateFormId { get; set; }
 
     public virtual ICollection<BorrowContract> BorrowContracts { get; set; } = new List<BorrowContract>();
 
@@ -39,7 +39,7 @@ public partial class DonateItem
 
     public virtual ICollection<BorrowRequest> BorrowRequests { get; set; } = new List<BorrowRequest>();
 
-    public virtual DonateForm? DonateForm { get; set; }
+    public virtual DonateForm DonateForm { get; set; } = null!;
 
     public virtual ICollection<FeedbackBorrow> FeedbackBorrows { get; set; } = new List<FeedbackBorrow>();
 
@@ -49,5 +49,5 @@ public partial class DonateItem
 
     public virtual ICollection<ReportDamage> ReportDamages { get; set; } = new List<ReportDamage>();
 
-    public virtual User? User { get; set; }
+    public virtual User User { get; set; } = null!;
 }

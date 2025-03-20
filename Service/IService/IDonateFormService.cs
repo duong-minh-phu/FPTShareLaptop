@@ -6,7 +6,7 @@ namespace Service.IService
 {
     public interface IDonateFormService
     {
-        Task<IEnumerable<DonateFormResModel>> GetAllDonationsAsync();
+        Task<List<DonateFormResModel>> GetAllDonationsAsync();
 
         Task<DonateFormResModel?> GetDonationByIdAsync(int id);
 
