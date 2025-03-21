@@ -8,7 +8,7 @@ namespace DataAccess.DepositTransactionDTO
 {
     public class DepositTransactionDTO
     {
-        public int? DepositId { get; set; }
+        public int DepositId { get; set; }
         public int? ContractId { get; set; }
         public int? UserId { get; set; }
         public string? Status { get; set; }

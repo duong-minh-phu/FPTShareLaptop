@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.ReportDamageDTO
 {
-    public class ReportDamageDTO
+    public class ReportDamageUpdateDTO
     {
         public int? ReportId { get; set; }
         public int? ItemId { get; set; }
@@ -14,8 +14,6 @@ namespace DataAccess.ReportDamageDTO
         public string? Note { get; set; }
         public string? ConditionBeforeBorrow { get; set; }
         public string? ConditionAfterReturn { get; set; }
-        public DateTime? CreatedDate { get; set; }
         public decimal? DamageFee { get; set; }
-        public string? ImageUrlReport { get; set; } // URL ảnh báo cáo
     }
 }
