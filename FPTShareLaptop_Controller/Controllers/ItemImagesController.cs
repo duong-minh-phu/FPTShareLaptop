@@ -7,18 +7,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
 using Service.Service;
+using DataAccess.ResultModel;
 
 namespace FPTShareLaptop_Controller.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/item-images")]
     [ApiController]
-    public class ItemImageController : ControllerBase
+    public class ItemImagesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly Cloudinary _cloudinary;
         private readonly IMapper _mapper;
 
-        public ItemImageController(IUnitOfWork unitOfWork, IMapper mapper, Cloudinary cloudinary)
+        public ItemImagesController(IUnitOfWork unitOfWork, IMapper mapper, Cloudinary cloudinary)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -27,7 +28,7 @@ namespace FPTShareLaptop_Controller.Controllers
 
         // POST: api/ItemImage (Upload ảnh mới)
         [HttpPost]
-        public async Task<IActionResult> AddItemImage(IFormFile file, int itemId)
+        public async Task<IActionResult> CreateItemImage(IFormFile file, int itemId)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("Invalid file.");
@@ -55,6 +56,7 @@ namespace FPTShareLaptop_Controller.Controllers
             await _unitOfWork.SaveAsync();
 
             return CreatedAtAction(nameof(GetItemImagesByItemId), new { itemId }, itemImage);
+            
         }
 
         // GET: api/ItemImage/{itemId} (Lấy danh sách ảnh theo ItemId)
@@ -63,7 +65,7 @@ namespace FPTShareLaptop_Controller.Controllers
         {
             var images = await _unitOfWork.ItemImage.GetAllAsync(ii => ii.ItemId == itemId);
             var imageDtos = _mapper.Map<IEnumerable<ItemImageDTO>>(images);
-            return Ok(imageDtos);
+            return Ok(ResultModel.Success(imageDtos));
         }
 
         // GET: api/ItemImage (Lấy toàn bộ danh sách ảnh)
@@ -72,7 +74,8 @@ namespace FPTShareLaptop_Controller.Controllers
         {
             var itemImages = await _unitOfWork.ItemImage.GetAllAsync();
             var itemImageDtos = _mapper.Map<IEnumerable<ItemImageDTO>>(itemImages);
-            return Ok(itemImageDtos);
+            return Ok(ResultModel.Success(itemImageDtos));
+            
         }
 
         // PUT: api/ItemImage/{id} (Cập nhật ảnh mới)
