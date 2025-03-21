@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text;
 using BusinessObjects.Models;
 using CloudinaryDotNet;
@@ -17,7 +17,7 @@ builder.Services.AddDbContext<Sep490Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
-// Th�m d?ch v? CORS
+// Thêm dịch vụ CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
@@ -106,17 +106,19 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
-// S? d?ng CORS
+// Sử dụng CORS
 app.UseCors("AllowAllOrigins");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseHttpsRedirection();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseAuthentication();
 
