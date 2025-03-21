@@ -3,6 +3,7 @@ using BusinessObjects.Models;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using DataAccess.DonateItemDTO;
+using DataAccess.ResultModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
@@ -10,50 +11,50 @@ using Service.Service;
 
 namespace FPTShareLaptop_Controller.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/donate-items")]
     [ApiController]
-    public class DonateItemController : ControllerBase
+    public class DonateItemsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly Cloudinary _cloudinary;
 
-        public DonateItemController(IUnitOfWork unitOfWork, IMapper mapper, Cloudinary cloudinary)
+        public DonateItemsController(IUnitOfWork unitOfWork, IMapper mapper, Cloudinary cloudinary)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _cloudinary = cloudinary;
         }
 
-        // GET: api/DonateItem
+        // GET: api/donate-items
         [HttpGet]
-        public async Task<IActionResult> GetDonateItems()
+        public async Task<IActionResult> GetAll()
         {
             var items = await _unitOfWork.DonateItem.GetAllAsync();
             var itemDTOs = _mapper.Map<IEnumerable<DonateItemDTO>>(items);
-            return Ok(itemDTOs);
+            return Ok(ResultModel.Success(itemDTOs));
         }
 
-        // GET: api/DonateItem/{id}
+        // GET: api/donate-items/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDonateItem(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var item = await _unitOfWork.DonateItem.GetByIdAsync(id);
             if (item == null)
             {
-                return NotFound();
+                return NotFound(ResultModel.NotFound());
             }
             var itemDTO = _mapper.Map<DonateItemDTO>(item);
-            return Ok(itemDTO);
+            return Ok(ResultModel.Success(itemDTO));
         }
 
-        // POST: api/DonateItem (Tạo mới + upload ảnh)
+        // POST: api/donate-items (Tạo mới + upload ảnh)
         [HttpPost]
-        public async Task<IActionResult> CreateDonateItem(IFormFile file, [FromForm] DonateItemCreateDTO itemDTO)
+        public async Task<IActionResult> Create(IFormFile file, [FromForm] DonateItemCreateDTO itemDTO)
         {
             if (itemDTO == null)
             {
-                return BadRequest("Invalid data.");
+                return BadRequest(ResultModel.BadRequest("Invalid data."));
             }
 
             // Upload ảnh lên Cloudinary
@@ -69,13 +70,13 @@ namespace FPTShareLaptop_Controller.Controllers
 
                 var uploadResult = await _cloudinary.UploadAsync(uploadParams);
                 if (uploadResult.Error != null)
-                    return BadRequest(uploadResult.Error.Message);
+                    return BadRequest(ResultModel.BadRequest(uploadResult.Error.Message));
 
                 imageUrl = uploadResult.SecureUrl.ToString();
             }
 
             var item = _mapper.Map<DonateItem>(itemDTO);
-            item.ItemImage = imageUrl; // Lưu URL ảnh vào DB
+            item.ItemImage = imageUrl;
             item.Status = "Available";
             item.CreatedDate = DateTime.UtcNow;
             item.UpdatedDate = DateTime.UtcNow;
@@ -83,22 +84,23 @@ namespace FPTShareLaptop_Controller.Controllers
             await _unitOfWork.DonateItem.AddAsync(item);
             await _unitOfWork.SaveAsync();
 
-            return CreatedAtAction(nameof(GetDonateItem), new { id = item.ItemId }, _mapper.Map<DonateItemDTO>(item));
+            var result = _mapper.Map<DonateItemDTO>(item);
+            return CreatedAtAction(nameof(GetById), new { id = item.ItemId }, ResultModel.Created(result));
         }
 
-        // PUT: api/DonateItem/{id} (Cập nhật thông tin + upload ảnh mới)
+        // PUT: api/donate-items/{id} (Cập nhật thông tin + upload ảnh mới)
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDonateItem(int id, IFormFile? file, [FromForm] DonateItemUpdateDTO itemDTO)
+        public async Task<IActionResult> Update(int id, IFormFile? file, [FromForm] DonateItemUpdateDTO itemDTO)
         {
             if (itemDTO == null || itemDTO.ItemId != id)
             {
-                return BadRequest("ID mismatch.");
+                return BadRequest(ResultModel.BadRequest("ID mismatch."));
             }
 
             var existingItem = await _unitOfWork.DonateItem.GetByIdAsync(id);
             if (existingItem == null)
             {
-                return NotFound();
+                return NotFound(ResultModel.NotFound());
             }
 
             // Upload ảnh mới lên Cloudinary nếu có file mới
@@ -113,9 +115,9 @@ namespace FPTShareLaptop_Controller.Controllers
 
                 var uploadResult = await _cloudinary.UploadAsync(uploadParams);
                 if (uploadResult.Error != null)
-                    return BadRequest(uploadResult.Error.Message);
+                    return BadRequest(ResultModel.BadRequest(uploadResult.Error.Message));
 
-                existingItem.ItemImage = uploadResult.SecureUrl.ToString(); // Cập nhật URL ảnh mới
+                existingItem.ItemImage = uploadResult.SecureUrl.ToString();
             }
 
             _mapper.Map(itemDTO, existingItem);
@@ -124,23 +126,23 @@ namespace FPTShareLaptop_Controller.Controllers
             _unitOfWork.DonateItem.Update(existingItem);
             await _unitOfWork.SaveAsync();
 
-            return NoContent();
+            return Ok(ResultModel.Success(null, "Updated successfully"));
         }
 
-        // DELETE: api/DonateItem/{id}
+        // DELETE: api/donate-items/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDonateItem(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var item = await _unitOfWork.DonateItem.GetByIdAsync(id);
             if (item == null)
             {
-                return NotFound();
+                return NotFound(ResultModel.NotFound());
             }
 
             _unitOfWork.DonateItem.Delete(item);
             await _unitOfWork.SaveAsync();
 
-            return NoContent();
+            return Ok(ResultModel.Success(null, "Deleted successfully"));
         }
     }
 }
