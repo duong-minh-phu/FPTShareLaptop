@@ -7,6 +7,7 @@ using AutoMapper;
 using BusinessObjects.Enums;
 using BusinessObjects.Models;
 using DataAccess.BorrowHistoryDTO;
+using DataAccess.CategoryDTO;
 using DataAccess.CompensationTransactionDTO;
 using DataAccess.DepositTransactionDTO;
 using DataAccess.DonateItemDTO;
@@ -35,6 +36,10 @@ namespace Service.Utils.MapperProfiles
             CreateMap<DepositTransaction, DepositTransactionDTO>();
             CreateMap<DepositTransactionCreateDTO, DepositTransaction>();
             CreateMap<DepositTransactionUpdateDTO, DepositTransaction>();
+
+            CreateMap<Category, CategoryDTO>();
+            CreateMap<CategoryCreateDTO, Category>();
+            CreateMap<CategoryUpdateDTO, Category>();
         }
     }
 }
