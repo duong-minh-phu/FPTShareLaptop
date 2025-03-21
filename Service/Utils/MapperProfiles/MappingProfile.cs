@@ -20,14 +20,21 @@ namespace Service.Utils.MapperProfiles
     {
         public MappingProfile()
         {
-            CreateMap<DonateItem, DonateItemDTO>().ReverseMap();
+            CreateMap<DonateItem, DonateItemDTO>();
+            CreateMap<DonateItemCreateDTO, DonateItem>();
+            CreateMap<DonateItemUpdateDTO, DonateItem>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+        
             CreateMap<ItemImage, ItemImageDTO>().ReverseMap();
             CreateMap<CreateItemImageDTO, ItemImage>().ReverseMap();
             CreateMap<UpdateItemImageDTO, ItemImage>().ReverseMap();
             CreateMap<BorrowHistory, BorrowHistoryDTO>().ReverseMap();
             CreateMap<ReportDamage, ReportDamageDTO>().ReverseMap();
+            CreateMap<ReportDamageCreateDTO, ReportDamage>();
+            CreateMap<ReportDamageUpdateDTO, ReportDamage>();
             CreateMap<CompensationTransaction, CompensationTransactionDTO>().ReverseMap();
-            CreateMap<DepositTransaction, DepositTransactionDTO>().ReverseMap();
+            CreateMap<DepositTransaction, DepositTransactionDTO>();
+            CreateMap<DepositTransactionCreateDTO, DepositTransaction>();
+            CreateMap<DepositTransactionUpdateDTO, DepositTransaction>();
         }
     }
 }

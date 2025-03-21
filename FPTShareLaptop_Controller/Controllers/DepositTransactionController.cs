@@ -44,7 +44,7 @@ namespace FPTShareLaptop_Controller.Controllers
 
         // POST: api/DepositTransaction
         [HttpPost]
-        public async Task<IActionResult> CreateDepositTransaction([FromBody] DepositTransactionDTO transactionDTO)
+        public async Task<IActionResult> CreateDepositTransaction([FromBody] DepositTransactionCreateDTO transactionDTO)
         {
             if (transactionDTO == null)
             {
@@ -60,7 +60,7 @@ namespace FPTShareLaptop_Controller.Controllers
 
         // PUT: api/DepositTransaction/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDepositTransaction(int id, [FromBody] DepositTransactionDTO transactionDTO)
+        public async Task<IActionResult> UpdateDepositTransaction(int id, [FromBody] DepositTransactionUpdateDTO transactionDTO)
         {
             if (transactionDTO == null || transactionDTO.DepositId != id)
             {

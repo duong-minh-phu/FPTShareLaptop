@@ -48,7 +48,7 @@ namespace FPTShareLaptop_Controller.Controllers
 
         // POST: api/ReportDamage (Tạo mới + upload ảnh)
         [HttpPost]
-        public async Task<IActionResult> CreateReportDamage([FromForm] IFormFile file, [FromForm] ReportDamageDTO reportDTO)
+        public async Task<IActionResult> CreateReportDamage( IFormFile file, [FromForm] ReportDamageCreateDTO reportDTO)
         {
             if (reportDTO == null)
             {
@@ -85,7 +85,7 @@ namespace FPTShareLaptop_Controller.Controllers
 
         // PUT: api/ReportDamage/{id} (Cập nhật thông tin + upload ảnh mới)
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateReportDamage(int id, [FromForm] IFormFile file, [FromForm] ReportDamageDTO reportDTO)
+        public async Task<IActionResult> UpdateReportDamage(int id,  IFormFile? file, [FromForm] ReportDamageUpdateDTO reportDTO)
         {
             if (reportDTO == null || reportDTO.ReportId != id)
             {
