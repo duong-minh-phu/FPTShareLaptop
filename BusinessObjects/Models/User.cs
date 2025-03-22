@@ -27,8 +27,6 @@ public partial class User
 
     public DateTime CreatedAt { get; set; }
 
-    public DateTime? UpdatedAt { get; set; }
-
     public int RoleId { get; set; }
 
     public virtual ICollection<BorrowContract> BorrowContracts { get; set; } = new List<BorrowContract>();

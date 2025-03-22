@@ -10,7 +10,6 @@ namespace FPTShareLaptop_Controller.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class BorrowRequestController : ControllerBase
     {
         private readonly IBorrowRequestService _borrowRequestService;
