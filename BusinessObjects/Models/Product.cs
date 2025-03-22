@@ -19,7 +19,7 @@ public partial class Product
 
     public string Storage { get; set; } = null!;
 
-    public DateTime? UpdatedDate { get; set; }
+    public DateTime UpdatedDate { get; set; }
 
     public DateTime CreatedDate { get; set; }
 

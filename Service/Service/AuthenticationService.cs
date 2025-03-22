@@ -152,7 +152,7 @@ public class AuthenticationService : IAuthenticationService
     }
 
 
-    public async Task<UserRegisterResModel> RegisterStudent(StudentRegisterReqModel userRegisterReqModel)
+    public async Task<UserRegisterResModel> RegisterStudent(UserRegisterReqModel userRegisterReqModel)
     {
         var existingUser = await _unitOfWork.Users.GetByEmailAsync(userRegisterReqModel.Email);
         if (existingUser != null)
@@ -165,7 +165,7 @@ public class AuthenticationService : IAuthenticationService
             FullName = userRegisterReqModel.FullName,
             Email = userRegisterReqModel.Email,
             Password = PasswordHasher.HashPassword(userRegisterReqModel.Password),
-            RoleId = 2, 
+            RoleId = 3, 
             CreatedAt = DateTime.UtcNow,
             Dob = userRegisterReqModel.Dob,
             Address = userRegisterReqModel.Address,
@@ -181,6 +181,7 @@ public class AuthenticationService : IAuthenticationService
         var student = new Student
         {
             UserId = user.UserId,
+            StudentId = user.UserId,
             StudentCode = userRegisterReqModel.StudentCode,
             IdentityCard = userRegisterReqModel.IdentityCard,
             EnrollmentDate = userRegisterReqModel.EnrollmentDate
@@ -198,9 +199,9 @@ public class AuthenticationService : IAuthenticationService
         };
     }
 
-    public async Task<UserRegisterResModel> RegisterSponsor(UserRegisterReqModel userRegisterReqModel)
+    public async Task<UserRegisterResModel> RegisterSponsor(SponsorRegisterReqModel sponsorRegisterReqModel)
     {
-        var existingUser = await _unitOfWork.Users.GetByEmailAsync(userRegisterReqModel.Email);
+        var existingUser = await _unitOfWork.Users.GetByEmailAsync(sponsorRegisterReqModel.Email);
         if (existingUser != null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
@@ -215,16 +216,16 @@ public class AuthenticationService : IAuthenticationService
 
         var user = new User
         {
-            FullName = userRegisterReqModel.FullName,
-            Email = userRegisterReqModel.Email,
-            Password = PasswordHasher.HashPassword(userRegisterReqModel.Password),
-            RoleId = userRegisterReqModel.RoleId,
+            FullName = sponsorRegisterReqModel.FullName,
+            Email = sponsorRegisterReqModel.Email,
+            Password = PasswordHasher.HashPassword(sponsorRegisterReqModel.Password),
+            RoleId = 3,
             CreatedAt = DateTime.UtcNow,
-            Dob =userRegisterReqModel.Dob,
-            Address = userRegisterReqModel.Address,
-            PhoneNumber = userRegisterReqModel.PhoneNumber,
-            Gender = userRegisterReqModel.Gender,
-            Avatar = userRegisterReqModel.Avatar,
+            Dob = sponsorRegisterReqModel.Dob,
+            Address = sponsorRegisterReqModel.Address,
+            PhoneNumber = sponsorRegisterReqModel.PhoneNumber,
+            Gender = sponsorRegisterReqModel.Gender,
+            Avatar = sponsorRegisterReqModel.Avatar,
             Status = "Active"
         };
 

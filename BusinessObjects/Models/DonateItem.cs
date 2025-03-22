@@ -13,7 +13,7 @@ public partial class DonateItem
 
     public DateTime CreatedDate { get; set; }
 
-    public DateTime? UpdatedDate { get; set; }
+    public DateTime UpdatedDate { get; set; }
 
     public string Cpu { get; set; } = null!;
 

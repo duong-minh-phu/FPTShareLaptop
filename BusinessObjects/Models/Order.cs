@@ -11,7 +11,7 @@ public partial class Order
 
     public DateTime CreatedDate { get; set; }
 
-    public DateTime? UpdatedDate { get; set; }
+    public DateTime UpdatedDate { get; set; }
 
     public decimal TotalPrice { get; set; }
 

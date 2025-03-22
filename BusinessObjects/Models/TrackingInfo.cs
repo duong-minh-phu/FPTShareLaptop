@@ -15,7 +15,7 @@ public partial class TrackingInfo
 
     public string Location { get; set; } = null!;
 
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
     public virtual Order Order { get; set; } = null!;
 

@@ -23,7 +23,7 @@ namespace FPTShareLaptop_Controller.Controllers
 
         [HttpPost]
         [Route("register/student")]
-        public async Task<IActionResult> RegisterStudent([FromBody] StudentRegisterReqModel studentRegisterReqModel)
+        public async Task<IActionResult> RegisterStudent([FromBody] UserRegisterReqModel studentRegisterReqModel)
         {
            
                 await _authenticationService.RegisterStudent(studentRegisterReqModel);
@@ -37,15 +37,15 @@ namespace FPTShareLaptop_Controller.Controllers
         }
 
         [HttpPost]
-        [Route("register")]
-        public async Task<IActionResult> RegisterSponsor([FromBody] UserRegisterReqModel userRegisterReqModel)
+        [Route("register/sponsor")]
+        public async Task<IActionResult> RegisterSponsor([FromBody] SponsorRegisterReqModel sponsorRegisterReqModel)
         {           
-                await _authenticationService.RegisterSponsor(userRegisterReqModel);
+                await _authenticationService.RegisterSponsor(sponsorRegisterReqModel);
                 ResultModel response = new ResultModel
                 {
                     IsSuccess = true,
                     Code = (int)HttpStatusCode.OK,
-                    Message = "User registered successfully."
+                    Message = "Sponsor registered successfully."
                 };
                 return StatusCode(response.Code, response);
         }

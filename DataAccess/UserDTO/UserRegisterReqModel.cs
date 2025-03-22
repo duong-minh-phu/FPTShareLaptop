@@ -3,13 +3,13 @@ using System.Text.Json.Serialization;
 
 namespace DataAccess.UserDTO
 {
-    public class StudentRegisterReqModel
+    public class UserRegisterReqModel
     {
         public string Email { get; set; } = null!;
 
         public string FullName { get; set; }
 
-        public string Dob { get; set; }
+        public DateTime Dob { get; set; }
 
         public string Address { get; set; }
 
@@ -25,22 +25,21 @@ namespace DataAccess.UserDTO
 
         public string IdentityCard { get; set; } = null!;
 
-        public string EnrollmentDate { get; set; }
+        public DateTime EnrollmentDate { get; set; }
 
     }
 
-    public class UserRegisterReqModel
+    public class SponsorRegisterReqModel
     {
         public string Email { get; set; } = null!;
 
         public string FullName { get; set; }
 
-        public string Dob { get; set; }
+        public DateTime Dob { get; set; }
 
         public string? Address { get; set; }
 
         public string? PhoneNumber { get; set; }
-        public int RoleId {  get; set; }
 
         public string? Gender { get; set; }
 
