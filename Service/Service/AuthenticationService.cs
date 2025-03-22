@@ -181,7 +181,6 @@ public class AuthenticationService : IAuthenticationService
         var student = new Student
         {
             UserId = user.UserId,
-            StudentId = user.UserId,
             StudentCode = userRegisterReqModel.StudentCode,
             IdentityCard = userRegisterReqModel.IdentityCard,
             EnrollmentDate = userRegisterReqModel.EnrollmentDate
