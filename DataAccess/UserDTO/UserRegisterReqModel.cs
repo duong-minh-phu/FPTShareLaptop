@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace DataAccess.UserDTO
 {
-    public class UserRegisterReqModel
+    public class StudentRegisterReqModel
     {
         public string Email { get; set; } = null!;
 
@@ -29,7 +29,7 @@ namespace DataAccess.UserDTO
 
     }
 
-    public class SponsorRegisterReqModel
+    public class UserRegisterReqModel
     {
         public string Email { get; set; } = null!;
 
@@ -40,6 +40,7 @@ namespace DataAccess.UserDTO
         public string? Address { get; set; }
 
         public string? PhoneNumber { get; set; }
+        public int RoleId {  get; set; }
 
         public string? Gender { get; set; }
 
