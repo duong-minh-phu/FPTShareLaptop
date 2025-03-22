@@ -66,6 +66,9 @@ namespace Service.Service
         public IGenericRepository<Student> Student => Repository<Student>();
 
         public IGenericRepository<RefreshToken> RefreshToken => Repository<RefreshToken>();
+        public IGenericRepository<ReportDamage> ReportDamage => Repository<ReportDamage>();
+        public IGenericRepository<DepositTransaction> DepositTransaction => Repository<DepositTransaction>();
+        public IGenericRepository<CompensationTransaction> CompensationTransaction => Repository<CompensationTransaction>();
 
         public IGenericRepository<ItemCondition> ItemCondition => Repository<ItemCondition>();
 

@@ -23,7 +23,7 @@ public partial class Payment
 
     public DateTime CreatedDate { get; set; }
 
-    public DateTime UpdatedDate { get; set; }
+    public DateTime? UpdatedDate { get; set; }
 
     public virtual Order Order { get; set; } = null!;
 

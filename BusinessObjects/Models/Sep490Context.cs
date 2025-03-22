@@ -92,7 +92,7 @@ public partial class Sep490Context : DbContext
     {
         modelBuilder.Entity<BorrowContract>(entity =>
         {
-            entity.HasKey(e => e.ContractId).HasName("PK__BorrowCo__C90D346917988447");
+            entity.HasKey(e => e.ContractId).HasName("PK__BorrowCo__C90D3469203F48B6");
 
             entity.ToTable("BorrowContract");
 
@@ -121,7 +121,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<BorrowHistory>(entity =>
         {
-            entity.HasKey(e => e.BorrowHistoryId).HasName("PK__BorrowHi__1F7C51B5CBA1744C");
+            entity.HasKey(e => e.BorrowHistoryId).HasName("PK__BorrowHi__1F7C51B55B601E04");
 
             entity.ToTable("BorrowHistory");
 
@@ -146,7 +146,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<BorrowRequest>(entity =>
         {
-            entity.HasKey(e => e.RequestId).HasName("PK__BorrowRe__33A8517A0DE007C2");
+            entity.HasKey(e => e.RequestId).HasName("PK__BorrowRe__33A8517A81895B5B");
 
             entity.ToTable("BorrowRequest");
 
@@ -169,7 +169,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__Category__19093A0B7393D271");
+            entity.HasKey(e => e.CategoryId).HasName("PK__Category__19093A0B357CC0CE");
 
             entity.ToTable("Category");
 
@@ -178,7 +178,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<CompensationTransaction>(entity =>
         {
-            entity.HasKey(e => e.CompensationId).HasName("PK__Compensa__14AB975984956D03");
+            entity.HasKey(e => e.CompensationId).HasName("PK__Compensa__14AB97591221208A");
 
             entity.ToTable("CompensationTransaction");
 
@@ -210,7 +210,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<DepositTransaction>(entity =>
         {
-            entity.HasKey(e => e.DepositId).HasName("PK__DepositT__AB60DF718A23F8FA");
+            entity.HasKey(e => e.DepositId).HasName("PK__DepositT__AB60DF710846F698");
 
             entity.ToTable("DepositTransaction");
 
@@ -231,7 +231,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<DonateForm>(entity =>
         {
-            entity.HasKey(e => e.DonateFormId).HasName("PK__DonateFo__4F91963439895CC2");
+            entity.HasKey(e => e.DonateFormId).HasName("PK__DonateFo__4F9196347E2BA20A");
 
             entity.ToTable("DonateForm");
 
@@ -249,7 +249,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<DonateItem>(entity =>
         {
-            entity.HasKey(e => e.ItemId).HasName("PK__DonateIt__727E838B04BF8DF2");
+            entity.HasKey(e => e.ItemId).HasName("PK__DonateIt__727E838B06C0ECE4");
 
             entity.ToTable("DonateItem");
 
@@ -281,7 +281,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<FeedbackBorrow>(entity =>
         {
-            entity.HasKey(e => e.FeedbackBorrowId).HasName("PK__Feedback__ACD684ADF17CB323");
+            entity.HasKey(e => e.FeedbackBorrowId).HasName("PK__Feedback__ACD684ADBBEC2341");
 
             entity.ToTable("FeedbackBorrow");
 
@@ -306,7 +306,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<FeedbackProduct>(entity =>
         {
-            entity.HasKey(e => e.FeedbackProductId).HasName("PK__Feedback__7C6D4B9C1CDDEA62");
+            entity.HasKey(e => e.FeedbackProductId).HasName("PK__Feedback__7C6D4B9C3F0EDB68");
 
             entity.ToTable("FeedbackProduct");
 
@@ -331,7 +331,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<ItemCondition>(entity =>
         {
-            entity.HasKey(e => e.ConditionId).HasName("PK__ItemCond__37F5C0CF6EF0353D");
+            entity.HasKey(e => e.ConditionId).HasName("PK__ItemCond__37F5C0CFA9C5BD15");
 
             entity.ToTable("ItemCondition");
 
@@ -373,7 +373,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<ItemImage>(entity =>
         {
-            entity.HasKey(e => e.ItemImageId).HasName("PK__ItemImag__09AE3297C943D61C");
+            entity.HasKey(e => e.ItemImageId).HasName("PK__ItemImag__09AE3297464CA349");
 
             entity.ToTable("ItemImage");
 
@@ -390,7 +390,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Order__C3905BCFC7BE4383");
+            entity.HasKey(e => e.OrderId).HasName("PK__Order__C3905BCFB5F7EBEE");
 
             entity.ToTable("Order");
 
@@ -409,7 +409,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderDet__57ED068197E77178");
+            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderDet__57ED0681E1F6FC0C");
 
             entity.ToTable("OrderDetail");
 
@@ -428,7 +428,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<Payment>(entity =>
         {
-            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__9B556A381CC0F031");
+            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__9B556A3847DE06B6");
 
             entity.ToTable("Payment");
 
@@ -453,7 +453,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<PaymentMethod>(entity =>
         {
-            entity.HasKey(e => e.PaymentMethodId).HasName("PK__PaymentM__DC31C1D30956F19D");
+            entity.HasKey(e => e.PaymentMethodId).HasName("PK__PaymentM__DC31C1D375FDCC0B");
 
             entity.ToTable("PaymentMethod");
 
@@ -464,7 +464,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ProductId).HasName("PK__Product__B40CC6CD4FB12993");
+            entity.HasKey(e => e.ProductId).HasName("PK__Product__B40CC6CD8397B5CF");
 
             entity.ToTable("Product");
 
@@ -495,7 +495,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<ProductImage>(entity =>
         {
-            entity.HasKey(e => e.ProductImageId).HasName("PK__ProductI__07B2B1B8B53058E3");
+            entity.HasKey(e => e.ProductImageId).HasName("PK__ProductI__07B2B1B804B9F7E0");
 
             entity.ToTable("ProductImage");
 
@@ -512,7 +512,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<RefreshToken>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__RefreshT__3214EC07666126E6");
+            entity.HasKey(e => e.Id).HasName("PK__RefreshT__3214EC071104B986");
 
             entity.ToTable("RefreshToken");
 
@@ -532,7 +532,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<RefundTransaction>(entity =>
         {
-            entity.HasKey(e => e.RefundId).HasName("PK__RefundTr__725AB9206F4CE20E");
+            entity.HasKey(e => e.RefundId).HasName("PK__RefundTr__725AB920C851ED11");
 
             entity.ToTable("RefundTransaction");
 
@@ -558,7 +558,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<ReportDamage>(entity =>
         {
-            entity.HasKey(e => e.ReportId).HasName("PK__ReportDa__D5BD4805FE35FEEC");
+            entity.HasKey(e => e.ReportId).HasName("PK__ReportDa__D5BD4805DC04C9DF");
 
             entity.ToTable("ReportDamage");
 
@@ -584,7 +584,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE1A82643C9B");
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE1A039A7AD6");
 
             entity.ToTable("Role");
 
@@ -593,7 +593,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<SettlementTransaction>(entity =>
         {
-            entity.HasKey(e => e.SettlementId).HasName("PK__Settleme__7712545AE2BDB33C");
+            entity.HasKey(e => e.SettlementId).HasName("PK__Settleme__7712545ABD4522CE");
 
             entity.ToTable("SettlementTransaction");
 
@@ -620,7 +620,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<Shipment>(entity =>
         {
-            entity.HasKey(e => e.ShipmentId).HasName("PK__Shipment__5CAD37ED443B6200");
+            entity.HasKey(e => e.ShipmentId).HasName("PK__Shipment__5CAD37EDE9E0C32B");
 
             entity.ToTable("Shipment");
 
@@ -639,11 +639,11 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<Shop>(entity =>
         {
-            entity.HasKey(e => e.ShopId).HasName("PK__Shop__67C557C9EDDC186B");
+            entity.HasKey(e => e.ShopId).HasName("PK__Shop__67C557C9C80E05B1");
 
             entity.ToTable("Shop");
 
-            entity.HasIndex(e => e.UserId, "UQ__Shop__1788CC4D481238AD").IsUnique();
+            entity.HasIndex(e => e.UserId, "UQ__Shop__1788CC4D22073DBF").IsUnique();
 
             entity.Property(e => e.BankName).HasMaxLength(100);
             entity.Property(e => e.BankNumber).HasMaxLength(100);
@@ -663,15 +663,14 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<Student>(entity =>
         {
-            entity.HasKey(e => e.StudentId).HasName("PK__Student__32C52B9922F2B476");
+            entity.HasKey(e => e.StudentId).HasName("PK__Student__32C52B99F0D7E1C8");
 
             entity.ToTable("Student");
 
-            entity.HasIndex(e => e.UserId, "UQ__Student__1788CC4DFEBDC4B6").IsUnique();
+            entity.HasIndex(e => e.UserId, "UQ__Student__1788CC4DE28A1826").IsUnique();
 
-            entity.Property(e => e.EnrollmentDate).HasColumnType("datetime");
+            entity.Property(e => e.EnrollmentDate).HasMaxLength(50);
             entity.Property(e => e.IdentityCard).HasMaxLength(50);
-            entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.StudentCode).HasMaxLength(50);
 
             entity.HasOne(d => d.User).WithOne(p => p.Student)
@@ -682,7 +681,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<TrackingInfo>(entity =>
         {
-            entity.HasKey(e => e.TrackingId).HasName("PK__Tracking__3C19EDF1898E7BE2");
+            entity.HasKey(e => e.TrackingId).HasName("PK__Tracking__3C19EDF141CD11EE");
 
             entity.ToTable("TrackingInfo");
 
@@ -703,13 +702,14 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4CEDD80FCB");
+            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C567334F5");
 
             entity.ToTable("User");
 
             entity.Property(e => e.Address).HasMaxLength(255);
             entity.Property(e => e.Avatar).HasMaxLength(255);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.Dob).HasMaxLength(50);
             entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.FullName).HasMaxLength(255);
             entity.Property(e => e.Gender).HasMaxLength(10);
@@ -717,7 +717,6 @@ public partial class Sep490Context : DbContext
             entity.Property(e => e.PhoneNumber).HasMaxLength(50);
             entity.Property(e => e.RoleId).HasDefaultValue(1);
             entity.Property(e => e.Status).HasMaxLength(50);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Role).WithMany(p => p.UsersNavigation)
                 .HasForeignKey(d => d.RoleId)
@@ -737,14 +736,14 @@ public partial class Sep490Context : DbContext
                         .HasConstraintName("FK__Account_R__UserI__778AC167"),
                     j =>
                     {
-                        j.HasKey("UserId", "RoleId").HasName("PK__Account___AF2760AD9C5C2069");
+                        j.HasKey("UserId", "RoleId").HasName("PK__Account___AF2760AD7FC46D56");
                         j.ToTable("Account_Role");
                     });
         });
 
         modelBuilder.Entity<Wallet>(entity =>
         {
-            entity.HasKey(e => e.WalletId).HasName("PK__Wallet__84D4F90E3E50FFA5");
+            entity.HasKey(e => e.WalletId).HasName("PK__Wallet__84D4F90EE21594C4");
 
             entity.ToTable("Wallet");
 
@@ -761,7 +760,7 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<WalletTransaction>(entity =>
         {
-            entity.HasKey(e => e.TransactionId).HasName("PK__WalletTr__55433A6BCC985518");
+            entity.HasKey(e => e.TransactionId).HasName("PK__WalletTr__55433A6B187C0FE1");
 
             entity.ToTable("WalletTransaction");
 
