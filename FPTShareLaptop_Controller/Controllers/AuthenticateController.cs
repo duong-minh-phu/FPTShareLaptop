@@ -40,7 +40,7 @@ namespace FPTShareLaptop_Controller.Controllers
         [Route("register")]
         public async Task<IActionResult> RegisterSponsor([FromBody] UserRegisterReqModel userRegisterReqModel)
         {           
-                await _authenticationService.RegisterSponsor(userRegisterReqModel);
+                await _authenticationService.Register(userRegisterReqModel);
                 ResultModel response = new ResultModel
                 {
                     IsSuccess = true,

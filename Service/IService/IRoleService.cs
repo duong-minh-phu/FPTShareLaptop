@@ -6,7 +6,7 @@ namespace Service.IService
 {
     public interface IRoleService
     {
-        Task<IEnumerable<RoleDTO>> GetAllRolesAsync();
+        Task<List<RoleDTO>> GetAllRolesAsync();
         Task<RoleDTO> GetRoleByIdAsync(int id);
         Task CreateRoleAsync(CreateRoleModel model);
         Task<bool> UpdateRoleAsync(int roleId, string roleName);

@@ -16,11 +16,12 @@ namespace Service.Service
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<RoleDTO>> GetAllRolesAsync()
+        public async Task<List<RoleDTO>> GetAllRolesAsync()
         {
             var roles = await _unitOfWork.Role.GetAllAsync();
-            return roles.Select(r => new RoleDTO { RoleName = r.RoleName });
+            return roles.Select(r => new RoleDTO { RoleName = r.RoleName }).ToList(); 
         }
+
 
         public async Task<RoleDTO> GetRoleByIdAsync(int id)
         {

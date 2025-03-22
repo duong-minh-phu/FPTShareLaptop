@@ -152,9 +152,9 @@ public class AuthenticationService : IAuthenticationService
     }
 
 
-    public async Task<UserRegisterResModel> RegisterStudent(StudentRegisterReqModel userRegisterReqModel)
+    public async Task RegisterStudent(StudentRegisterReqModel studentRegisterReqModel)
     {
-        var existingUser = await _unitOfWork.Users.GetByEmailAsync(userRegisterReqModel.Email);
+        var existingUser = await _unitOfWork.Users.GetByEmailAsync(studentRegisterReqModel.Email);
         if (existingUser != null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
@@ -162,16 +162,16 @@ public class AuthenticationService : IAuthenticationService
 
         var user = new User
         {
-            FullName = userRegisterReqModel.FullName,
-            Email = userRegisterReqModel.Email,
-            Password = PasswordHasher.HashPassword(userRegisterReqModel.Password),
+            FullName = studentRegisterReqModel.FullName,
+            Email = studentRegisterReqModel.Email,
+            Password = PasswordHasher.HashPassword(studentRegisterReqModel.Password),
             RoleId = 2, 
             CreatedAt = DateTime.UtcNow,
-            Dob = userRegisterReqModel.Dob,
-            Address = userRegisterReqModel.Address,
-            PhoneNumber = userRegisterReqModel.PhoneNumber,
-            Gender = userRegisterReqModel.Gender,
-            Avatar = userRegisterReqModel.Avatar,
+            Dob = studentRegisterReqModel.Dob,
+            Address = studentRegisterReqModel.Address,
+            PhoneNumber = studentRegisterReqModel.PhoneNumber,
+            Gender = studentRegisterReqModel.Gender,
+            Avatar = studentRegisterReqModel.Avatar,
             Status = "Active"
         };
 
@@ -181,24 +181,17 @@ public class AuthenticationService : IAuthenticationService
         var student = new Student
         {
             UserId = user.UserId,
-            StudentCode = userRegisterReqModel.StudentCode,
-            IdentityCard = userRegisterReqModel.IdentityCard,
-            EnrollmentDate = userRegisterReqModel.EnrollmentDate
+            StudentCode = studentRegisterReqModel.StudentCode,
+            IdentityCard = studentRegisterReqModel.IdentityCard,
+            EnrollmentDate = studentRegisterReqModel.EnrollmentDate
         };
 
         await _unitOfWork.Student.AddAsync(student);
         await _unitOfWork.SaveAsync();
 
-        return new UserRegisterResModel
-        {
-            UserId = user.UserId,
-            Email = user.Email,
-            RoleName = "Student",
-            Message = "Student registered successfully."
-        };
     }
 
-    public async Task<UserRegisterResModel> RegisterSponsor(UserRegisterReqModel userRegisterReqModel)
+    public async Task  Register(UserRegisterReqModel userRegisterReqModel)
     {
         var existingUser = await _unitOfWork.Users.GetByEmailAsync(userRegisterReqModel.Email);
         if (existingUser != null)
@@ -206,9 +199,8 @@ public class AuthenticationService : IAuthenticationService
             throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
         }
 
-        var role = await _unitOfWork.Role.GetAllAsync();
-        var sponsorRole = role.FirstOrDefault(r => r.RoleName == "Sponsor");
-        if (sponsorRole == null)
+        var role = await _unitOfWork.Role.FirstOrDefaultAsync(r => r.RoleId == userRegisterReqModel.RoleId);
+        if (role == null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Invalid role.");
         }
@@ -230,14 +222,7 @@ public class AuthenticationService : IAuthenticationService
 
         await _unitOfWork.Users.AddAsync(user);
         await _unitOfWork.SaveAsync();      
-
-        return new UserRegisterResModel
-        {
-            UserId = user.UserId,
-            Email = user.Email,
-            RoleName = sponsorRole.RoleName,
-            Message = "Sponsor registered successfully."
-        };
+       
     }
 
    
