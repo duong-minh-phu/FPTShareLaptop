@@ -9,7 +9,7 @@ namespace DataAccess.UserDTO
 
         public string FullName { get; set; }
 
-        public DateTime Dob { get; set; }
+        public string Dob { get; set; }
 
         public string Address { get; set; }
 
@@ -25,7 +25,7 @@ namespace DataAccess.UserDTO
 
         public string IdentityCard { get; set; } = null!;
 
-        public DateTime EnrollmentDate { get; set; }
+        public string EnrollmentDate { get; set; }
 
     }
 
@@ -35,7 +35,7 @@ namespace DataAccess.UserDTO
 
         public string FullName { get; set; }
 
-        public DateTime Dob { get; set; }
+        public string Dob { get; set; }
 
         public string? Address { get; set; }
 

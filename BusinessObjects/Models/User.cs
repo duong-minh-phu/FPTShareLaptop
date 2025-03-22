@@ -11,7 +11,7 @@ public partial class User
 
     public string FullName { get; set; } = null!;
 
-    public DateTime Dob { get; set; }
+    public string Dob { get; set; } = null!;
 
     public string Address { get; set; } = null!;
 
@@ -27,7 +27,7 @@ public partial class User
 
     public DateTime CreatedAt { get; set; }
 
-    public DateTime UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
     public int RoleId { get; set; }
 
