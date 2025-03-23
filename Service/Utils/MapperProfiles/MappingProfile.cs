@@ -14,6 +14,7 @@ using DataAccess.DonateItemDTO;
 using DataAccess.DonationFormDTO;
 using DataAccess.ItemImageDTO;
 using DataAccess.ReportDamageDTO;
+using DataAccess.WalletDTO;
 
 namespace Service.Utils.MapperProfiles
 {
@@ -40,6 +41,8 @@ namespace Service.Utils.MapperProfiles
             CreateMap<Category, CategoryDTO>();
             CreateMap<CategoryCreateDTO, Category>();
             CreateMap<CategoryUpdateDTO, Category>();
+
+            CreateMap<Wallet, WalletResModel>().ReverseMap();
         }
     }
 }

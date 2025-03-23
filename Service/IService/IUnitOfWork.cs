@@ -32,6 +32,8 @@ namespace Service.IService
         IGenericRepository<RefreshToken> RefreshToken { get; }
         IGenericRepository<ItemCondition> ItemCondition { get; }
         IGenericRepository<BorrowContract> BorrowContract { get; }
+        IGenericRepository<Wallet> Wallet { get; }
+        IGenericRepository<WalletTransaction> WalletTransaction { get; }
 
         Task<int> SaveAsync();
     }

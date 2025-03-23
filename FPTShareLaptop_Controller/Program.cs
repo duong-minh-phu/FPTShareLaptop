@@ -42,6 +42,8 @@ builder.Services.AddScoped<IBorrowRequestService, BorrowRequestService>();
 builder.Services.AddScoped<IItemConditionService, ItemConditionService>();
 builder.Services.AddScoped<IBorrowContractService, BorrowContractService>();
 builder.Services.AddScoped<IFeedbackBorrowService, FeedbackBorrowService>();
+builder.Services.AddScoped<IWalletService, WalletService>();
+builder.Services.AddScoped<IWalletTransactionService, WalletTransactionService>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));

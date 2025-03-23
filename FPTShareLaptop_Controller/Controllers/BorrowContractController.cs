@@ -23,13 +23,13 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> GetAllBorrowContracts()
         {
             var result = await _borrowContractService.GetAllBorrowContracts();
-            return Ok(new ResultModel
+            ResultModel response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Get all borrow contracts successfully",
-                Data = result
-            });
+                Message = "Student registered successfully."
+            };
+            return StatusCode(response.Code, response);
         }
 
         [HttpGet]

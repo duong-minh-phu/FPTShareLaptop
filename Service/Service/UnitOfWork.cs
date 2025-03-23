@@ -69,8 +69,9 @@ namespace Service.Service
         public IGenericRepository<ReportDamage> ReportDamage => Repository<ReportDamage>();
         public IGenericRepository<DepositTransaction> DepositTransaction => Repository<DepositTransaction>();
         public IGenericRepository<CompensationTransaction> CompensationTransaction => Repository<CompensationTransaction>();
-
         public IGenericRepository<ItemCondition> ItemCondition => Repository<ItemCondition>();
+        public IGenericRepository<Wallet> Wallet => Repository<Wallet>();
+        public IGenericRepository<WalletTransaction> WalletTransaction => Repository<WalletTransaction>();
 
         public async Task<int> SaveAsync()
         {
