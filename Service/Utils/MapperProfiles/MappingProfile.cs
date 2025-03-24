@@ -13,8 +13,12 @@ using DataAccess.DepositTransactionDTO;
 using DataAccess.DonateItemDTO;
 using DataAccess.DonationFormDTO;
 using DataAccess.ItemImageDTO;
+using DataAccess.PaymentDTO;
+using DataAccess.PaymentMethodDTO;
+using DataAccess.RefundTransactionDTO;
 using DataAccess.ReportDamageDTO;
 using DataAccess.WalletDTO;
+using DataAccess.WalletTransaction;
 
 namespace Service.Utils.MapperProfiles
 {
@@ -43,6 +47,24 @@ namespace Service.Utils.MapperProfiles
             CreateMap<CategoryUpdateDTO, Category>();
 
             CreateMap<Wallet, WalletResModel>().ReverseMap();
+            CreateMap<WalletReqModel, Wallet>().ReverseMap();
+
+            CreateMap<WalletTransaction, WalletTransactionResModel>().ReverseMap();
+            CreateMap<WalletTransactionReqModel, WalletTransaction>().ReverseMap();
+
+            CreateMap<RefundTransaction, RefundTransactionResModel>().ReverseMap();
+            CreateMap<RefundTransactionReqModel, RefundTransaction>().ReverseMap();
+
+            CreateMap<Payment, PaymentResModel>();          
+            CreateMap<PaymentReqModel, Payment>()
+                .ForMember(dest => dest.PaymentId, opt => opt.Ignore()) 
+                .ForMember(dest => dest.PaymentDate, opt => opt.Ignore()) 
+                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore()) 
+                .ForMember(dest => dest.UpdatedDate, opt => opt.Ignore());
+
+            CreateMap<PaymentMethod, PaymentMethodResModel>().ReverseMap();
+            CreateMap<PaymentMethodReqModel, PaymentMethod>();
+
         }
     }
 }
