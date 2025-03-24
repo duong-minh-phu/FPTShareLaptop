@@ -13,6 +13,7 @@ using DataAccess.DepositTransactionDTO;
 using DataAccess.DonateItemDTO;
 using DataAccess.DonationFormDTO;
 using DataAccess.ItemImageDTO;
+using DataAccess.ProductImageDTO;
 using DataAccess.ReportDamageDTO;
 using DataAccess.ShopDTO;
 
@@ -48,6 +49,13 @@ namespace Service.Utils.MapperProfiles
                 .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
             CreateMap<ShopUpdateDTO, Shop>()
                 .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
+
+
+
+            CreateMap<ProductImage, ProductImageReadDTO>();
+            CreateMap<ProductImageCreateDTO, ProductImage>()
+                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
+            CreateMap<ProductImageUpdateDTO, ProductImage>();
         }
     }
 }
