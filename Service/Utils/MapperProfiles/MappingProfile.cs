@@ -13,6 +13,7 @@ using DataAccess.DepositTransactionDTO;
 using DataAccess.DonateItemDTO;
 using DataAccess.DonationFormDTO;
 using DataAccess.ItemImageDTO;
+using DataAccess.ProductDTO;
 using DataAccess.ProductImageDTO;
 using DataAccess.ReportDamageDTO;
 using DataAccess.ShopDTO;
@@ -56,6 +57,11 @@ namespace Service.Utils.MapperProfiles
             CreateMap<ProductImageCreateDTO, ProductImage>()
                 .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
             CreateMap<ProductImageUpdateDTO, ProductImage>();
+
+
+            CreateMap<Product, ProductReadDTO>();
+            CreateMap<ProductCreateDTO, Product>();
+            CreateMap<ProductUpdateDTO, Product>();
         }
     }
 }

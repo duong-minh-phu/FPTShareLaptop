@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using BusinessObjects.Models;
+using CloudinaryDotNet.Actions;
+using CloudinaryDotNet;
 using DataAccess.ProductImageDTO;
 using DataAccess.ResultModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
+using Service.Service;
 
 namespace FPTShareLaptop_Controller.Controllers
 {
@@ -13,78 +16,111 @@ namespace FPTShareLaptop_Controller.Controllers
     public class ProductImageController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly Cloudinary _cloudinary;
         private readonly IMapper _mapper;
 
-        public ProductImageController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ProductImageController(IUnitOfWork unitOfWork, IMapper mapper, Cloudinary cloudinary)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _cloudinary = cloudinary;
         }
 
-        // GET: api/product-images
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var productImages = await _unitOfWork.ProductImage.GetAllAsync();
-            var result = _mapper.Map<IEnumerable<ProductImageReadDTO>>(productImages);
-            return Ok(ResultModel.Success(result, "Product images retrieved successfully"));
-        }
-
-        // GET: api/product-images/{id}
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var productImage = await _unitOfWork.ProductImage.GetByIdAsync(id);
-            if (productImage == null)
-                return NotFound(ResultModel.NotFound("Product image not found"));
-
-            var result = _mapper.Map<ProductImageReadDTO>(productImage);
-            return Ok(ResultModel.Success(result));
-        }
-
-        // POST: api/product-images
+        // POST: api/product-images (Upload ảnh mới)
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] ProductImageCreateDTO createDto)
+        public async Task<IActionResult> CreateProductImage(IFormFile file, int productId)
         {
-            if (createDto == null)
-                return BadRequest(ResultModel.BadRequest("Invalid product image data"));
+            if (file == null || file.Length == 0)
+                return BadRequest("Invalid file.");
 
-            var productImage = _mapper.Map<ProductImage>(createDto);
+            using var stream = file.OpenReadStream();
+            var uploadParams = new ImageUploadParams
+            {
+                File = new FileDescription(file.FileName, stream),
+                Folder = "product_images"
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            if (uploadResult.Error != null)
+                return BadRequest(uploadResult.Error.Message);
+
+            var productImage = new ProductImage
+            {
+                ProductId = productId,
+                ImageUrl = uploadResult.SecureUrl.ToString(),
+                CreatedDate = DateTime.UtcNow
+            };
+
             await _unitOfWork.ProductImage.AddAsync(productImage);
             await _unitOfWork.SaveAsync();
 
-            var result = _mapper.Map<ProductImageReadDTO>(productImage);
-            return CreatedAtAction(nameof(GetById), new { id = productImage.ProductImageId }, ResultModel.Created(result, "Product image created successfully"));
+            return CreatedAtAction(nameof(GetProductImagesByProductId), new { productId }, productImage);
         }
 
-        // PUT: api/product-images/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] ProductImageUpdateDTO updateDto)
+        // GET: api/product-images/{productId} (Lấy danh sách ảnh theo ProductId)
+        [HttpGet("{productId}")]
+        public async Task<IActionResult> GetProductImagesByProductId(int productId)
         {
-            var existingProductImage = await _unitOfWork.ProductImage.GetByIdAsync(id);
-            if (existingProductImage == null)
-                return NotFound(ResultModel.NotFound("Product image not found"));
-
-            _mapper.Map(updateDto, existingProductImage);
-            _unitOfWork.ProductImage.Update(existingProductImage);
-            await _unitOfWork.SaveAsync();
-
-            var result = _mapper.Map<ProductImageReadDTO>(existingProductImage);
-            return Ok(ResultModel.Success(result, "Product image updated successfully"));
+            var images = await _unitOfWork.ProductImage.GetAllAsync(pi => pi.ProductId == productId);
+            var imageDtos = _mapper.Map<IEnumerable<ProductImageReadDTO>>(images);
+            return Ok(ResultModel.Success(imageDtos));
         }
 
-        // DELETE: api/product-images/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        // GET: api/product-images (Lấy toàn bộ danh sách ảnh)
+        [HttpGet]
+        public async Task<IActionResult> GetAllProductImages()
+        {
+            var productImages = await _unitOfWork.ProductImage.GetAllAsync();
+            var productImageDtos = _mapper.Map<IEnumerable<ProductImageReadDTO>>(productImages);
+            return Ok(ResultModel.Success(productImageDtos));
+        }
+
+        // PUT: api/product-images/{id} (Cập nhật ảnh mới)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProductImage(int id, IFormFile file)
         {
             var productImage = await _unitOfWork.ProductImage.GetByIdAsync(id);
             if (productImage == null)
-                return NotFound(ResultModel.NotFound("Product image not found"));
+            {
+                return NotFound(new { message = $"Không tìm thấy ProductImage với Id = {id}" });
+            }
+
+            using var stream = file.OpenReadStream();
+            var uploadParams = new ImageUploadParams
+            {
+                File = new FileDescription(file.FileName, stream),
+                Folder = "product_images"
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            if (uploadResult.Error != null)
+                return BadRequest(uploadResult.Error.Message);
+
+            productImage.ImageUrl = uploadResult.SecureUrl.ToString();
+            productImage.CreatedDate = DateTime.UtcNow;
+
+            _unitOfWork.ProductImage.Update(productImage);
+            await _unitOfWork.SaveAsync();
+
+            return Ok(new { message = "Cập nhật thành công", productImage });
+        }
+
+        // DELETE: api/product-images/{id} (Xóa ảnh)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProductImage(int id)
+        {
+            var productImage = await _unitOfWork.ProductImage.GetByIdAsync(id);
+            if (productImage == null)
+            {
+                return NotFound(new { message = $"Không tìm thấy ProductImage với Id = {id}" });
+            }
 
             _unitOfWork.ProductImage.Delete(productImage);
             await _unitOfWork.SaveAsync();
 
-            return Ok(ResultModel.Success(null, "Product image deleted successfully"));
+            return Ok(new { message = "Xóa thành công", productImage });
         }
     }
+
+
 }
