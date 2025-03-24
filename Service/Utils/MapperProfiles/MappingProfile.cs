@@ -43,9 +43,11 @@ namespace Service.Utils.MapperProfiles
             CreateMap<CategoryUpdateDTO, Category>();
 
 
-            CreateMap<Shop, ShopDTO>().ReverseMap();
-            CreateMap<ShopCreateDTO, Shop>();
-            CreateMap<ShopUpdateDTO, Shop>();
+            CreateMap<Shop, ShopReadDTO>();
+            CreateMap<ShopCreateDTO, Shop>()
+                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
+            CreateMap<ShopUpdateDTO, Shop>()
+                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
         }
     }
 }
