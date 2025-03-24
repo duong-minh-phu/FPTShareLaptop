@@ -10,12 +10,12 @@ namespace FPTShareLaptop_Controller.Controllers
 {
     [Route("api/shops")]
     [ApiController]
-    public class ShopsController : ControllerBase
+    public class ShopController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ShopsController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ShopController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -23,80 +23,63 @@ namespace FPTShareLaptop_Controller.Controllers
 
         // GET: api/shops
         [HttpGet]
-        public async Task<IActionResult> GetShops()
+        public async Task<IActionResult> GetAll()
         {
             var shops = await _unitOfWork.Shop.GetAllAsync();
-            var shopDTOs = _mapper.Map<IEnumerable<ShopDTO>>(shops);
-            return Ok(ResultModel.Success(shopDTOs));
+            var result = _mapper.Map<IEnumerable<ShopReadDTO>>(shops);
+            return Ok(ResultModel.Success(result, "Shops retrieved successfully"));
         }
 
         // GET: api/shops/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetShop(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var shop = await _unitOfWork.Shop.GetByIdAsync(id);
             if (shop == null)
-            {
                 return NotFound(ResultModel.NotFound("Shop not found"));
-            }
 
-            var shopDTO = _mapper.Map<ShopDTO>(shop);
-            return Ok(ResultModel.Success(shopDTO));
+            var result = _mapper.Map<ShopReadDTO>(shop);
+            return Ok(ResultModel.Success(result));
         }
 
         // POST: api/shops
         [HttpPost]
-        public async Task<IActionResult> CreateShop([FromBody] ShopCreateDTO shopDTO)
+        public async Task<IActionResult> Create([FromBody] ShopCreateDTO createDto)
         {
-            if (shopDTO == null)
-            {
-                return BadRequest(ResultModel.BadRequest("Invalid data"));
-            }
+            if (createDto == null)
+                return BadRequest(ResultModel.BadRequest("Invalid shop data"));
 
-            var shop = _mapper.Map<Shop>(shopDTO);
-            shop.CreatedDate = DateTime.UtcNow;
-            shop.UpdatedDate = DateTime.UtcNow;
-
+            var shop = _mapper.Map<Shop>(createDto);
             await _unitOfWork.Shop.AddAsync(shop);
             await _unitOfWork.SaveAsync();
 
-            var createdShopDTO = _mapper.Map<ShopDTO>(shop);
-            return CreatedAtAction(nameof(GetShop), new { id = shop.ShopId }, ResultModel.Created(createdShopDTO));
+            var result = _mapper.Map<ShopReadDTO>(shop);
+            return CreatedAtAction(nameof(GetById), new { id = shop.ShopId }, ResultModel.Created(result, "Shop created successfully"));
         }
 
         // PUT: api/shops/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateShop(int id, [FromBody] ShopUpdateDTO shopDTO)
+        public async Task<IActionResult> Update(int id, [FromBody] ShopUpdateDTO updateDto)
         {
-            if (shopDTO == null)
-            {
-                return BadRequest(ResultModel.BadRequest("Invalid data"));
-            }
-
             var existingShop = await _unitOfWork.Shop.GetByIdAsync(id);
             if (existingShop == null)
-            {
                 return NotFound(ResultModel.NotFound("Shop not found"));
-            }
 
-            _mapper.Map(shopDTO, existingShop);
-            existingShop.UpdatedDate = DateTime.UtcNow;
-
+            _mapper.Map(updateDto, existingShop);
             _unitOfWork.Shop.Update(existingShop);
             await _unitOfWork.SaveAsync();
 
-            return Ok(ResultModel.Success(_mapper.Map<ShopDTO>(existingShop), "Shop updated successfully"));
+            var result = _mapper.Map<ShopReadDTO>(existingShop);
+            return Ok(ResultModel.Success(result, "Shop updated successfully"));
         }
 
         // DELETE: api/shops/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteShop(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var shop = await _unitOfWork.Shop.GetByIdAsync(id);
             if (shop == null)
-            {
                 return NotFound(ResultModel.NotFound("Shop not found"));
-            }
 
             _unitOfWork.Shop.Delete(shop);
             await _unitOfWork.SaveAsync();
