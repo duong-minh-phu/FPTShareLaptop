@@ -13,6 +13,7 @@ using DataAccess.DepositTransactionDTO;
 using DataAccess.DonateItemDTO;
 using DataAccess.DonationFormDTO;
 using DataAccess.ItemImageDTO;
+using DataAccess.OrderDTO;
 using DataAccess.ProductDTO;
 using DataAccess.ProductImageDTO;
 using DataAccess.ReportDamageDTO;
@@ -62,6 +63,10 @@ namespace Service.Utils.MapperProfiles
             CreateMap<Product, ProductReadDTO>();
             CreateMap<ProductCreateDTO, Product>();
             CreateMap<ProductUpdateDTO, Product>();
+
+            CreateMap<Order, OrderReadDTO>();
+            CreateMap<OrderCreateDTO, Order>();
+            CreateMap<OrderUpdateDTO, Order>();
         }
     }
 }
