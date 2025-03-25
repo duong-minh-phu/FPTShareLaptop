@@ -37,6 +37,8 @@ namespace Service.IService
         IGenericRepository<RefundTransaction> RefundTransaction { get; }
         IGenericRepository<Payment> Payment { get; }
         IGenericRepository<PaymentMethod> PaymentMethod { get; }
+        IGenericRepository<Shipment> Shipment { get; }
+        IGenericRepository<TrackingInfo> TrackingInfo { get; }
 
         Task<int> SaveAsync();
     }

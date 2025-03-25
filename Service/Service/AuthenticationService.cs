@@ -159,6 +159,10 @@ public class AuthenticationService : IAuthenticationService
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
         }
+        if (studentRegisterReqModel.StudentCardImage == null)
+        {
+            throw new ApiException(HttpStatusCode.BadRequest, "Student card image is required.");
+        }
 
         var user = new User
         {

@@ -75,6 +75,8 @@ namespace Service.Service
         public IGenericRepository<RefundTransaction> RefundTransaction => Repository<RefundTransaction>();
         public IGenericRepository<Payment> Payment => Repository<Payment>();
         public IGenericRepository<PaymentMethod> PaymentMethod => Repository<PaymentMethod>();
+        public IGenericRepository<Shipment> Shipment => Repository<Shipment>();
+        public IGenericRepository<TrackingInfo> TrackingInfo => Repository<TrackingInfo>();
 
         public async Task<int> SaveAsync()
         {

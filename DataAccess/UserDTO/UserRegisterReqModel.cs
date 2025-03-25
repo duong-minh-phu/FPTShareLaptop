@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 
 namespace DataAccess.UserDTO
 {
@@ -26,6 +27,7 @@ namespace DataAccess.UserDTO
         public string IdentityCard { get; set; } = null!;
 
         public string EnrollmentDate { get; set; }
+        public IFormFile StudentCardImage { get; set; } = null!;
 
     }
 
