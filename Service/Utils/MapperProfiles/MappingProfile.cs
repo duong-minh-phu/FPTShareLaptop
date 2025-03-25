@@ -61,7 +61,8 @@ namespace Service.Utils.MapperProfiles
             CreateMap<ProductImageUpdateDTO, ProductImage>();
 
 
-            CreateMap<Product, ProductReadDTO>();
+            CreateMap<Product, ProductReadDTO>()
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName));
             CreateMap<ProductCreateDTO, Product>();
             CreateMap<ProductUpdateDTO, Product>();
 

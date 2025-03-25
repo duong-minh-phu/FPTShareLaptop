@@ -17,9 +17,12 @@ namespace DataAccess.ProductDTO
         public string Storage { get; set; } = null!;
         public string Ram { get; set; } = null!;
         public string Cpu { get; set; } = null!;
-        public int CategoryId { get; set; }
-        public int ShopId { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+        public int CategoryId { get; set; }
+        public int ShopId { get; set; }
+
+        public string CategoryName { get; set; } = null!; // Lấy tên danh mục sản phẩm
+        public string ShopName { get; set; } = null!; // Lấy tên cửa hàng
     }
 }

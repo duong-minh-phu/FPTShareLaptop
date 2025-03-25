@@ -12,87 +12,59 @@ namespace FPTShareLaptop_Controller.Controllers
 {
     [Route("api/products")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly Cloudinary _cloudinary;
         private readonly IMapper _mapper;
+        private readonly Cloudinary _cloudinary;
 
-        public ProductController(IUnitOfWork unitOfWork, IMapper mapper, Cloudinary cloudinary)
+        public ProductsController(IUnitOfWork unitOfWork, IMapper mapper, Cloudinary cloudinary)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _cloudinary = cloudinary;
         }
 
-        // GET: api/products (Lấy danh sách sản phẩm)
+        // GET: api/products
         [HttpGet]
-        public async Task<IActionResult> GetProducts()
+        public async Task<IActionResult> GetAll()
         {
-            var products = await _unitOfWork.Product.GetAllAsync();
-            var productDtos = _mapper.Map<IEnumerable<ProductReadDTO>>(products);
-            return Ok(ResultModel.Success(productDtos));
+            var products = await _unitOfWork.Product.GetAllAsync(
+                includeProperties: p => p.Category);
+            var productDTOs = _mapper.Map<IEnumerable<ProductReadDTO>>(products);
+            return Ok(ResultModel.Success(productDTOs));
         }
 
-        // GET: api/products/{id} (Lấy sản phẩm theo ID)
+        // GET: api/products/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProductById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var product = await _unitOfWork.Product.GetByIdAsync(id);
+            var product = await _unitOfWork.Product.GetByIdAsync(id, p => p.Category);
             if (product == null)
-                return NotFound(ResultModel.NotFound($"Không tìm thấy sản phẩm với ID = {id}"));
-
-            var productDto = _mapper.Map<ProductReadDTO>(product);
-            return Ok(ResultModel.Success(productDto));
+            {
+                return NotFound(ResultModel.NotFound());
+            }
+            var productDTO = _mapper.Map<ProductReadDTO>(product);
+            return Ok(ResultModel.Success(productDTO));
         }
 
-        // POST: api/products (Tạo sản phẩm mới)
+        // POST: api/products (Thêm mới sản phẩm + upload ảnh)
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromForm] IFormFile file, [FromForm] ProductCreateDTO productDto)
+        public async Task<IActionResult> Create([FromForm] ProductCreateDTO productDTO)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest(ResultModel.BadRequest("File ảnh không hợp lệ."));
-
-            using var stream = file.OpenReadStream();
-            var uploadParams = new ImageUploadParams
+            if (productDTO == null)
             {
-                File = new FileDescription(file.FileName, stream),
-                Folder = "product_images"
-            };
+                return BadRequest(ResultModel.BadRequest("Invalid data."));
+            }
 
-            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-            if (uploadResult.Error != null)
-                return BadRequest(ResultModel.BadRequest(uploadResult.Error.Message));
-
-            var product = _mapper.Map<Product>(productDto);
-            product.ImageProduct = uploadResult.SecureUrl.ToString();
-            product.CreatedDate = DateTime.UtcNow;
-
-            await _unitOfWork.Product.AddAsync(product);
-            await _unitOfWork.SaveAsync();
-
-            var productReadDto = _mapper.Map<ProductReadDTO>(product);
-            return CreatedAtAction(nameof(GetProductById), new { id = product.ProductId }, ResultModel.Success(productReadDto, "Sản phẩm đã được tạo."));
-        }
-
-        // PUT: api/products/{id} (Cập nhật sản phẩm)
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromForm] IFormFile? file, [FromForm] ProductUpdateDTO productDto)
-        {
-            var product = await _unitOfWork.Product.GetByIdAsync(id);
-            if (product == null)
-                return NotFound(ResultModel.NotFound($"Không tìm thấy sản phẩm với ID = {id}"));
-
-            _mapper.Map(productDto, product);
-            product.UpdatedDate = DateTime.UtcNow;
-
-            // Nếu có file mới thì upload lên Cloudinary
-            if (file != null)
+            // Upload ảnh lên Cloudinary nếu có
+            string imageUrl = null;
+            if (productDTO.ImageFile != null && productDTO.ImageFile.Length > 0)
             {
-                using var stream = file.OpenReadStream();
+                using var stream = productDTO.ImageFile.OpenReadStream();
                 var uploadParams = new ImageUploadParams
                 {
-                    File = new FileDescription(file.FileName, stream),
+                    File = new FileDescription(productDTO.ImageFile.FileName, stream),
                     Folder = "product_images"
                 };
 
@@ -100,28 +72,77 @@ namespace FPTShareLaptop_Controller.Controllers
                 if (uploadResult.Error != null)
                     return BadRequest(ResultModel.BadRequest(uploadResult.Error.Message));
 
-                product.ImageProduct = uploadResult.SecureUrl.ToString();
+                imageUrl = uploadResult.SecureUrl.ToString();
             }
 
-            _unitOfWork.Product.Update(product);
+            var product = _mapper.Map<Product>(productDTO);
+            product.ImageProduct = imageUrl;
+            product.CreatedDate = DateTime.UtcNow;
+            product.UpdatedDate = DateTime.UtcNow;
+
+            await _unitOfWork.Product.AddAsync(product);
             await _unitOfWork.SaveAsync();
 
-            var productReadDto = _mapper.Map<ProductReadDTO>(product);
-            return Ok(ResultModel.Success(productReadDto, "Sản phẩm đã được cập nhật."));
+            var result = _mapper.Map<ProductReadDTO>(product);
+            return CreatedAtAction(nameof(GetById), new { id = product.ProductId }, ResultModel.Created(result));
         }
 
-        // DELETE: api/products/{id} (Xóa sản phẩm)
+        // PUT: api/products/{id} (Cập nhật sản phẩm + upload ảnh mới nếu có)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromForm] ProductUpdateDTO productDTO)
+        {
+            if (productDTO == null || productDTO.ProductId != id)
+            {
+                return BadRequest(ResultModel.BadRequest("ID mismatch."));
+            }
+
+            var existingProduct = await _unitOfWork.Product.GetByIdAsync(id);
+            if (existingProduct == null)
+            {
+                return NotFound(ResultModel.NotFound());
+            }
+
+            // Upload ảnh mới nếu có
+            if (productDTO.ImageFile != null && productDTO.ImageFile.Length > 0)
+            {
+                using var stream = productDTO.ImageFile.OpenReadStream();
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(productDTO.ImageFile.FileName, stream),
+                    Folder = "product_images"
+                };
+
+                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                if (uploadResult.Error != null)
+                    return BadRequest(ResultModel.BadRequest(uploadResult.Error.Message));
+
+                existingProduct.ImageProduct = uploadResult.SecureUrl.ToString();
+            }
+
+            _mapper.Map(productDTO, existingProduct);
+            existingProduct.UpdatedDate = DateTime.UtcNow;
+
+            _unitOfWork.Product.Update(existingProduct);
+            await _unitOfWork.SaveAsync();
+
+            return Ok(ResultModel.Success(null, "Updated successfully"));
+        }
+
+        // DELETE: api/products/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var product = await _unitOfWork.Product.GetByIdAsync(id);
             if (product == null)
-                return NotFound(ResultModel.NotFound($"Không tìm thấy sản phẩm với ID = {id}"));
+            {
+                return NotFound(ResultModel.NotFound());
+            }
 
             _unitOfWork.Product.Delete(product);
             await _unitOfWork.SaveAsync();
 
-            return Ok(ResultModel.Success($"Sản phẩm với ID {id} đã được xóa."));
+            return Ok(ResultModel.Success(null, "Deleted successfully"));
         }
     }
+
 }
