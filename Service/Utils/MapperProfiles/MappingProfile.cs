@@ -12,12 +12,14 @@ using DataAccess.CompensationTransactionDTO;
 using DataAccess.DepositTransactionDTO;
 using DataAccess.DonateItemDTO;
 using DataAccess.DonationFormDTO;
+using DataAccess.FeedbackProductDTO;
 using DataAccess.ItemImageDTO;
 using DataAccess.OrderDetailDTO;
 using DataAccess.OrderDTO;
 using DataAccess.ProductDTO;
 using DataAccess.ProductImageDTO;
 using DataAccess.ReportDamageDTO;
+using DataAccess.SettlementTransactionDTO;
 using DataAccess.ShopDTO;
 
 namespace Service.Utils.MapperProfiles
@@ -74,6 +76,16 @@ namespace Service.Utils.MapperProfiles
             CreateMap<OrderDetail, OrderDetailReadDTO>();
             CreateMap<OrderDetailCreateDTO, OrderDetail>();
             CreateMap<OrderDetailUpdateDTO, OrderDetail>();
+
+
+            CreateMap<SettlementTransaction, SettlementTransactionDTO>();
+            CreateMap<SettlementTransactionCreateDTO, SettlementTransaction>();
+            CreateMap<SettlementTransactionUpdateDTO, SettlementTransaction>();
+
+
+            CreateMap<FeedbackProduct, FeedbackProductDTO>();
+            CreateMap<FeedbackProductCreateDTO, FeedbackProduct>();
+            CreateMap<FeedbackProductUpdateDTO, FeedbackProduct>();
         }
     }
 }
