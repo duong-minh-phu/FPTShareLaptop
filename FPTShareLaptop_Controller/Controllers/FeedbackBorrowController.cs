@@ -66,7 +66,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> CreateFeedback([FromBody] CreateFeedbackBorrowReqModel model)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _feedbackBorrowService.CreateFeedback(model, token);
+            await _feedbackBorrowService.CreateFeedback(token, model);
 
             return Ok(new ResultModel
             {
