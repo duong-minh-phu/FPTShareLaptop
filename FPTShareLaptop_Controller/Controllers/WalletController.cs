@@ -18,14 +18,29 @@ namespace FPTShareLaptop_Controller.Controllers
             _walletService = walletService;
         }
 
-        // Lấy ví theo UserId từ JWT
-        [HttpGet]
-        [Route("get")]
-        public async Task<IActionResult> GetWalletByUser()
+        // Lấy tất cả ví 
+        [HttpGet("get")]
+        public async Task<IActionResult> GetAllWallets()
         {
-            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            var result = await _walletService.GetWalletByUser(token);
+            var result = await _walletService.GetAllWallets();
+            ResultModel response = new ResultModel
+            {
+                IsSuccess = true,
+                Code = (int)HttpStatusCode.OK,
+                Message = "Wallet retrived successfully.",
+                Data = result
+            };
+            return StatusCode(response.Code, response);
+        }
 
+
+        // Lấy theo ví id
+        [HttpGet]
+        [Route("get/{id}")]
+        public async Task<IActionResult> GetWalletById(int id)
+        {
+
+            var result = await _walletService.GetWalletById(id);
             ResultModel response = new ResultModel
             {
                 IsSuccess = true,

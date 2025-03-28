@@ -35,7 +35,11 @@ namespace Service.Service
         public async Task AddAsync(PaymentMethodReqModel model)
         {
             var paymentMethod = _mapper.Map<PaymentMethod>(model);
+            paymentMethod.CreatedDate = DateTime.UtcNow;
+            paymentMethod.IsActive = true;
             await _unitOfWork.PaymentMethod.AddAsync(paymentMethod);
+            await _unitOfWork.SaveAsync();
+
         }
 
         public async Task UpdateAsync(string token, int id, PaymentMethodReqModel model)
@@ -50,6 +54,7 @@ namespace Service.Service
             {
                 _mapper.Map(model, paymentMethod);
                 _unitOfWork.PaymentMethod.Update(paymentMethod);
+                await _unitOfWork.SaveAsync();
             }
         }
 
@@ -64,6 +69,7 @@ namespace Service.Service
             if (paymentMethod != null)
             {
                 _unitOfWork.PaymentMethod.Delete(paymentMethod); 
+                await _unitOfWork.SaveAsync();
             }
         }
     }

@@ -8,8 +8,7 @@ namespace DataAccess.WalletDTO
 {
     public class WalletReqModel
     {
-        public decimal Amount { get; set; } 
+        public decimal Balance { get; set; } 
         public string Type { get; set; } = null!; 
-        public string Status { get; set; } 
     }
 }

@@ -64,6 +64,9 @@ namespace FPTShareLaptop_Controller.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PaymentMethodReqModel request)
         {
+            if (request == null)
+                return BadRequest("Invalid data");
+
             await _paymentMethodService.AddAsync(request);
             var response = new ResultModel
             {
