@@ -27,6 +27,7 @@ namespace FPTShareLaptop_Controller.Controllers
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
+                Data = result,
                 Message = "Get borrow contract successfully"
             };
             return StatusCode(response.Code, response);
