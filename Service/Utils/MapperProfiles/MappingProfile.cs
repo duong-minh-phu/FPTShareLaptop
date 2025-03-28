@@ -12,8 +12,15 @@ using DataAccess.CompensationTransactionDTO;
 using DataAccess.DepositTransactionDTO;
 using DataAccess.DonateItemDTO;
 using DataAccess.DonationFormDTO;
+using DataAccess.FeedbackProductDTO;
 using DataAccess.ItemImageDTO;
+using DataAccess.OrderDetailDTO;
+using DataAccess.OrderDTO;
+using DataAccess.ProductDTO;
+using DataAccess.ProductImageDTO;
 using DataAccess.ReportDamageDTO;
+using DataAccess.SettlementTransactionDTO;
+using DataAccess.ShopDTO;
 
 namespace Service.Utils.MapperProfiles
 {
@@ -40,6 +47,45 @@ namespace Service.Utils.MapperProfiles
             CreateMap<Category, CategoryDTO>();
             CreateMap<CategoryCreateDTO, Category>();
             CreateMap<CategoryUpdateDTO, Category>();
+
+
+            CreateMap<Shop, ShopReadDTO>();
+            CreateMap<ShopCreateDTO, Shop>()
+                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
+            CreateMap<ShopUpdateDTO, Shop>()
+                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
+
+
+
+            CreateMap<ProductImage, ProductImageReadDTO>();
+            CreateMap<ProductImageCreateDTO, ProductImage>()
+                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.UtcNow));
+            CreateMap<ProductImageUpdateDTO, ProductImage>();
+
+
+            CreateMap<Product, ProductReadDTO>()
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName));
+            CreateMap<ProductCreateDTO, Product>();
+            CreateMap<ProductUpdateDTO, Product>();
+
+            CreateMap<Order, OrderReadDTO>();
+            CreateMap<OrderCreateDTO, Order>();
+            CreateMap<OrderUpdateDTO, Order>();
+
+
+            CreateMap<OrderDetail, OrderDetailReadDTO>();
+            CreateMap<OrderDetailCreateDTO, OrderDetail>();
+            CreateMap<OrderDetailUpdateDTO, OrderDetail>();
+
+
+            CreateMap<SettlementTransaction, SettlementTransactionDTO>();
+            CreateMap<SettlementTransactionCreateDTO, SettlementTransaction>();
+            CreateMap<SettlementTransactionUpdateDTO, SettlementTransaction>();
+
+
+            CreateMap<FeedbackProduct, FeedbackProductDTO>();
+            CreateMap<FeedbackProductCreateDTO, FeedbackProduct>();
+            CreateMap<FeedbackProductUpdateDTO, FeedbackProduct>();
         }
     }
 }

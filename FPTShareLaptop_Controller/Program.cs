@@ -113,8 +113,7 @@ app.UseCors("AllowAllOrigins");
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    
 }
 
 app.UseSwagger();
