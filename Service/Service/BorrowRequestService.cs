@@ -66,7 +66,7 @@ public class BorrowRequestService : IBorrowRequestService
         
         var existingRequest = await _unitOfWork.BorrowRequest.FirstOrDefaultAsync(br =>
         br.UserId == int.Parse(userId) &&
-        (br.Status == DonateStatus.Pending.ToString() || br.Status == DonateStatus.Approved.ToString()));
+        (br.Status == DonateStatus.Pending.ToString()));
         if (existingRequest != null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Bạn đã có một yêu cầu mượn laptop đang chờ xử lý hoặc đã được duyệt.");
