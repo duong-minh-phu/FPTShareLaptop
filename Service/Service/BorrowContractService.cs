@@ -73,6 +73,14 @@ namespace Service.Service
             if (borrowRequest == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Borrow request not found.");
 
+            var existingContract = await _unitOfWork.BorrowContract.FirstOrDefaultAsync(br =>
+            br.UserId == int.Parse(userId) &&
+            (br.Status == DonateStatus.Pending.ToString() || br.Status == DonateStatus.Approved.ToString()));
+            if (existingContract != null)
+            {
+                throw new ApiException(HttpStatusCode.BadRequest, "Bạn đã có một yêu cầu mượn laptop đang chờ xử lý hoặc đã được duyệt.");
+            }
+
             var contract = new BorrowContract
             {
                 RequestId = request.RequestId,
