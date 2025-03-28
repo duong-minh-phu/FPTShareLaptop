@@ -51,7 +51,7 @@ builder.Services.AddScoped<IRefundTransactionService, RefundTransactionService>(
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 builder.Services.AddScoped<IShipmentService, ShipmentService>();
-builder.Services.AddScoped<IWalletService, WalletService>();
+builder.Services.AddScoped<ITrackingInfoService, TrackingInfoService>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
