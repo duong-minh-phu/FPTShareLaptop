@@ -32,6 +32,7 @@ namespace Service.IService
         IGenericRepository<RefreshToken> RefreshToken { get; }
         IGenericRepository<ItemCondition> ItemCondition { get; }
         IGenericRepository<BorrowContract> BorrowContract { get; }
+
         IGenericRepository<Wallet> Wallet { get; }
         IGenericRepository<WalletTransaction> WalletTransaction { get; }
         IGenericRepository<RefundTransaction> RefundTransaction { get; }
@@ -39,6 +40,10 @@ namespace Service.IService
         IGenericRepository<PaymentMethod> PaymentMethod { get; }
         IGenericRepository<Shipment> Shipment { get; }
         IGenericRepository<TrackingInfo> TrackingInfo { get; }
+
+
+        IGenericRepository<SettlementTransaction> SettlementTransaction { get; }
+        IGenericRepository<FeedbackProduct> FeedbackProduct { get; }
 
         Task<int> SaveAsync();
     }

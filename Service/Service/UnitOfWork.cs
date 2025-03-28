@@ -70,6 +70,7 @@ namespace Service.Service
         public IGenericRepository<DepositTransaction> DepositTransaction => Repository<DepositTransaction>();
         public IGenericRepository<CompensationTransaction> CompensationTransaction => Repository<CompensationTransaction>();
         public IGenericRepository<ItemCondition> ItemCondition => Repository<ItemCondition>();
+
         public IGenericRepository<Wallet> Wallet => Repository<Wallet>();
         public IGenericRepository<WalletTransaction> WalletTransaction => Repository<WalletTransaction>();
         public IGenericRepository<RefundTransaction> RefundTransaction => Repository<RefundTransaction>();
@@ -77,6 +78,10 @@ namespace Service.Service
         public IGenericRepository<PaymentMethod> PaymentMethod => Repository<PaymentMethod>();
         public IGenericRepository<Shipment> Shipment => Repository<Shipment>();
         public IGenericRepository<TrackingInfo> TrackingInfo => Repository<TrackingInfo>();
+
+        public IGenericRepository<SettlementTransaction> SettlementTransaction => Repository<SettlementTransaction>();
+        public IGenericRepository<FeedbackProduct> FeedbackProduct => Repository<FeedbackProduct>();
+
 
         public async Task<int> SaveAsync()
         {
