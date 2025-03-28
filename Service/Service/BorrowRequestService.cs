@@ -63,6 +63,14 @@ public class BorrowRequestService : IBorrowRequestService
         var item = await _unitOfWork.DonateItem.GetByIdAsync(requestModel.ItemId);
         if (item == null)
             throw new ApiException(HttpStatusCode.NotFound, "Laptop not found.");
+        
+        var existingRequest = await _unitOfWork.BorrowRequest.FirstOrDefaultAsync(br =>
+        br.UserId == int.Parse(userId) &&
+        (br.Status == DonateStatus.Pending.ToString() || br.Status == DonateStatus.Approved.ToString()));
+        if (existingRequest != null)
+        {
+            throw new ApiException(HttpStatusCode.BadRequest, "Bạn đã có một yêu cầu mượn laptop đang chờ xử lý hoặc đã được duyệt.");
+        }
 
         var borrowRequest = new BorrowRequest
         {

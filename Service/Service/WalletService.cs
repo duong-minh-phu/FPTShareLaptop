@@ -22,14 +22,9 @@ namespace Service.Service
         }
 
         // Lấy ví theo UserId từ JWT
-        public async Task<WalletResModel> GetWalletByUser(string token)
-        {
-            var userId = _jwtService.decodeToken(token, "userId");
-            var user = await _unitOfWork.Users.GetByIdAsync(userId);
-            if (user == null)
-                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
-
-            var wallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.UserId == user.UserId);
+        public async Task<WalletResModel> GetWalletById(int walletId)
+        {          
+            var wallet = await _unitOfWork.Wallet.GetByIdAsync(walletId);
             if (wallet == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Wallet not found.");
 
@@ -44,7 +39,7 @@ namespace Service.Service
             if (user == null)
                 throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
-            var existingWallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.UserId == user.UserId);
+            var existingWallet = await _unitOfWork.Wallet.GetByIdAsync(userId);
             if (existingWallet != null)
                 throw new ApiException(HttpStatusCode.BadRequest, "User already has a wallet.");
 
@@ -67,7 +62,7 @@ namespace Service.Service
             if (user == null)
                 throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
-            var wallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.UserId == user.UserId);
+            var wallet = await _unitOfWork.Wallet.GetByIdAsync(userId);
             if (wallet == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Wallet not found.");
 
@@ -85,7 +80,7 @@ namespace Service.Service
             if (user == null)
                 throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
-            var wallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.UserId == user.UserId);
+            var wallet = await _unitOfWork.Wallet.GetByIdAsync(userId);
             if (wallet == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Wallet not found.");
 
@@ -96,6 +91,12 @@ namespace Service.Service
 
             _unitOfWork.Wallet.Update(wallet);
             await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<List<WalletResModel>> GetAllWallets()
+        {
+            var wallets = await _unitOfWork.Wallet.GetAllAsync();
+            return _mapper.Map<List<WalletResModel>>(wallets);
         }
     }
 }

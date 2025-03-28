@@ -2,6 +2,7 @@
 using System.Text;
 using BusinessObjects.Models;
 using CloudinaryDotNet;
+using FPTShareLaptop_Controller.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -29,6 +30,8 @@ builder.Services.AddCors(options =>
         });
 });
 builder.Services.AddControllers();
+//-----------------------------------------MIDDLEWARE---------------------------------------
+builder.Services.AddSingleton<GlobalExceptionMiddleware>();
 //-----------------------------------------SERVICES-----------------------------------------
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -132,4 +135,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.Run();
