@@ -21,7 +21,7 @@ namespace Service.Service
         // Lấy tất cả hợp đồng mượn
         public async Task<List<BorrowContractResponseDTO>> GetAllBorrowContracts()
         {
-            var contracts = await _unitOfWork.BorrowContract.GetAllAsync();
+            var contracts = await _unitOfWork.BorrowContract.GetAllAsync(includeProperties: c => c.User);
             return contracts.Select(contract => new BorrowContractResponseDTO
             {
                 ContractId = contract.ContractId,
