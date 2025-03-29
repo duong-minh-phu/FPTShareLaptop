@@ -44,7 +44,7 @@ namespace Service.Service
         // Lấy hợp đồng theo ID
         public async Task<BorrowContractResponseDTO> GetBorrowContractById(int contractId)
         {
-            var contract = await _unitOfWork.BorrowContract.GetByIdAsync(contractId);
+            var contract = await _unitOfWork.BorrowContract.GetByIdAsync(contractId, includeProperties: c => c.User);
             if (contract == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Borrow contract not found.");
 
