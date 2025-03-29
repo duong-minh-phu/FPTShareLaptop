@@ -75,10 +75,11 @@ namespace Service.Service
 
             var existingContract = await _unitOfWork.BorrowContract.FirstOrDefaultAsync(br =>
             br.UserId == int.Parse(userId) &&
+            br.ItemId == request.ItemId &&
             (br.Status == DonateStatus.Pending.ToString()));
             if (existingContract != null)
             {
-                throw new ApiException(HttpStatusCode.BadRequest, "Bạn đã có một yêu cầu mượn laptop đang chờ xử lý hoặc đã được duyệt.");
+                throw new ApiException(HttpStatusCode.BadRequest, "Bạn đã có hợp đồng mượn cho laptop này.");
             }
 
             var contract = new BorrowContract
