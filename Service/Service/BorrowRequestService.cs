@@ -47,7 +47,7 @@ public class BorrowRequestService : IBorrowRequestService
         var borrowRequest = await _unitOfWork.BorrowRequest.GetByIdAsync(requestId, includeProperties: new Expression<Func<BorrowRequest, object>>[] {
         b => b.Item,
         b => b.User
-    });
+        });
 
         if (borrowRequest == null)
             throw new ApiException(HttpStatusCode.NotFound, "Yêu cầu mượn không tồn tại.");

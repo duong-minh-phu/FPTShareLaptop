@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Net;
+using AutoMapper;
 using BusinessObjects.Models;
 using DataAccess.PasswordDTO;
 using DataAccess.UserDTO;
@@ -119,7 +120,7 @@ public class AuthenticationService : IAuthenticationService
         if (user == null)
             throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
-        return new UserProfileModel
+        var profile = new UserProfileModel
         {
             UserId = user.UserId,
             FullName = user.FullName,
@@ -130,15 +131,16 @@ public class AuthenticationService : IAuthenticationService
             Address = user.Address,
             Dob = user.Dob,
             Gender = user.Gender,
-            CreatedAt = user.CreatedAt,
-
-            // Chỉ có giá trị nếu là Student
-            StudentCode = user.Student.StudentCode,
-            IdentityCard = user.Student.IdentityCard,
-            EnrollmentDate = user.Student.EnrollmentDate,
-
-            // Nếu sau này cần thêm Sponsor, có thể bỏ các trường của Sponsor vào đây (nếu có)
+            CreatedAt = user.CreatedAt
         };
+
+        if (user.Role.RoleName == "Student" && user.Student != null)
+        {
+            profile.StudentCode = user.Student.StudentCode;
+            profile.IdentityCard = user.Student.IdentityCard;
+            profile.EnrollmentDate = user.Student.EnrollmentDate;
+        }
+        return profile;
     }
 
 
