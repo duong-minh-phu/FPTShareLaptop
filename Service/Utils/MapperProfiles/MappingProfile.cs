@@ -29,6 +29,7 @@ using DataAccess.ProductImageDTO;
 using DataAccess.ReportDamageDTO;
 using DataAccess.SettlementTransactionDTO;
 using DataAccess.ShopDTO;
+using DataAccess.UserDTO;
 
 
 namespace Service.Utils.MapperProfiles
@@ -67,15 +68,15 @@ namespace Service.Utils.MapperProfiles
             CreateMap<RefundTransaction, RefundTransactionResModel>().ReverseMap();
             CreateMap<RefundTransactionReqModel, RefundTransaction>().ReverseMap();
 
-            CreateMap<Payment, PaymentResModel>();          
-            CreateMap<PaymentReqModel, Payment>()
-                .ForMember(dest => dest.PaymentId, opt => opt.Ignore()) 
-                .ForMember(dest => dest.PaymentDate, opt => opt.Ignore()) 
-                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore()) 
-                .ForMember(dest => dest.UpdatedDate, opt => opt.Ignore());
+            CreateMap<Payment, PaymentViewResModel>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Order.User.Email))
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Order.User.FullName));
+
+
 
             CreateMap<PaymentMethod, PaymentMethodResModel>().ReverseMap();
-            CreateMap<PaymentMethodReqModel, PaymentMethod>();
+            CreateMap<PaymentMethodReqModel, PaymentMethod>().ReverseMap();
+
 
 
 
@@ -116,6 +117,23 @@ namespace Service.Utils.MapperProfiles
             CreateMap<FeedbackProduct, FeedbackProductDTO>();
             CreateMap<FeedbackProductCreateDTO, FeedbackProduct>();
             CreateMap<FeedbackProductUpdateDTO, FeedbackProduct>();
+
+            // Mapping cho bảng User
+            CreateMap<User, UserProfileModel>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Dob, opt => opt.MapFrom(src => src.Dob))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender))
+                .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.Avatar))
+                .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.RoleName))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+
+                // Mapping thông tin từ bảng Student nếu có
+                .ForMember(dest => dest.StudentCode, opt => opt.MapFrom(src => src.Student != null ? src.Student.StudentCode : null))
+                .ForMember(dest => dest.IdentityCard, opt => opt.MapFrom(src => src.Student != null ? src.Student.IdentityCard : null))
+                .ForMember(dest => dest.EnrollmentDate, opt => opt.MapFrom(src => src.Student != null ? src.Student.EnrollmentDate : null));
 
         }
     }

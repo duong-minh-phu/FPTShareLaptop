@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
+using System.Net;
 using BusinessObjects.Enums;
 using BusinessObjects.Models;
 using DataAccess.BorrowRequestDTO;
@@ -20,11 +22,17 @@ public class BorrowRequestService : IBorrowRequestService
     // Lấy tất cả yêu cầu mượn
     public async Task<List<BorrowRequestResModel>> GetAllBorrowRequests()
     {
-        var borrowRequests = await _unitOfWork.BorrowRequest.GetAllAsync(includeProperties: b => b.Item);
+        var borrowRequests = await _unitOfWork.BorrowRequest.GetAllAsync(includeProperties: new Expression<Func<BorrowRequest, object>>[] {
+        b => b.Item,
+        b => b.User
+    });
         return borrowRequests.Select(b => new BorrowRequestResModel
         {
             RequestId = b.RequestId,
             UserId = b.UserId,
+            FullName = b.User.FullName,
+            Email = b.User.Email,
+            PhoneNumber =b.User.PhoneNumber,
             ItemId = b.ItemId,
             ItemName = b.Item.ItemName,
             Status = b.Status,
@@ -36,7 +44,11 @@ public class BorrowRequestService : IBorrowRequestService
     // Lấy yêu cầu mượn theo ID
     public async Task<BorrowRequestResModel> GetBorrowRequestById(int requestId)
     {
-        var borrowRequest = await _unitOfWork.BorrowRequest.GetByIdAsync(requestId, includeProperties: b => b.Item);
+        var borrowRequest = await _unitOfWork.BorrowRequest.GetByIdAsync(requestId, includeProperties: new Expression<Func<BorrowRequest, object>>[] {
+        b => b.Item,
+        b => b.User
+        });
+
         if (borrowRequest == null)
             throw new ApiException(HttpStatusCode.NotFound, "Yêu cầu mượn không tồn tại.");
 
@@ -44,6 +56,9 @@ public class BorrowRequestService : IBorrowRequestService
         {
             RequestId = borrowRequest.RequestId,
             UserId = borrowRequest.UserId,
+            FullName = borrowRequest.User.FullName,
+            Email = borrowRequest.User.Email,
+            PhoneNumber = borrowRequest.User.PhoneNumber,
             ItemId = borrowRequest.ItemId,
             ItemName = borrowRequest.Item.ItemName,
             Status = borrowRequest.Status,

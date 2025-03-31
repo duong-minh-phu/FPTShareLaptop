@@ -1,7 +1,10 @@
-﻿using System.Net;
+﻿using System.Linq.Expressions;
+using System.Net;
 using AutoMapper;
 using BusinessObjects.Models;
 using DataAccess.PaymentDTO;
+using DataAccess.PayOSDTO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Service.IService;
 using Service.Utils.CustomException;
@@ -13,71 +16,109 @@ namespace Service.Service
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IJWTService _jwtService;
+        private readonly IPayOSService _payOSService;
 
-        public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IJWTService jWTService)
-        {            
+        public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IJWTService jWTService, IPayOSService pOSService)
+        {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _jwtService = jWTService;
+            _payOSService = pOSService;
         }
 
-        public async Task<List<PaymentResModel>> GetAllAsync()
+        public async Task<bool> UpdatePaymentAsync(int paymentId)
         {
-            var payments = await _unitOfWork.Payment.GetAllAsync();
-            return _mapper.Map<List<PaymentResModel>>(payments);
-        }
+            var currPayment = await _unitOfWork.Payment.GetByIdAsync(paymentId);
+            if (currPayment == null)
+            {
+                throw new ApiException(HttpStatusCode.NotFound, "Payment does not exist");
+            }
 
-        public async Task<PaymentResModel?> GetByIdAsync(int id)
-        {
-            var payment = await _unitOfWork.Payment.GetByIdAsync(id);
-            return _mapper.Map<PaymentResModel>(payment);
-        }
+            if (currPayment.Status == "Paid")
+            {
+                throw new ApiException(HttpStatusCode.BadRequest, "The payment has already been confirmed");
+            }
 
-        public async Task<List<PaymentResModel>> GetByOrderIdAsync(int orderId)
-        {
-            var payments = await _unitOfWork.Payment.GetByIdAsync(orderId);
-            return _mapper.Map<List<PaymentResModel>>(payments);
-        }
-
-        public async Task AddAsync(PaymentReqModel request)
-        {
-            var payment = _mapper.Map<Payment>(request);
-            payment.PaymentDate = DateTime.UtcNow;
-            payment.CreatedDate = DateTime.UtcNow;
-
-            await _unitOfWork.Payment.AddAsync(payment);
+            // Cập nhật trạng thái thanh toán
+            currPayment.Status = "Paid";
+            _unitOfWork.Payment.Update(currPayment);
             await _unitOfWork.SaveAsync();
+
+            return true;
         }
 
-        public async Task UpdateAsync(string token, int paymentId, PaymentReqModel request)
+        public async Task<int> CreatePaymentAsync(string token, int orderId, int paymentMethodId)
         {
             var userId = _jwtService.decodeToken(token, "userId");
             var user = await _unitOfWork.Users.GetByIdAsync(userId);
             if (user == null)
                 throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
-            var payment = await _unitOfWork.Payment.GetByIdAsync(paymentId);
-            if (payment == null) throw new Exception("Payment not found.");
+            var order = await _unitOfWork.Order.GetByIdAsync(orderId);
+            if (order == null)
+            {
+                throw new ApiException(HttpStatusCode.NotFound, $"Order with ID {orderId} not found.");
+            }
 
-            _mapper.Map(request, payment);
-            payment.UpdatedDate = DateTime.UtcNow;
+            var paymentMethod = await _unitOfWork.PaymentMethod.GetByIdAsync(paymentMethodId);
+            if (paymentMethod == null)
+            {
+                throw new ApiException(HttpStatusCode.NotFound,$"Payment method with ID {paymentMethodId} is invalid.");
+            }
 
-            _unitOfWork.Payment.Update(payment);
+            Payment newPayment = new Payment
+            {
+                OrderId = order.OrderId,
+                PaymentMethodId = paymentMethod.PaymentMethodId,
+                Amount = order.TotalPrice,  
+                PaymentDate = DateTime.UtcNow, 
+                Status = "Unpaid",
+                TransactionCode = Guid.NewGuid().ToString() 
+            };
+
+            await _unitOfWork.Payment.AddAsync(newPayment);
             await _unitOfWork.SaveAsync();
+
+            return newPayment.PaymentId;
         }
 
-        public async Task DeleteAsync(string token, int paymentId)
+        public async Task<List<PaymentViewResModel>> GetAllPayment()
         {
-            var userId = _jwtService.decodeToken(token, "userId");
-            var user = await _unitOfWork.Users.GetByIdAsync(userId);
-            if (user == null)
-                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+            var payments = await _unitOfWork.Payment.GetAllAsync(includeProperties: new Expression<Func<Payment, object>>[] { p => p.Order, p => p.Order.User });
+            return _mapper.Map<List<PaymentViewResModel>>(payments);
+        }
 
-            var payment = await _unitOfWork.Payment.GetByIdAsync(paymentId);
-            if (payment == null) throw new Exception("Payment not found.");
+        public async Task<PaymentViewResModel> GetPaymentByIdAsync(int paymentId)
+        {
+            var payment = await _unitOfWork.Payment.GetByIdAsync(paymentId ,includeProperties: new Expression<Func<Payment, object>>[] { p => p.Order, p => p.Order.User});
+            return _mapper.Map<PaymentViewResModel>(payment);
+        }
 
-            _unitOfWork.Payment.Delete(payment);
-            await _unitOfWork.SaveAsync();
+        public async Task<string> GetPaymentUrlAsync(HttpContext context, int paymentId, string redirectUrl)
+        {
+            var currPayment = await _unitOfWork.Payment.GetByIdAsync(paymentId);
+            if (currPayment == null)
+            {
+                throw new ApiException(HttpStatusCode.NotFound, "Payment does not exist");
+            }
+
+            if (currPayment.Status == "Paid")
+            {
+                throw new ApiException(HttpStatusCode.BadRequest, "The payment has already been paid");
+            }
+
+            PayOSReqModel payOSReqModel = new PayOSReqModel
+            {
+                OrderId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                ProductName = "Thanh toán đơn hàng",
+                Amount = currPayment.Amount,
+                RedirectUrl = redirectUrl,
+                CancelUrl = redirectUrl
+            };
+
+            var result = await _payOSService.CreatePaymentUrl(payOSReqModel);
+
+            return result.checkoutUrl;
         }
     }
 }

@@ -4,6 +4,7 @@ using DataAccess.PaymentDTO;
 using DataAccess.ResultModel;
 using System.Net;
 using System.Threading.Tasks;
+using Net.payOS.Types;
 
 namespace FPTShareLaptop_Controller.Controllers
 {
@@ -19,76 +20,83 @@ namespace FPTShareLaptop_Controller.Controllers
         }
 
         // Lấy danh sách tất cả Payment
-        [HttpGet]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAllPayments()
         {
-            var result = await _paymentService.GetAllAsync();
-            return Ok(new ResultModel
+            var result = await _paymentService.GetAllPayment();
+            var response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
                 Message = "Payments retrieved successfully.",
                 Data = result
-            });
+            };
+            return StatusCode(response.Code, response);
         }
 
-        // Lấy Payment theo Id
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetPaymentById(int id)
+        /// Lấy thông tin payment theo ID
+        [HttpGet("{paymentId}")]
+        public async Task<IActionResult> GetPaymentById(int paymentId)
         {
-            var result = await _paymentService.GetByIdAsync(id);
-            if (result == null)
-                return NotFound(new ResultModel { IsSuccess = false, Code = (int)HttpStatusCode.NotFound, Message = "Payment not found." });
 
-            return Ok(new ResultModel
+            var result = await _paymentService.GetPaymentByIdAsync(paymentId);
+            var response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Payment retrieved successfully.",
+                Message = "Lấy thông tin thanh toán thành công.",
                 Data = result
-            });
+            };
+            return StatusCode(response.Code, response);
         }
 
-        // Tạo mới Payment
-        [HttpPost]
-        public async Task<IActionResult> CreatePayment([FromBody] PaymentReqModel request)
+        /// Lấy URL thanh toán cho payment
+        [HttpGet("{paymentId}/payment-url")]
+        public async Task<IActionResult> GetPaymentUrl(int paymentId, [FromQuery] string redirectUrl)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _paymentService.AddAsync(request);
-            return Ok(new ResultModel
-            {
-                IsSuccess = true,
-                Code = (int)HttpStatusCode.Created,
-                Message = "Payment created successfully."
-            });
-        }
-
-        // Cập nhật Payment
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePayment(int id, [FromBody] PaymentReqModel request)
-        {
-            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _paymentService.UpdateAsync(token, id, request);
-            return Ok(new ResultModel
+            var result = await _paymentService.GetPaymentUrlAsync(HttpContext, paymentId, redirectUrl);
+            var response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Payment updated successfully."
-            });
+                Message = "Url retrieved successfully.",
+                Data = result
+            };
+            return StatusCode(response.Code, response);
         }
 
-        // Xóa Payment
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePayment(int id)
+        // Tạo thanh toán mới
+        [HttpPost("create")]
+
+        public async Task<IActionResult> CreatePaymentAsync(int orderID, int paymenMethodId)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _paymentService.DeleteAsync(token, id);
-            return Ok(new ResultModel
+            var paymentId = await _paymentService.CreatePaymentAsync(token, orderID ,paymenMethodId);
+
+            var response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Payment deleted successfully."
-            });
+                Message = "Payment created successfully.",
+                Data = paymentId
+            };
+            return StatusCode(response.Code, response);
+        }
+
+        /// Xác nhận thanh toán
+        [HttpPost("{paymentId}/confirm")]
+        public async Task<IActionResult> UpdatePayment(int paymentId)
+        {
+            var result = await _paymentService.UpdatePaymentAsync(paymentId);
+            var response = new ResultModel
+            {
+                IsSuccess = true,
+                Code = (int)HttpStatusCode.OK,
+                Message = "Payment confirmation successful.",
+                Data = result
+            };
+            return StatusCode(response.Code, response);
         }
     }
 }
