@@ -68,10 +68,15 @@ namespace Service.Utils.MapperProfiles
             CreateMap<RefundTransaction, RefundTransactionResModel>().ReverseMap();
             CreateMap<RefundTransactionReqModel, RefundTransaction>().ReverseMap();
 
-            CreateMap<Payment, PaymentViewResModel>();          
+            CreateMap<Payment, PaymentViewResModel>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Order.User.Email))
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Order.User.FullName));
+
+
 
             CreateMap<PaymentMethod, PaymentMethodResModel>().ReverseMap();
-            CreateMap<PaymentMethodReqModel, PaymentMethod>();
+            CreateMap<PaymentMethodReqModel, PaymentMethod>().ReverseMap();
+
 
 
 
