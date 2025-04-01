@@ -15,7 +15,6 @@ namespace DataAccess.SettlementTransactionDTO
         public int ManagerWalletId { get; set; }
         public decimal Amount { get; set; }
         public decimal Fee { get; set; }
-        public SettlementStatus Status { get; set; }
         public DateTime CreatedDate { get; set; }
     }
 }

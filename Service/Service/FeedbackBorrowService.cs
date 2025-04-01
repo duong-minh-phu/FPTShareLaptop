@@ -62,6 +62,14 @@ namespace Service.Service
             if (user == null)
                 throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
+            var borrowHistory = await _unitOfWork.BorrowHistory.GetByIdAsync(model.BorrowHistoryId);
+            if (borrowHistory == null)
+                throw new ApiException(HttpStatusCode.BadRequest, "Invalid BorrowHistoryId.");
+
+            var item = await _unitOfWork.DonateItem.GetByIdAsync(model.ItemId);
+            if (item == null)
+                throw new ApiException(HttpStatusCode.BadRequest, "Invalid ItemId.");
+
             var newFeedback = new FeedbackBorrow
             {
                 BorrowHistoryId = model.BorrowHistoryId,
@@ -81,6 +89,11 @@ namespace Service.Service
         // Cập nhật feedback
         public async Task UpdateFeedback(int feedbackId, UpdateFeedbackBorrowReqModel model,string token)
         {
+            var userId = _jwtService.decodeToken(token, "userId");
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null)
+                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+
             var feedback = await _unitOfWork.FeedbackBorrow.GetByIdAsync(feedbackId);
             if (feedback == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Feedback not found.");
@@ -94,8 +107,13 @@ namespace Service.Service
         }
 
         // Xóa feedback
-        public async Task DeleteFeedback(int feedbackId)
+        public async Task DeleteFeedback(string token ,int feedbackId)
         {
+            var userId = _jwtService.decodeToken(token, "userId");
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null)
+                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+
             var feedback = await _unitOfWork.FeedbackBorrow.GetByIdAsync(feedbackId);
             if (feedback == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Feedback not found.");
