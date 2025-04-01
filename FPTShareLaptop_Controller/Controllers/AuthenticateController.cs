@@ -5,8 +5,10 @@ using DataAccess.UserDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
+using Service.Service;
 using Service.Utils.CustomException;
 using System.Net;
+using System.Security.Claims;
 
 namespace FPTShareLaptop_Controller.Controllers
 {
@@ -139,5 +141,24 @@ namespace FPTShareLaptop_Controller.Controllers
 
             return StatusCode(response.Code, response);
         }
+
+        [HttpPut]
+        [Route("update-profile")]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileReqModel request)
+        {
+            string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            await _authenticationService.UpdateUserProfile(token, request);
+
+            ResultModel response = new ResultModel
+            {
+                IsSuccess = true,
+                Code = (int)HttpStatusCode.OK,
+                Message = "Profile updated successfully",
+            };
+
+            return StatusCode(response.Code, response);
+        }
+
+
     }
 }
