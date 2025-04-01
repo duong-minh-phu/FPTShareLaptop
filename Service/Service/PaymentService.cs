@@ -111,7 +111,7 @@ namespace Service.Service
             {
                 OrderId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 ProductName = "Thanh toán đơn hàng",
-                Amount = currPayment.Amount,
+                Amount = currPayment.Amount/1000,
                 RedirectUrl = redirectUrl,
                 CancelUrl = redirectUrl
             };

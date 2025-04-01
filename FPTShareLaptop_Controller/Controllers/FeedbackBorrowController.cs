@@ -97,7 +97,8 @@ namespace FPTShareLaptop_Controller.Controllers
         [Route("delete/{id}")]
         public async Task<IActionResult> DeleteFeedback(int id)
         {
-            await _feedbackBorrowService.DeleteFeedback(id);
+            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
+            await _feedbackBorrowService.DeleteFeedback(token, id);
             return Ok(new ResultModel
             {
                 IsSuccess = true,
