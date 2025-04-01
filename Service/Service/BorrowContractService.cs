@@ -21,13 +21,16 @@ namespace Service.Service
         // Lấy tất cả hợp đồng mượn
         public async Task<List<BorrowContractResponseDTO>> GetAllBorrowContracts()
         {
-            var contracts = await _unitOfWork.BorrowContract.GetAllAsync();
+            var contracts = await _unitOfWork.BorrowContract.GetAllAsync(includeProperties: c => c.User);
             return contracts.Select(contract => new BorrowContractResponseDTO
             {
                 ContractId = contract.ContractId,
                 RequestId = contract.RequestId,
                 ItemId = contract.ItemId,
                 UserId = contract.UserId,
+                FullName = contract.User.FullName,  
+                Email = contract.User.Email,
+                PhoneNumber = contract.User.PhoneNumber,
                 Status = contract.Status,
                 ContractDate = contract.ContractDate,
                 Terms = contract.Terms,
@@ -41,7 +44,7 @@ namespace Service.Service
         // Lấy hợp đồng theo ID
         public async Task<BorrowContractResponseDTO> GetBorrowContractById(int contractId)
         {
-            var contract = await _unitOfWork.BorrowContract.GetByIdAsync(contractId);
+            var contract = await _unitOfWork.BorrowContract.GetByIdAsync(contractId, includeProperties: c => c.User);
             if (contract == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Borrow contract not found.");
 
@@ -51,6 +54,9 @@ namespace Service.Service
                 RequestId = contract.RequestId,
                 ItemId = contract.ItemId,
                 UserId = contract.UserId,
+                FullName = contract.User.FullName,
+                Email = contract.User.Email,
+                PhoneNumber = contract.User.PhoneNumber,
                 Status = contract.Status,
                 ContractDate = contract.ContractDate,
                 Terms = contract.Terms,
@@ -72,6 +78,15 @@ namespace Service.Service
             var borrowRequest = await _unitOfWork.BorrowRequest.GetByIdAsync(request.RequestId);
             if (borrowRequest == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Borrow request not found.");
+
+            var existingContract = await _unitOfWork.BorrowContract.FirstOrDefaultAsync(br =>
+            br.UserId == int.Parse(userId) &&
+            br.ItemId == request.ItemId &&
+            (br.Status == DonateStatus.Pending.ToString()));
+            if (existingContract != null)
+            {
+                throw new ApiException(HttpStatusCode.BadRequest, "Bạn đã có hợp đồng mượn cho laptop này.");
+            }
 
             var contract = new BorrowContract
             {

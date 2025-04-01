@@ -9,10 +9,12 @@ namespace Service.Service
     public class FeedbackBorrowService : IFeedbackBorrowService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IJWTService _jwtService;
 
-        public FeedbackBorrowService(IUnitOfWork unitOfWork)
+        public FeedbackBorrowService(IUnitOfWork unitOfWork, IJWTService jwtService)
         {
             _unitOfWork = unitOfWork;
+            _jwtService = jwtService;
         }
 
         // Lấy tất cả feedbacks
@@ -53,17 +55,22 @@ namespace Service.Service
         }
 
         // Tạo feedback mới
-        public async Task CreateFeedback(CreateFeedbackBorrowReqModel model, string token)
+        public async Task CreateFeedback(string token, CreateFeedbackBorrowReqModel model)
         {
+            var userId = _jwtService.decodeToken(token, "userId");
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null)
+                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+
             var newFeedback = new FeedbackBorrow
             {
                 BorrowHistoryId = model.BorrowHistoryId,
                 ItemId = model.ItemId,
-                UserId = model.UserId,
+                UserId = user.UserId,
                 FeedbackDate = DateTime.UtcNow,
                 Rating = model.Rating,
                 Comments = model.Comments,
-                IsAnonymous = model.IsAnonymous
+                IsAnonymous = false
             };
 
             await _unitOfWork.FeedbackBorrow.AddAsync(newFeedback);

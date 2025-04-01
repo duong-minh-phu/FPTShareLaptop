@@ -19,12 +19,6 @@ public partial class Payment
 
     public string Status { get; set; } = null!;
 
-    public string Note { get; set; } = null!;
-
-    public DateTime CreatedDate { get; set; }
-
-    public DateTime? UpdatedDate { get; set; }
-
     public virtual Order Order { get; set; } = null!;
 
     public virtual PaymentMethod PaymentMethod { get; set; } = null!;

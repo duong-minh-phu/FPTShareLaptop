@@ -433,12 +433,9 @@ public partial class Sep490Context : DbContext
             entity.ToTable("Payment");
 
             entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.Note).HasMaxLength(255);
             entity.Property(e => e.PaymentDate).HasColumnType("datetime");
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.TransactionCode).HasMaxLength(255);
-            entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
             entity.HasOne(d => d.Order).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.OrderId)
