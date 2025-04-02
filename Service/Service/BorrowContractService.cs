@@ -19,10 +19,10 @@ namespace Service.Service
         }
 
         // Lấy tất cả hợp đồng mượn
-        public async Task<List<BorrowContractResponseDTO>> GetAllBorrowContracts()
+        public async Task<List<BorrowContractResponseModel>> GetAllBorrowContracts()
         {
             var contracts = await _unitOfWork.BorrowContract.GetAllAsync(includeProperties: c => c.User);
-            return contracts.Select(contract => new BorrowContractResponseDTO
+            return contracts.Select(contract => new BorrowContractResponseModel
             {
                 ContractId = contract.ContractId,
                 RequestId = contract.RequestId,
@@ -42,13 +42,13 @@ namespace Service.Service
 
 
         // Lấy hợp đồng theo ID
-        public async Task<BorrowContractResponseDTO> GetBorrowContractById(int contractId)
+        public async Task<BorrowContractResponseModel> GetBorrowContractById(int contractId)
         {
             var contract = await _unitOfWork.BorrowContract.GetByIdAsync(contractId, includeProperties: c => c.User);
             if (contract == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Borrow contract not found.");
 
-            return new BorrowContractResponseDTO
+            return new BorrowContractResponseModel
             {
                 ContractId = contract.ContractId,
                 RequestId = contract.RequestId,
@@ -68,7 +68,7 @@ namespace Service.Service
 
 
         // Tạo hợp đồng mới
-        public async Task CreateBorrowContract(string token, CreateBorrowContractReqModel request)
+        public async Task<BorrowContractResponseModel> CreateBorrowContract(string token, CreateBorrowContractReqModel request)
         {
             var userId = _jwtService.decodeToken(token, "userId");
             var user = await _unitOfWork.Users.GetByIdAsync(userId);
@@ -103,6 +103,24 @@ namespace Service.Service
 
             await _unitOfWork.BorrowContract.AddAsync(contract);
             await _unitOfWork.SaveAsync();
+
+            // Trả về BorrowContractResponseDTO
+            return new BorrowContractResponseModel
+            {
+                ContractId = contract.ContractId,
+                RequestId = contract.RequestId,
+                ItemId = contract.ItemId,
+                UserId = contract.UserId,
+                FullName = user.FullName,  
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Status = contract.Status,
+                ContractDate = contract.ContractDate,
+                Terms = contract.Terms,
+                ConditionBorrow = contract.ConditionBorrow,
+                ItemValue = contract.ItemValue,
+                ExpectedReturnDate = contract.ExpectedReturnDate
+            };
         }
 
         // Cập nhật hợp đồng
@@ -118,10 +136,6 @@ namespace Service.Service
                 throw new ApiException(HttpStatusCode.NotFound, "Borrow contract not found.");
 
             contract.Status = updateModel.Status ?? contract.Status;
-            contract.Terms = updateModel.Terms ?? contract.Terms;
-            contract.ConditionBorrow = updateModel.ConditionBorrow ?? contract.ConditionBorrow;
-            contract.ItemValue = updateModel.ItemValue ?? contract.ItemValue;
-            contract.ExpectedReturnDate = updateModel.ExpectedReturnDate ?? contract.ExpectedReturnDate;
 
             _unitOfWork.BorrowContract.Update(contract);
             await _unitOfWork.SaveAsync();

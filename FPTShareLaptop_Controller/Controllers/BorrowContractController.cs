@@ -62,13 +62,14 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> CreateBorrowContract([FromBody] CreateBorrowContractReqModel request)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _borrowContractService.CreateBorrowContract(token, request);
+            var result = await _borrowContractService.CreateBorrowContract(token, request);
 
             return Ok(new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Borrow contract created successfully"
+                Message = "Borrow contract created successfully",
+                Data = result
             });
         }
       

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.BorrowContractDTO
 {
-    public class BorrowContractResponseDTO
+    public class BorrowContractResponseModel
     {
         public int ContractId { get; set; }
         public int RequestId { get; set; }

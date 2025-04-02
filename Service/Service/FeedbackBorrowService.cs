@@ -55,7 +55,7 @@ namespace Service.Service
         }
 
         // Tạo feedback mới
-        public async Task CreateFeedback(string token, CreateFeedbackBorrowReqModel model)
+        public async Task<FeedbackBorrowResModel> CreateFeedback(string token, CreateFeedbackBorrowReqModel model)
         {
             var userId = _jwtService.decodeToken(token, "userId");
             var user = await _unitOfWork.Users.GetByIdAsync(userId);
@@ -83,6 +83,18 @@ namespace Service.Service
 
             await _unitOfWork.FeedbackBorrow.AddAsync(newFeedback);
             await _unitOfWork.SaveAsync();
+
+            return new FeedbackBorrowResModel
+            {
+                FeedbackBorrowId = newFeedback.FeedbackBorrowId,
+                BorrowHistoryId = newFeedback.BorrowHistoryId,
+                ItemId = newFeedback.ItemId,
+                UserId = newFeedback.UserId,
+                FeedbackDate = newFeedback.FeedbackDate,
+                Rating = newFeedback.Rating,
+                Comments = newFeedback.Comments,
+                IsAnonymous = newFeedback.IsAnonymous
+            };
         }
 
 

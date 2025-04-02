@@ -72,14 +72,14 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> CreatePaymentAsync(int orderID, int paymenMethodId)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            var paymentId = await _paymentService.CreatePaymentAsync(token, orderID ,paymenMethodId);
+            var result = await _paymentService.CreatePaymentAsync(token, orderID ,paymenMethodId);
 
             var response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
                 Message = "Payment created successfully.",
-                Data = paymentId
+                Data = result
             };
             return StatusCode(response.Code, response);
         }
