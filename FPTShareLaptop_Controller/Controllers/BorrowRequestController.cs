@@ -64,13 +64,14 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> CreateBorrowRequest([FromBody] CreateBorrowRequestReqModel request)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _borrowRequestService.CreateBorrowRequest(token, request);
+            var result = await _borrowRequestService.CreateBorrowRequest(token, request);
 
             return Ok(new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Borrow request created successfully"
+                Message = "Borrow request created successfully",
+                Data = result
             });
         }
 
