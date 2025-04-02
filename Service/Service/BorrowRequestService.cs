@@ -68,7 +68,7 @@ public class BorrowRequestService : IBorrowRequestService
     }
 
     // Tạo yêu cầu mượn mới
-    public async Task CreateBorrowRequest(string token, CreateBorrowRequestReqModel requestModel)
+    public async Task<int> CreateBorrowRequest(string token, CreateBorrowRequestReqModel requestModel)
     {
         var userId = _jwtService.decodeToken(token, "userId");
         var user = await _unitOfWork.Users.GetByIdAsync(userId);
@@ -83,6 +83,7 @@ public class BorrowRequestService : IBorrowRequestService
         br.UserId == int.Parse(userId) &&
         br.ItemId == requestModel.ItemId &&
         (br.Status == DonateStatus.Pending.ToString()));
+
         if (existingRequest != null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Bạn đã có một yêu cầu mượn laptop đang chờ xử lý hoặc đã được duyệt.");
@@ -100,6 +101,8 @@ public class BorrowRequestService : IBorrowRequestService
 
         await _unitOfWork.BorrowRequest.AddAsync(borrowRequest);
         await _unitOfWork.SaveAsync(); // Lưu lại vào DB
+
+        return borrowRequest.RequestId;
     }
 
 
