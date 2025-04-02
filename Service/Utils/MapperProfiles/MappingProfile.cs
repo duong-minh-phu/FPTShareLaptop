@@ -35,7 +35,10 @@ namespace Service.Utils.MapperProfiles
             CreateMap<ItemImage, ItemImageDTO>().ReverseMap();
             CreateMap<CreateItemImageDTO, ItemImage>().ReverseMap();
             CreateMap<UpdateItemImageDTO, ItemImage>().ReverseMap();
-            CreateMap<BorrowHistory, BorrowHistoryDTO>().ReverseMap();
+            CreateMap<BorrowHistory, BorrowHistoryReadDTO>().ReverseMap();
+            CreateMap<BorrowHistoryCreateDTO, BorrowHistory>().ReverseMap();
+            CreateMap<BorrowHistoryUpdateDTO, BorrowHistory>().ReverseMap();
+
             CreateMap<ReportDamage, ReportDamageDTO>().ReverseMap();
             CreateMap<ReportDamageCreateDTO, ReportDamage>();
             CreateMap<ReportDamageUpdateDTO, ReportDamage>();
