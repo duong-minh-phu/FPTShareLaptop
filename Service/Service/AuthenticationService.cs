@@ -231,5 +231,31 @@ public class AuthenticationService : IAuthenticationService
        
     }
 
-   
+    public async Task UpdateUserProfile(string token, UpdateProfileReqModel request)
+    {
+        var userId = _jwtService.decodeToken(token, "userId");
+
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
+        if (user == null)
+            throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+
+        if (!string.IsNullOrWhiteSpace(request.Dob))
+            user.Dob = request.Dob;
+
+        if (!string.IsNullOrWhiteSpace(request.Address))
+            user.Address = request.Address;
+
+        if (!string.IsNullOrWhiteSpace(request.PhoneNumber))
+            user.PhoneNumber = request.PhoneNumber;
+
+        if (!string.IsNullOrWhiteSpace(request.Gender))
+            user.Gender = request.Gender;
+
+        if (!string.IsNullOrWhiteSpace(request.Avatar))
+            user.Avatar = request.Avatar;
+
+
+        _unitOfWork.Users.Update(user);
+        await _unitOfWork.SaveAsync();
+    }
 }
