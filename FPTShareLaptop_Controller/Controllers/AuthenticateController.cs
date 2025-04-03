@@ -1,8 +1,10 @@
 ﻿using DataAccess.PasswordDTO;
 using DataAccess.RefreshTokenDTO;
 using DataAccess.ResultModel;
+using DataAccess.StudentDTO;
 using DataAccess.UserDTO;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
 using Service.Service;
@@ -17,25 +19,28 @@ namespace FPTShareLaptop_Controller.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
+        private readonly IStudentService _studentService;
 
-        public AuthenticationController(IAuthenticationService authenticationService)
+        public AuthenticationController(IAuthenticationService authenticationService, IStudentService studentService)
         {
             _authenticationService = authenticationService;
+            _studentService = studentService;
         }
 
         [HttpPost]
         [Route("register/student")]
-        public async Task<IActionResult> RegisterStudent([FromBody] StudentRegisterReqModel studentRegisterReqModel)
-        {
-           
-                await _authenticationService.RegisterStudent(studentRegisterReqModel);
-                ResultModel response = new ResultModel
-                {
-                    IsSuccess = true,
-                    Code = (int)HttpStatusCode.OK,
-                    Message = "Student registered successfully."
-                };
-                return StatusCode(response.Code, response);       
+        public async Task<IActionResult> RegisterStudent([FromForm] StudentRegisterReqModel studentRegisterReqModel)
+        {          
+
+            // Nếu xác thực thành công, tiếp tục đăng ký sinh viên
+            await _authenticationService.RegisterStudent(studentRegisterReqModel);
+            ResultModel response = new ResultModel
+            {
+                IsSuccess = true,
+                Code = (int)HttpStatusCode.OK,
+                Message = "Student registered successfully."
+            };
+            return StatusCode(response.Code, response);       
         }
 
         [HttpPost]

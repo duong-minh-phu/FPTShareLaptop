@@ -42,18 +42,9 @@ namespace Service.Service
             return filePath;
         }
 
-        public async Task<StudentResModel> VerifyStudent(string token, StudentReqModel request)
+        public async Task<StudentResModel> VerifyStudent(StudentReqModel request)
         {
-            var userId = _jwtService.decodeToken(token, "userId");
-
-            var user = await _unitOfWork.Users.GetByIdAsync(userId);
-            
-            if (user == null)
-                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
-            
-            if (user.RoleId != 2)
-                throw new ApiException(HttpStatusCode.Forbidden, "You do not have permission to perform this action.");
-            
+                     
             if (request.Image == null)
             {
                 return null;

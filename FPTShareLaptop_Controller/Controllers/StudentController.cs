@@ -22,7 +22,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> VerifyStudent([FromForm] StudentReqModel request)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            var result = await _studentService.VerifyStudent(token, request);
+            var result = await _studentService.VerifyStudent(request);
 
             ResultModel response = new ResultModel
             {

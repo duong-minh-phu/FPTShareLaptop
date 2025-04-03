@@ -11,7 +11,7 @@ namespace Service.IService
 {
     public interface IStudentService
     {
-        Task<StudentResModel> VerifyStudent(string token, StudentReqModel request);
+        Task<StudentResModel> VerifyStudent(StudentReqModel request);
         Task<string> SaveImage(IFormFile image);
     }
 }

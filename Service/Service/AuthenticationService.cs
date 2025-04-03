@@ -3,6 +3,7 @@ using System.Net;
 using AutoMapper;
 using BusinessObjects.Models;
 using DataAccess.PasswordDTO;
+using DataAccess.StudentDTO;
 using DataAccess.UserDTO;
 using Service.IService;
 using Service.Utils.CustomException;
@@ -13,12 +14,14 @@ public class AuthenticationService : IAuthenticationService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJWTService _jwtService;
     private readonly IEmailService _emailService;
+    private readonly IStudentService _studentService;
 
-    public AuthenticationService(IUnitOfWork unitOfWork, IJWTService jwtService, IEmailService emailService)
+    public AuthenticationService(IUnitOfWork unitOfWork, IJWTService jwtService, IEmailService emailService, IStudentService studentService)
     {
         _unitOfWork = unitOfWork;
         _jwtService = jwtService;
         _emailService = emailService;
+        _studentService = studentService;
     }
 
     public async Task<UserLoginResModel> Login(UserLoginReqModel userLoginReqModel)
@@ -143,8 +146,6 @@ public class AuthenticationService : IAuthenticationService
         return profile;
     }
 
-
-
     private string GenerateTemporaryPassword()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
@@ -161,9 +162,26 @@ public class AuthenticationService : IAuthenticationService
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
         }
+        
         if (studentRegisterReqModel.StudentCardImage == null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Student card image is required.");
+        }
+
+        // Tạo đối tượng StudentReqModel từ StudentRegisterReqModel
+        var studentRequest = new StudentReqModel
+        {
+            FullName = studentRegisterReqModel.FullName,
+            StudentCode = studentRegisterReqModel.StudentCode,
+            EnrollmentDate = studentRegisterReqModel.EnrollmentDate,
+            Image = studentRegisterReqModel.StudentCardImage
+        };
+
+        // Xác thực thẻ sinh viên
+        var studentVerification = await _studentService.VerifyStudent(studentRequest);
+        if (studentVerification == null)
+        {
+            throw new ApiException(HttpStatusCode.BadRequest, "Student card verification failed. Cannot register.");
         }
 
         var user = new User
