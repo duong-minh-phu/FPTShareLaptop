@@ -73,7 +73,7 @@ namespace Service.Service
             donation.ItemName = request.ItemName;
             donation.ItemDescription = request.ItemDescription;
             donation.DonateQuantity = request.Quantity;           
-
+            donation.Status = request.Status;
             _unitOfWork.DonateForm.Update(donation);
             await _unitOfWork.SaveAsync();
         }

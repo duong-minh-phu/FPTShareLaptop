@@ -16,6 +16,7 @@ namespace DataAccess.DonationFormDTO
         public string ItemDescription { get; set; }
         [Required(ErrorMessage = "Quantity is required")]
         public int Quantity { get; set; }
-       
+        public string Status { get; set; }
+
     }
 }
