@@ -68,7 +68,7 @@ public class BorrowRequestService : IBorrowRequestService
     }
 
     // Tạo yêu cầu mượn mới
-    public async Task<int> CreateBorrowRequest(string token, CreateBorrowRequestReqModel requestModel)
+    public async Task<BorrowRequestResModel> CreateBorrowRequest(string token, CreateBorrowRequestReqModel requestModel)
     {
         var userId = _jwtService.decodeToken(token, "userId");
         var user = await _unitOfWork.Users.GetByIdAsync(userId);
@@ -102,7 +102,19 @@ public class BorrowRequestService : IBorrowRequestService
         await _unitOfWork.BorrowRequest.AddAsync(borrowRequest);
         await _unitOfWork.SaveAsync(); // Lưu lại vào DB
 
-        return borrowRequest.RequestId;
+        return new BorrowRequestResModel
+        {
+            RequestId = borrowRequest.RequestId,
+            UserId = borrowRequest.UserId,
+            FullName = borrowRequest.User.FullName,
+            Email = borrowRequest.User.Email,
+            PhoneNumber = borrowRequest.User.PhoneNumber,
+            ItemId = borrowRequest.ItemId,
+            ItemName = borrowRequest.Item.ItemName,
+            Status = borrowRequest.Status,
+            StartDate = borrowRequest.StartDate,
+            EndDate = borrowRequest.EndDate
+        };
     }
 
 

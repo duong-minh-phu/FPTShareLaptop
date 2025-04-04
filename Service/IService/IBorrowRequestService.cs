@@ -11,7 +11,7 @@ namespace Service.IService
     {
         Task<List<BorrowRequestResModel>> GetAllBorrowRequests();
         Task<BorrowRequestResModel> GetBorrowRequestById(int requestId);
-        Task<int> CreateBorrowRequest(string token ,CreateBorrowRequestReqModel requestModel);
+        Task<BorrowRequestResModel> CreateBorrowRequest(string token ,CreateBorrowRequestReqModel requestModel);
         Task UpdateBorrowRequest(string token,int requestId, UpdateBorrowRequestReqModel updateModel);
         Task DeleteBorrowRequest(string token, int requestId);
     }

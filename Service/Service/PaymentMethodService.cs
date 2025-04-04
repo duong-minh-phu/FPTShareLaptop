@@ -32,13 +32,14 @@ namespace Service.Service
             return _mapper.Map<PaymentMethodResModel>(paymentMethod);
         }
 
-        public async Task AddAsync(PaymentMethodReqModel model)
+        public async Task<PaymentMethodResModel> AddAsync(PaymentMethodReqModel model)
         {
             var paymentMethod = _mapper.Map<PaymentMethod>(model);
             paymentMethod.CreatedDate = DateTime.UtcNow;
             paymentMethod.IsActive = true;
             await _unitOfWork.PaymentMethod.AddAsync(paymentMethod);
             await _unitOfWork.SaveAsync();
+            return _mapper.Map<PaymentMethodResModel>(paymentMethod);
 
         }
 

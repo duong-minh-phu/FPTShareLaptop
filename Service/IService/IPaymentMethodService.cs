@@ -11,7 +11,7 @@ namespace Service.IService
     {
         Task<List<PaymentMethodResModel>> GetAllAsync();
         Task<PaymentMethodResModel> GetByIdAsync(int id);
-        Task AddAsync(PaymentMethodReqModel model);
+        Task<PaymentMethodResModel> AddAsync(PaymentMethodReqModel model);
         Task UpdateAsync(string token, int id, PaymentMethodReqModel model);
         Task DeleteAsync(string token, int id);
     }

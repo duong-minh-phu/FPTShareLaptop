@@ -54,6 +54,8 @@ builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 builder.Services.AddScoped<IShipmentService, ShipmentService>();
 builder.Services.AddScoped<ITrackingInfoService, TrackingInfoService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<IComputerVisionService, ComputerVisionService>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));

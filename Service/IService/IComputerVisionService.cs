@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Service.IService
 {
-    public class GhnApiService
+    public interface  IComputerVisionService
     {
+        Task<string> ExtractTextFromImageAsync(string imagePath);
     }
 }

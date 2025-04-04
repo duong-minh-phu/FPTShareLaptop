@@ -67,12 +67,13 @@ namespace FPTShareLaptop_Controller.Controllers
             if (request == null)
                 return BadRequest("Invalid data");
 
-            await _paymentMethodService.AddAsync(request);
+            var result = await _paymentMethodService.AddAsync(request);
             var response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.Created,
-                Message = "Thêm phương thức thanh toán thành công."
+                Message = "Thêm phương thức thanh toán thành công.",
+                Data = result
             };
             return StatusCode(response.Code, response);
         }
