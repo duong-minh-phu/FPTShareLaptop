@@ -47,7 +47,7 @@ namespace Service.Service
             return true;
         }
 
-        public async Task<int> CreatePaymentAsync(string token, int orderId, int paymentMethodId)
+        public async Task<PaymentViewResModel> CreatePaymentAsync(string token, int orderId, int paymentMethodId)
         {
             var userId = _jwtService.decodeToken(token, "userId");
             var user = await _unitOfWork.Users.GetByIdAsync(userId);
@@ -79,7 +79,18 @@ namespace Service.Service
             await _unitOfWork.Payment.AddAsync(newPayment);
             await _unitOfWork.SaveAsync();
 
-            return newPayment.PaymentId;
+            return new PaymentViewResModel
+            {
+                PaymentId = newPayment.PaymentId,
+                OrderId = newPayment.OrderId,
+                PaymentMethodId = newPayment.PaymentMethodId,
+                Email = user.Email,   
+                FullName = user.FullName,
+                Amount = newPayment.Amount,
+                Status = newPayment.Status,
+                PaymentDate = newPayment.PaymentDate,
+                TransactionCode = newPayment.TransactionCode
+            };
         }
 
         public async Task<List<PaymentViewResModel>> GetAllPayment()

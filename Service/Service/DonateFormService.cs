@@ -78,13 +78,12 @@ namespace Service.Service
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task SoftDeleteDonationAsync(int id)
+        public async Task DeleteDonationAsync(int id)
         {
             var donation = await _unitOfWork.DonateForm.GetByIdAsync(id);
             if (donation == null) throw new ApiException(HttpStatusCode.BadRequest, "Donation not found");
-
-            donation.Status = DonateStatus.Rejected.ToString();
-            _unitOfWork.DonateForm.Update(donation);
+            
+            _unitOfWork.DonateForm.Delete(donation);
             await _unitOfWork.SaveAsync();
         }
     }

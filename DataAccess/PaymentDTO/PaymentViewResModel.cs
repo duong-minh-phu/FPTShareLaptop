@@ -15,6 +15,7 @@ namespace DataAccess.PaymentDTO
         public string Email { get; set; }
         public string FullName { get; set; }
         public decimal Amount { get; set; }
+        public string Status { get; set; }
         public DateTime PaymentDate { get; set; }
         public string TransactionCode { get; set; }
 
