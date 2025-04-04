@@ -13,7 +13,7 @@ namespace Service.IService
     {
         Task<List<PaymentViewResModel>> GetAllPayment();
         Task<PaymentViewResModel> GetPaymentByIdAsync(int paymentId);
-        Task<int> CreatePaymentAsync(string token, int orderId, int paymentMethodId);
+        Task<PaymentViewResModel> CreatePaymentAsync(string token, int orderId, int paymentMethodId);
         Task<string> GetPaymentUrlAsync(HttpContext context, int paymentId, string redirectUrl);
         Task<bool> UpdatePaymentAsync(int paymentId);
     }
