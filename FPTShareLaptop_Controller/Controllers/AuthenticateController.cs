@@ -19,12 +19,11 @@ namespace FPTShareLaptop_Controller.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
-        private readonly IStudentService _studentService;
 
-        public AuthenticationController(IAuthenticationService authenticationService, IStudentService studentService)
+        public AuthenticationController(IAuthenticationService authenticationService)
         {
             _authenticationService = authenticationService;
-            _studentService = studentService;
+            
         }
 
         [HttpPost]
@@ -32,7 +31,6 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> RegisterStudent([FromForm] StudentRegisterReqModel studentRegisterReqModel)
         {          
 
-            // Nếu xác thực thành công, tiếp tục đăng ký sinh viên
             await _authenticationService.RegisterStudent(studentRegisterReqModel);
             ResultModel response = new ResultModel
             {
@@ -45,7 +43,7 @@ namespace FPTShareLaptop_Controller.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> RegisterSponsor([FromBody] UserRegisterReqModel userRegisterReqModel)
+        public async Task<IActionResult> Register([FromBody] UserRegisterReqModel userRegisterReqModel)
         {           
                 await _authenticationService.Register(userRegisterReqModel);
                 ResultModel response = new ResultModel
@@ -57,6 +55,19 @@ namespace FPTShareLaptop_Controller.Controllers
                 return StatusCode(response.Code, response);
         }
 
+        [HttpPost]
+        [Route("register/shop")]
+        public async Task<IActionResult> RegisterShop([FromBody] ShopRegisterReqModel shopRegisterReqModel)
+        {
+            await _authenticationService.RegisterShop(shopRegisterReqModel);
+            ResultModel response = new ResultModel
+            {
+                IsSuccess = true,
+                Code = (int)HttpStatusCode.OK,
+                Message = "Shop registered successfully."
+            };
+            return StatusCode(response.Code, response);
+        }
 
 
         [HttpPost]

@@ -13,14 +13,11 @@ namespace Service.Utils.DecodeTokenHandler
         {
             _jWTService = jWTService;
         }
+
         public TokenModel decode(string token)
         {
             var roleName = _jWTService.decodeToken(token, ClaimsIdentity.DefaultRoleClaimType);
-            var userIdString = _jWTService.decodeToken(token, ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdString, out int userId))
-            {
-                throw new Exception("Invalid userId format in JWT token");
-            }
+            var userId = _jWTService.decodeToken(token, "userid");          
             var fullName = _jWTService.decodeToken(token, "fullname");
             var email = _jWTService.decodeToken(token, "email");          
             return new TokenModel(userId, email ,fullName, roleName);
