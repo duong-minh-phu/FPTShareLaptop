@@ -118,7 +118,7 @@ public class AuthenticationService : IAuthenticationService
         var userId = _jwtService.decodeToken(token, "userId");
 
         var user = await _unitOfWork.Users.GetByIdAsync(userId,
-            includeProperties: new Expression<Func<User, object>>[] { u => u.Role, u => u.Student });
+            includeProperties: new Expression<Func<User, object>>[] { u => u.Role, u => u.Student, u => u.Shop });
 
         if (user == null)
             throw new ApiException(HttpStatusCode.NotFound, "User not found.");
@@ -142,6 +142,16 @@ public class AuthenticationService : IAuthenticationService
             profile.StudentCode = user.Student.StudentCode;
             profile.IdentityCard = user.Student.IdentityCard;
             profile.EnrollmentDate = user.Student.EnrollmentDate;
+        }
+
+        if (user.Role.RoleName == "Shop" && user.Shop != null) 
+        {
+            profile.ShopName = user.Shop.ShopName;
+            profile.ShopPhone = user.Shop.ShopPhone;
+            profile.ShopAddress = user.Shop.ShopAddress;
+            profile.BusinessLicense = user.Shop.BusinessLicense;
+            profile.BankName = user.Shop.BankName;
+            profile.BankNumber = user.Shop.BankNumber;
         }
         return profile;
     }
@@ -215,7 +225,7 @@ public class AuthenticationService : IAuthenticationService
 
     }
 
-    public async Task  Register(UserRegisterReqModel userRegisterReqModel)
+    public async Task Register(UserRegisterReqModel userRegisterReqModel)
     {
         var existingUser = await _unitOfWork.Users.GetByEmailAsync(userRegisterReqModel.Email);
         if (existingUser != null)
@@ -236,7 +246,7 @@ public class AuthenticationService : IAuthenticationService
             Password = PasswordHasher.HashPassword(userRegisterReqModel.Password),
             RoleId = userRegisterReqModel.RoleId,
             CreatedAt = DateTime.UtcNow,
-            Dob =userRegisterReqModel.Dob,
+            Dob = userRegisterReqModel.Dob,
             Address = userRegisterReqModel.Address,
             PhoneNumber = userRegisterReqModel.PhoneNumber,
             Gender = userRegisterReqModel.Gender,
@@ -274,6 +284,47 @@ public class AuthenticationService : IAuthenticationService
 
 
         _unitOfWork.Users.Update(user);
+        await _unitOfWork.SaveAsync();
+    }
+
+    public async Task RegisterShop(ShopRegisterReqModel shopRegisterReqModel)
+    {
+        var existingUser = await _unitOfWork.Users.GetByEmailAsync(shopRegisterReqModel.Email);
+        if (existingUser != null)
+        {
+            throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
+        }
+      
+        var user = new User
+        {
+            FullName = shopRegisterReqModel.FullName,
+            Email = shopRegisterReqModel.Email,
+            Password = PasswordHasher.HashPassword(shopRegisterReqModel.Password),
+            RoleId = 6,
+            CreatedAt = DateTime.UtcNow,
+            Dob = shopRegisterReqModel.Dob,
+            Address = shopRegisterReqModel.Address,
+            PhoneNumber = shopRegisterReqModel.PhoneNumber,
+            Gender = shopRegisterReqModel.Gender,
+            Avatar = shopRegisterReqModel.Avatar,          
+            Status = "Active"
+        };
+        await _unitOfWork.Users.AddAsync(user);
+        await _unitOfWork.SaveAsync();
+
+        var shop = new Shop
+        {
+            UserId = user.UserId,
+            ShopName = shopRegisterReqModel.ShopName,
+            ShopAddress = shopRegisterReqModel.ShopAddress,
+            ShopPhone = shopRegisterReqModel.ShopPhone,
+            BankName = shopRegisterReqModel.BankName,
+            BankNumber = shopRegisterReqModel.BankNumber,
+            BusinessLicense = shopRegisterReqModel.BusinessLicense,
+            CreatedDate = DateTime.UtcNow,
+        };
+
+        await _unitOfWork.Shop.AddAsync(shop);
         await _unitOfWork.SaveAsync();
     }
 }

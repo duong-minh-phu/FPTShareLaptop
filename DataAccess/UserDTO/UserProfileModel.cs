@@ -25,5 +25,21 @@ namespace DataAccess.UserDTO
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? EnrollmentDate { get; set; }
+
+        // Thêm trường ShopName, ShopPhone, ShopAddress, BussinessLicense, BankName, BankNumber vào UserProfile luôn
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ShopName { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ShopAddress { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ShopPhone { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? BusinessLicense { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? BankName { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? BankNumber { get; set; }
     }
 }

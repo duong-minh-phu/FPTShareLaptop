@@ -18,6 +18,7 @@ namespace Service.IService
         Task<UserProfileModel> GetUserInfor(string token);
         Task RegisterStudent(StudentRegisterReqModel studentRegisterReqModel);
         Task Register(UserRegisterReqModel userRegisterReqModel);
+        Task RegisterShop(ShopRegisterReqModel shopRegisterReqModel);
         Task UpdateUserProfile(string token, UpdateProfileReqModel request);
     }
 }
