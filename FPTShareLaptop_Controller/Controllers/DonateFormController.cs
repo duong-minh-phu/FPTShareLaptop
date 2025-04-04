@@ -92,7 +92,7 @@ namespace FPTShareLaptop_Controller.Controllers
         [Route("delete/{id}")]
         public async Task<IActionResult> SoftDeleteDonation(int id)
         {
-            await _donationFormService.SoftDeleteDonationAsync(id);
+            await _donationFormService.DeleteDonationAsync(id);
 
             ResultModel response = new ResultModel
             {

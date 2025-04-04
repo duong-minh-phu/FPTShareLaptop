@@ -14,6 +14,6 @@ namespace Service.IService
 
         Task UpdateDonationAsync(int id, UpdateDonateFormReqModel request);
 
-        Task SoftDeleteDonationAsync(int id);
+        Task DeleteDonationAsync(int id);
     }
 }
