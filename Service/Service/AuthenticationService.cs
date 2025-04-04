@@ -322,6 +322,7 @@ public class AuthenticationService : IAuthenticationService
             BankNumber = shopRegisterReqModel.BankNumber,
             BusinessLicense = shopRegisterReqModel.BusinessLicense,
             CreatedDate = DateTime.UtcNow,
+            Status = "Active"
         };
 
         await _unitOfWork.Shop.AddAsync(shop);

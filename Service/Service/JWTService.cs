@@ -43,12 +43,13 @@ namespace Service.Service
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:JwtKey"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.RoleName ?? "User"),               
-            };
+                var claims = new List<Claim>
+                {
+                    new Claim("userId", user.UserId.ToString()), 
+                    new Claim("email", user.Email), 
+                    new Claim("role", user.Role.RoleName ?? "User"), 
+                    new Claim("fullName", user.FullName)              
+                };
 
             var token = new JwtSecurityToken(
                 issuer: _config["JwtSettings:Issuer"],
