@@ -28,10 +28,10 @@ namespace FPTShareLaptop_Controller.Controllers
 
         [HttpPost]
         [Route("register/student")]
-        public async Task<IActionResult> RegisterStudent([FromForm] StudentRegisterReqModel studentRegisterReqModel)
+        public async Task<IActionResult> RegisterStudent([FromForm] StudentRegisterReqModel request)
         {          
 
-            await _authenticationService.RegisterStudent(studentRegisterReqModel);
+            await _authenticationService.RegisterStudent(request);
             ResultModel response = new ResultModel
             {
                 IsSuccess = true,
@@ -43,9 +43,9 @@ namespace FPTShareLaptop_Controller.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterReqModel userRegisterReqModel)
+        public async Task<IActionResult> Register([FromForm] UserRegisterReqModel request)
         {           
-                await _authenticationService.Register(userRegisterReqModel);
+                await _authenticationService.Register(request);
                 ResultModel response = new ResultModel
                 {
                     IsSuccess = true,
@@ -57,9 +57,9 @@ namespace FPTShareLaptop_Controller.Controllers
 
         [HttpPost]
         [Route("register/shop")]
-        public async Task<IActionResult> RegisterShop([FromBody] ShopRegisterReqModel shopRegisterReqModel)
+        public async Task<IActionResult> RegisterShop([FromForm] ShopRegisterReqModel request)
         {
-            await _authenticationService.RegisterShop(shopRegisterReqModel);
+            await _authenticationService.RegisterShop(request);
             ResultModel response = new ResultModel
             {
                 IsSuccess = true,

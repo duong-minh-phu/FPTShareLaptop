@@ -16,9 +16,9 @@ namespace Service.IService
         Task ChangePassword(string token, ChangePasswordReqModel changePasswordReqModel);
         Task ForgotPassword(string email);
         Task<UserProfileModel> GetUserInfor(string token);
-        Task RegisterStudent(StudentRegisterReqModel studentRegisterReqModel);
-        Task Register(UserRegisterReqModel userRegisterReqModel);
-        Task RegisterShop(ShopRegisterReqModel shopRegisterReqModel);
+        Task RegisterStudent(StudentRegisterReqModel request);
+        Task Register(UserRegisterReqModel request);
+        Task RegisterShop(ShopRegisterReqModel request);
         Task UpdateUserProfile(string token, UpdateProfileReqModel request);
     }
 }
