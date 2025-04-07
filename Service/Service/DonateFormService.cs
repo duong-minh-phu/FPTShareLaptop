@@ -53,6 +53,7 @@ namespace Service.Service
         {
             var newDonate = new DonateForm
             {
+                UserId=request.SponsorId,
                 ItemName = request.ItemName,
                 ItemDescription = request.ItemDescription,
                 DonateQuantity = request.Quantity,

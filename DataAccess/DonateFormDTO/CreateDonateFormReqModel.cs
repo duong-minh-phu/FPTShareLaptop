@@ -11,6 +11,8 @@ namespace DataAccess.DonationFormDTO
     public class CreateDonateFormReqModel
     {
         [Required(ErrorMessage = "ItemName is required")]
+        public int SponsorId { get; set; } = 0;
+        [Required(ErrorMessage = "ItemName is required")]
         public string ItemName { get; set; } = string.Empty;
         [Required(ErrorMessage = "ItemDescription is required")]
         public string ItemDescription { get; set; }
