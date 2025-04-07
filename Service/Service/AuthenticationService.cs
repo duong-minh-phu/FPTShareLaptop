@@ -2,6 +2,8 @@
 using System.Net;
 using AutoMapper;
 using BusinessObjects.Models;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using DataAccess.PasswordDTO;
 using DataAccess.StudentDTO;
 using DataAccess.UserDTO;
@@ -15,13 +17,16 @@ public class AuthenticationService : IAuthenticationService
     private readonly IJWTService _jwtService;
     private readonly IEmailService _emailService;
     private readonly IStudentService _studentService;
+    private readonly Cloudinary _cloudinary;
 
-    public AuthenticationService(IUnitOfWork unitOfWork, IJWTService jwtService, IEmailService emailService, IStudentService studentService)
+    public AuthenticationService(IUnitOfWork unitOfWork, IJWTService jwtService, 
+        IEmailService emailService, IStudentService studentService, Cloudinary cloudinary)
     {
         _unitOfWork = unitOfWork;
         _jwtService = jwtService;
         _emailService = emailService;
         _studentService = studentService;
+        _cloudinary = cloudinary;
     }
 
     public async Task<UserLoginResModel> Login(UserLoginReqModel userLoginReqModel)
@@ -165,15 +170,15 @@ public class AuthenticationService : IAuthenticationService
     }
 
 
-    public async Task RegisterStudent(StudentRegisterReqModel studentRegisterReqModel)
+    public async Task RegisterStudent(StudentRegisterReqModel request)
     {
-        var existingUser = await _unitOfWork.Users.GetByEmailAsync(studentRegisterReqModel.Email);
+        var existingUser = await _unitOfWork.Users.GetByEmailAsync(request.Email);
         if (existingUser != null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
         }
         
-        if (studentRegisterReqModel.StudentCardImage == null)
+        if (request.StudentCardImage == null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Student card image is required.");
         }
@@ -181,10 +186,10 @@ public class AuthenticationService : IAuthenticationService
         // Tạo đối tượng StudentReqModel từ StudentRegisterReqModel
         var studentRequest = new StudentReqModel
         {
-            FullName = studentRegisterReqModel.FullName,
-            StudentCode = studentRegisterReqModel.StudentCode,
-            EnrollmentDate = studentRegisterReqModel.EnrollmentDate,
-            Image = studentRegisterReqModel.StudentCardImage
+            FullName = request.FullName,
+            StudentCode = request.StudentCode,
+            EnrollmentDate = request.EnrollmentDate,
+            Image = request.StudentCardImage
         };
 
         // Xác thực thẻ sinh viên
@@ -194,18 +199,33 @@ public class AuthenticationService : IAuthenticationService
             throw new ApiException(HttpStatusCode.BadRequest, "Student card verification failed. Cannot register.");
         }
 
+        using var stream = request.AvatarImage.OpenReadStream();
+        var uploadParams = new ImageUploadParams
+        {
+            File = new FileDescription(request.AvatarImage.FileName, stream),
+            Folder = "user_avatars"
+        };
+
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        if (uploadResult.Error != null)
+        {
+            throw new ApiException(HttpStatusCode.InternalServerError, uploadResult.Error.Message);
+        }
+
+        string avatarUrl = uploadResult.SecureUrl.ToString();
+
         var user = new User
         {
-            FullName = studentRegisterReqModel.FullName,
-            Email = studentRegisterReqModel.Email,
-            Password = PasswordHasher.HashPassword(studentRegisterReqModel.Password),
+            FullName = request.FullName,
+            Email = request.Email,
+            Password = PasswordHasher.HashPassword(request.Password),
             RoleId = 2, 
             CreatedAt = DateTime.UtcNow,
-            Dob = studentRegisterReqModel.Dob,
-            Address = studentRegisterReqModel.Address,
-            PhoneNumber = studentRegisterReqModel.PhoneNumber,
-            Gender = studentRegisterReqModel.Gender,
-            Avatar = studentRegisterReqModel.Avatar,
+            Dob = request.Dob,
+            Address = request.Address,
+            PhoneNumber = request.PhoneNumber,
+            Gender = request.Gender,
+            Avatar = avatarUrl,
             Status = "Active"
         };
 
@@ -215,9 +235,9 @@ public class AuthenticationService : IAuthenticationService
         var student = new Student
         {
             UserId = user.UserId,
-            StudentCode = studentRegisterReqModel.StudentCode,
-            IdentityCard = studentRegisterReqModel.IdentityCard,
-            EnrollmentDate = studentRegisterReqModel.EnrollmentDate
+            StudentCode = request.StudentCode,
+            IdentityCard = request.IdentityCard,
+            EnrollmentDate = request.EnrollmentDate
         };
 
         await _unitOfWork.Student.AddAsync(student);
@@ -225,32 +245,53 @@ public class AuthenticationService : IAuthenticationService
 
     }
 
-    public async Task Register(UserRegisterReqModel userRegisterReqModel)
+    public async Task Register(UserRegisterReqModel request)
     {
-        var existingUser = await _unitOfWork.Users.GetByEmailAsync(userRegisterReqModel.Email);
+        var existingUser = await _unitOfWork.Users.GetByEmailAsync(request.Email);
         if (existingUser != null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
         }
 
-        var role = await _unitOfWork.Role.FirstOrDefaultAsync(r => r.RoleId == userRegisterReqModel.RoleId);
+        var role = await _unitOfWork.Role.FirstOrDefaultAsync(r => r.RoleId == request.RoleId);
         if (role == null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Invalid role.");
         }
 
+        if (request.AvatarImage == null || request.AvatarImage.Length == 0)
+        {
+            throw new ApiException(HttpStatusCode.BadRequest, "Avatar image is required.");
+        }
+
+        using var stream = request.AvatarImage.OpenReadStream();
+        var uploadParams = new ImageUploadParams
+        {
+            File = new FileDescription(request.AvatarImage.FileName, stream),
+            Folder = "user_avatars"
+        };
+
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        if (uploadResult.Error != null)
+        {
+            throw new ApiException(HttpStatusCode.InternalServerError, uploadResult.Error.Message);
+        }
+
+        string avatarUrl = uploadResult.SecureUrl.ToString();
+
+
         var user = new User
         {
-            FullName = userRegisterReqModel.FullName,
-            Email = userRegisterReqModel.Email,
-            Password = PasswordHasher.HashPassword(userRegisterReqModel.Password),
-            RoleId = userRegisterReqModel.RoleId,
+            FullName = request.FullName,
+            Email = request.Email,
+            Password = PasswordHasher.HashPassword(request.Password),
+            RoleId = request.RoleId,
             CreatedAt = DateTime.UtcNow,
-            Dob = userRegisterReqModel.Dob,
-            Address = userRegisterReqModel.Address,
-            PhoneNumber = userRegisterReqModel.PhoneNumber,
-            Gender = userRegisterReqModel.Gender,
-            Avatar = userRegisterReqModel.Avatar,
+            Dob = request.Dob,
+            Address = request.Address,
+            PhoneNumber = request.PhoneNumber,
+            Gender = request.Gender,
+            Avatar = avatarUrl,
             Status = "Active"
         };
 
@@ -263,9 +304,25 @@ public class AuthenticationService : IAuthenticationService
     {
         var userId = _jwtService.decodeToken(token, "userId");
 
+
         var user = await _unitOfWork.Users.GetByIdAsync(userId);
         if (user == null)
             throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+        
+        using var stream = request.AvatarImage.OpenReadStream();
+        var uploadParams = new ImageUploadParams
+        {
+            File = new FileDescription(request.AvatarImage.FileName, stream),
+            Folder = "user_avatars"
+        };
+
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        if (uploadResult.Error != null)
+        {
+            throw new ApiException(HttpStatusCode.InternalServerError, uploadResult.Error.Message);
+        }
+
+        string avatarUrl = uploadResult.SecureUrl.ToString();
 
         if (!string.IsNullOrWhiteSpace(request.Dob))
             user.Dob = request.Dob;
@@ -279,34 +336,49 @@ public class AuthenticationService : IAuthenticationService
         if (!string.IsNullOrWhiteSpace(request.Gender))
             user.Gender = request.Gender;
 
-        if (!string.IsNullOrWhiteSpace(request.Avatar))
-            user.Avatar = request.Avatar;
+        if (!string.IsNullOrWhiteSpace(avatarUrl))
+            user.Avatar = avatarUrl;
 
 
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveAsync();
     }
 
-    public async Task RegisterShop(ShopRegisterReqModel shopRegisterReqModel)
+    public async Task RegisterShop(ShopRegisterReqModel request)
     {
-        var existingUser = await _unitOfWork.Users.GetByEmailAsync(shopRegisterReqModel.Email);
+        var existingUser = await _unitOfWork.Users.GetByEmailAsync(request.Email);
         if (existingUser != null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
         }
-      
+
+        using var stream = request.AvatarImage.OpenReadStream();
+        var uploadParams = new ImageUploadParams
+        {
+            File = new FileDescription(request.AvatarImage.FileName, stream),
+            Folder = "user_avatars"
+        };
+
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        if (uploadResult.Error != null)
+        {
+            throw new ApiException(HttpStatusCode.InternalServerError, uploadResult.Error.Message);
+        }
+
+        string avatarUrl = uploadResult.SecureUrl.ToString();
+
         var user = new User
         {
-            FullName = shopRegisterReqModel.FullName,
-            Email = shopRegisterReqModel.Email,
-            Password = PasswordHasher.HashPassword(shopRegisterReqModel.Password),
+            FullName = request.FullName,
+            Email = request.Email,
+            Password = PasswordHasher.HashPassword(request.Password),
             RoleId = 6,
             CreatedAt = DateTime.UtcNow,
-            Dob = shopRegisterReqModel.Dob,
-            Address = shopRegisterReqModel.Address,
-            PhoneNumber = shopRegisterReqModel.PhoneNumber,
-            Gender = shopRegisterReqModel.Gender,
-            Avatar = shopRegisterReqModel.Avatar,          
+            Dob = request.Dob,
+            Address = request.Address,
+            PhoneNumber = request.PhoneNumber,
+            Gender = request.Gender,
+            Avatar = avatarUrl,          
             Status = "Active"
         };
         await _unitOfWork.Users.AddAsync(user);
@@ -315,12 +387,12 @@ public class AuthenticationService : IAuthenticationService
         var shop = new Shop
         {
             UserId = user.UserId,
-            ShopName = shopRegisterReqModel.ShopName,
-            ShopAddress = shopRegisterReqModel.ShopAddress,
-            ShopPhone = shopRegisterReqModel.ShopPhone,
-            BankName = shopRegisterReqModel.BankName,
-            BankNumber = shopRegisterReqModel.BankNumber,
-            BusinessLicense = shopRegisterReqModel.BusinessLicense,
+            ShopName = request.ShopName,
+            ShopAddress = request.ShopAddress,
+            ShopPhone = request.ShopPhone,
+            BankName = request.BankName,
+            BankNumber = request.BankNumber,
+            BusinessLicense = request.BusinessLicense,
             CreatedDate = DateTime.UtcNow,
             Status = "Active"
         };
