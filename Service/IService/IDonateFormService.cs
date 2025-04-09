@@ -10,9 +10,9 @@ namespace Service.IService
 
         Task<DonateFormResModel?> GetDonationByIdAsync(int id);
 
-        Task CreateDonationAsync(CreateDonateFormReqModel request);
+        Task<DonateFormResModel> CreateDonationAsync(CreateDonateFormReqModel request);
 
-        Task UpdateDonationAsync(int id, UpdateDonateFormReqModel request);
+        Task UpdateDonationAsync(string token, int id, UpdateDonateFormReqModel request);
 
         Task DeleteDonationAsync(int id);
     }

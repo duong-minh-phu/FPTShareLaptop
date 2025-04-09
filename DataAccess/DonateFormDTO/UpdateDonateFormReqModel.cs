@@ -5,17 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BusinessObjects.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace DataAccess.DonationFormDTO
 {
     public class UpdateDonateFormReqModel
     {
-        [Required(ErrorMessage = "ItemName is required")]
-        public string ItemName { get; set; }
-        [Required(ErrorMessage = "ItemDescription is required")]
-        public string ItemDescription { get; set; }
-        [Required(ErrorMessage = "Quantity is required")]
-        public int Quantity { get; set; }
+
+        [Required(ErrorMessage = "Status is required")]
         public string Status { get; set; }
 
     }
