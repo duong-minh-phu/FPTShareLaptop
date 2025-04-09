@@ -26,7 +26,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> GetAllAsync()
         {
             var borrowHistories = await _unitOfWork.BorrowHistory.GetAllAsync();
-            var borrowHistoryDTOs = _mapper.Map<IEnumerable<BorrowHistoryDTO>>(borrowHistories);
+            var borrowHistoryDTOs = _mapper.Map<IEnumerable<BorrowHistoryReadDTO>>(borrowHistories);
             return Ok(ResultModel.Success(borrowHistoryDTOs));
         }
 
@@ -40,13 +40,13 @@ namespace FPTShareLaptop_Controller.Controllers
                 return NotFound(ResultModel.NotFound("Borrow history not found."));
             }
 
-            var borrowHistoryDTO = _mapper.Map<BorrowHistoryDTO>(borrowHistory);
+            var borrowHistoryDTO = _mapper.Map<BorrowHistoryReadDTO>(borrowHistory);
             return Ok(ResultModel.Success(borrowHistoryDTO));
         }
 
         // POST: api/borrow-histories
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] BorrowHistoryDTO borrowHistoryDTO)
+        public async Task<IActionResult> CreateAsync([FromBody] BorrowHistoryCreateDTO borrowHistoryDTO)
         {
             if (borrowHistoryDTO == null)
             {
@@ -57,17 +57,17 @@ namespace FPTShareLaptop_Controller.Controllers
             await _unitOfWork.BorrowHistory.AddAsync(borrowHistory);
             await _unitOfWork.SaveAsync();
 
-            var createdDTO = _mapper.Map<BorrowHistoryDTO>(borrowHistory);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = borrowHistory.BorrowHistoryId }, ResultModel.Created(createdDTO));
+            var createdDTO = _mapper.Map<BorrowHistoryReadDTO>(borrowHistory);
+            return Ok(ResultModel.Created(createdDTO));
         }
 
         // PUT: api/borrow-histories/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] BorrowHistoryDTO borrowHistoryDTO)
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] BorrowHistoryUpdateDTO borrowHistoryDTO)
         {
-            if (borrowHistoryDTO == null || borrowHistoryDTO.BorrowHistoryId != id)
+            if (borrowHistoryDTO == null)
             {
-                return BadRequest(ResultModel.BadRequest("ID mismatch."));
+                return BadRequest(ResultModel.BadRequest("Invalid data."));
             }
 
             var existingBorrowHistory = await _unitOfWork.BorrowHistory.GetByIdAsync(id);

@@ -23,7 +23,7 @@ namespace FPTShareLaptop_Controller.Controllers
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
             var result = await _studentService.VerifyStudent(request);
-
+            if(request!=null) { 
             ResultModel response = new ResultModel
             {
                 IsSuccess = true,
@@ -32,6 +32,18 @@ namespace FPTShareLaptop_Controller.Controllers
                 Data = result
             };
             return StatusCode(response.Code, response);
-        }
+            }
+            else
+            {
+                ResultModel response = new ResultModel
+                {
+                    IsSuccess = true,
+                    Code = (int)HttpStatusCode.OK,
+                    Message = "Thông tin xác thực không thành công.",
+                    Data = result
+                };
+                return StatusCode(response.Code, response);
+            }
+    }
     }
 }

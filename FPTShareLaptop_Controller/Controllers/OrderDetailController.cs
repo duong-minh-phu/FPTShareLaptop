@@ -44,15 +44,26 @@ namespace FPTShareLaptop_Controller.Controllers
 
         // POST: api/orderdetails (Tạo chi tiết đơn hàng mới)
         [HttpPost]
-        public async Task<IActionResult> CreateOrderDetail([FromBody] OrderDetailCreateDTO orderDetailDto)
+        public async Task<IActionResult> CreateMultipleOrderDetails([FromBody] List<OrderDetailCreateDTO> orderDetailDtos)
         {
-            var orderDetail = _mapper.Map<OrderDetail>(orderDetailDto);
+            if (orderDetailDtos == null || !orderDetailDtos.Any())
+            {
+                return BadRequest(ResultModel.BadRequest("Danh sách chi tiết đơn hàng không hợp lệ."));
+            }
 
-            await _unitOfWork.OrderDetail.AddAsync(orderDetail);
+            var createdDetails = new List<OrderDetail>();
+
+            foreach (var dto in orderDetailDtos)
+            {
+                var orderDetail = _mapper.Map<OrderDetail>(dto);
+                await _unitOfWork.OrderDetail.AddAsync(orderDetail);
+                createdDetails.Add(orderDetail);
+            }
+
             await _unitOfWork.SaveAsync();
 
-            var orderDetailReadDto = _mapper.Map<OrderDetailReadDTO>(orderDetail);
-            return CreatedAtAction(nameof(GetOrderDetailById), new { id = orderDetail.OrderItemId }, ResultModel.Success(orderDetailReadDto, "Chi tiết đơn hàng đã được tạo."));
+            var resultDtos = _mapper.Map<List<OrderDetailReadDTO>>(createdDetails);
+            return Ok(ResultModel.Created(resultDtos, "Danh sách chi tiết đơn hàng đã được tạo."));
         }
 
         // PUT: api/orderdetails/{id} (Cập nhật chi tiết đơn hàng)
