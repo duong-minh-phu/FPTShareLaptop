@@ -117,8 +117,14 @@ namespace Service.Utils.MapperProfiles
             CreateMap<SettlementTransactionUpdateDTO, SettlementTransaction>();
 
 
-            CreateMap<FeedbackProduct, FeedbackProductDTO>();
-            CreateMap<FeedbackProductCreateDTO, FeedbackProduct>();
+            CreateMap<FeedbackProduct, FeedbackProductDTO>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.FeedbackProductId))
+            .ForMember(dest => dest.OrderDetailId, opt => opt.MapFrom(src => src.OrderItemId))
+            .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.FeedbackDate));
+
+            CreateMap<FeedbackProductCreateDTO, FeedbackProduct>()
+                .ForMember(dest => dest.OrderItemId, opt => opt.MapFrom(src => src.OrderDetailId))
+                .ForMember(dest => dest.FeedbackDate, opt => opt.Ignore());
             CreateMap<FeedbackProductUpdateDTO, FeedbackProduct>();
 
             // Mapping cho bảng User
