@@ -11,6 +11,7 @@ namespace DataAccess.DonationFormDTO
 {
     public class UpdateDonateFormReqModel
     {
+
         [Required(ErrorMessage = "Status is required")]
         public string Status { get; set; }
 

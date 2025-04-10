@@ -74,7 +74,9 @@ namespace Service.Service
 
             var newDonate = new DonateForm
             {
-                UserId = request.SponsorId,
+
+                UserId=request.SponsorId,
+
                 ItemName = request.ItemName,
                 ItemDescription = request.ItemDescription,
                 DonateQuantity = request.Quantity,
@@ -110,7 +112,9 @@ namespace Service.Service
             var donation = await _unitOfWork.DonateForm.GetByIdAsync(id);
             if (donation == null) throw new ApiException(HttpStatusCode.BadRequest, "Donation not found");
 
+
             donation.Status = request.Status;          
+
             _unitOfWork.DonateForm.Update(donation);
             await _unitOfWork.SaveAsync();
         }

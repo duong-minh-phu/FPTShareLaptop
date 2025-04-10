@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -86,11 +87,30 @@ namespace Service.Service
 
         private bool CompareText(string extractedText, string name, string studentCode)
         {
-            var wordsInName = name.ToLower().Split(' ');
-            var wordsInCode = studentCode.ToLower().Split(' ');
+            // Bỏ dấu tiếng Việt
+            extractedText = RemoveDiacritics(extractedText.ToLower());
+            var wordsInName = RemoveDiacritics(name.ToLower()).Split(' ');
+            var wordsInCode = RemoveDiacritics(studentCode.ToLower()).Split(' ');
 
             return wordsInName.All(word => extractedText.Contains(word)) &&
                    wordsInCode.All(word => extractedText.Contains(word));
+        }
+
+        public static string RemoveDiacritics(string text)
+        {
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
     }
 }
