@@ -3,7 +3,7 @@ name: Deploy to VPS via SSH
 on:
   push:
     branches:
-      - master  # nếu bạn dùng branch khác thì sửa tên ở đây
+      - master
 
 jobs:
   deploy:
@@ -22,7 +22,7 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no root@14.225.207.80 << 'EOF'
           cd FPTShareLaptop
-          git pull origin main
+          git pull origin master
           docker-compose down
           docker-compose up --build -d
         EOF
