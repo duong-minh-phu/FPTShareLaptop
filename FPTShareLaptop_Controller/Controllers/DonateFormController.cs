@@ -58,15 +58,16 @@ namespace FPTShareLaptop_Controller.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> CreateDonation([FromBody] CreateDonateFormReqModel request)
+        public async Task<IActionResult> CreateDonation([FromForm] CreateDonateFormReqModel request)
         {
-            await _donationFormService.CreateDonationAsync(request);
+            var result = await _donationFormService.CreateDonationAsync(request);
 
             ResultModel response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
                 Message = "Donation form created successfully",
+                Data = result,
             };
 
             return StatusCode(response.Code, response);
@@ -76,7 +77,8 @@ namespace FPTShareLaptop_Controller.Controllers
         [Route("update/{id}")]
         public async Task<IActionResult> UpdateDonation(int id, [FromBody] UpdateDonateFormReqModel request)
         {
-            await _donationFormService.UpdateDonationAsync(id, request);
+            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
+            await _donationFormService.UpdateDonationAsync(token, id, request);
 
             ResultModel response = new ResultModel
             {
@@ -92,7 +94,7 @@ namespace FPTShareLaptop_Controller.Controllers
         [Route("delete/{id}")]
         public async Task<IActionResult> SoftDeleteDonation(int id)
         {
-            await _donationFormService.SoftDeleteDonationAsync(id);
+            await _donationFormService.DeleteDonationAsync(id);
 
             ResultModel response = new ResultModel
             {

@@ -14,7 +14,10 @@ namespace DataAccess.DonationFormDTO
         public int SponsorId { get; set; }
 
         public string ItemName { get; set; } = string.Empty;
+        
         public string ItemDescription { get; set; }
+
+        public string? ImageDonateForm { get; set; }
 
         public int Quantity { get; set; }
 

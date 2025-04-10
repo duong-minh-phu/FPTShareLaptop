@@ -1,7 +1,11 @@
 ﻿using System.Linq.Expressions;
 using System.Net;
+using AutoMapper;
 using BusinessObjects.Models;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using DataAccess.PasswordDTO;
+using DataAccess.StudentDTO;
 using DataAccess.UserDTO;
 using Service.IService;
 using Service.Utils.CustomException;
@@ -12,12 +16,17 @@ public class AuthenticationService : IAuthenticationService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJWTService _jwtService;
     private readonly IEmailService _emailService;
+    private readonly IStudentService _studentService;
+    private readonly Cloudinary _cloudinary;
 
-    public AuthenticationService(IUnitOfWork unitOfWork, IJWTService jwtService, IEmailService emailService)
+    public AuthenticationService(IUnitOfWork unitOfWork, IJWTService jwtService, 
+        IEmailService emailService, IStudentService studentService, Cloudinary cloudinary)
     {
         _unitOfWork = unitOfWork;
         _jwtService = jwtService;
         _emailService = emailService;
+        _studentService = studentService;
+        _cloudinary = cloudinary;
     }
 
     public async Task<UserLoginResModel> Login(UserLoginReqModel userLoginReqModel)
@@ -114,12 +123,12 @@ public class AuthenticationService : IAuthenticationService
         var userId = _jwtService.decodeToken(token, "userId");
 
         var user = await _unitOfWork.Users.GetByIdAsync(userId,
-            includeProperties: new Expression<Func<User, object>>[] { u => u.Role, u => u.Student });
+            includeProperties: new Expression<Func<User, object>>[] { u => u.Role, u => u.Student, u => u.Shop });
 
         if (user == null)
             throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
-        return new UserProfileModel
+        var profile = new UserProfileModel
         {
             UserId = user.UserId,
             FullName = user.FullName,
@@ -130,18 +139,27 @@ public class AuthenticationService : IAuthenticationService
             Address = user.Address,
             Dob = user.Dob,
             Gender = user.Gender,
-            CreatedAt = user.CreatedAt,
-
-            // Chỉ có giá trị nếu là Student
-            StudentCode = user.Student.StudentCode,
-            IdentityCard = user.Student.IdentityCard,
-            EnrollmentDate = user.Student.EnrollmentDate,
-
-            // Nếu sau này cần thêm Sponsor, có thể bỏ các trường của Sponsor vào đây (nếu có)
+            CreatedAt = user.CreatedAt
         };
+
+        if (user.Role.RoleName == "Student" && user.Student != null)
+        {
+            profile.StudentCode = user.Student.StudentCode;
+            profile.IdentityCard = user.Student.IdentityCard;
+            profile.EnrollmentDate = user.Student.EnrollmentDate;
+        }
+
+        if (user.Role.RoleName == "Shop" && user.Shop != null) 
+        {
+            profile.ShopName = user.Shop.ShopName;
+            profile.ShopPhone = user.Shop.ShopPhone;
+            profile.ShopAddress = user.Shop.ShopAddress;
+            profile.BusinessLicense = user.Shop.BusinessLicense;
+            profile.BankName = user.Shop.BankName;
+            profile.BankNumber = user.Shop.BankNumber;
+        }
+        return profile;
     }
-
-
 
     private string GenerateTemporaryPassword()
     {
@@ -152,26 +170,62 @@ public class AuthenticationService : IAuthenticationService
     }
 
 
-    public async Task<UserRegisterResModel> RegisterStudent(UserRegisterReqModel userRegisterReqModel)
+    public async Task RegisterStudent(StudentRegisterReqModel request)
     {
-        var existingUser = await _unitOfWork.Users.GetByEmailAsync(userRegisterReqModel.Email);
+        var existingUser = await _unitOfWork.Users.GetByEmailAsync(request.Email);
         if (existingUser != null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
         }
+        
+        if (request.StudentCardImage == null)
+        {
+            throw new ApiException(HttpStatusCode.BadRequest, "Student card image is required.");
+        }
+
+        // Tạo đối tượng StudentReqModel từ StudentRegisterReqModel
+        var studentRequest = new StudentReqModel
+        {
+            FullName = request.FullName,
+            StudentCode = request.StudentCode,
+            EnrollmentDate = request.EnrollmentDate,
+            Image = request.StudentCardImage
+        };
+
+        // Xác thực thẻ sinh viên
+        var studentVerification = await _studentService.VerifyStudent(studentRequest);
+        if (studentVerification == null)
+        {
+            throw new ApiException(HttpStatusCode.BadRequest, "Student card verification failed. Cannot register.");
+        }
+
+        using var stream = request.AvatarImage.OpenReadStream();
+        var uploadParams = new ImageUploadParams
+        {
+            File = new FileDescription(request.AvatarImage.FileName, stream),
+            Folder = "user_avatars"
+        };
+
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        if (uploadResult.Error != null)
+        {
+            throw new ApiException(HttpStatusCode.InternalServerError, uploadResult.Error.Message);
+        }
+
+        string avatarUrl = uploadResult.SecureUrl.ToString();
 
         var user = new User
         {
-            FullName = userRegisterReqModel.FullName,
-            Email = userRegisterReqModel.Email,
-            Password = PasswordHasher.HashPassword(userRegisterReqModel.Password),
-            RoleId = 3, 
+            FullName = request.FullName,
+            Email = request.Email,
+            Password = PasswordHasher.HashPassword(request.Password),
+            RoleId = 2, 
             CreatedAt = DateTime.UtcNow,
-            Dob = userRegisterReqModel.Dob,
-            Address = userRegisterReqModel.Address,
-            PhoneNumber = userRegisterReqModel.PhoneNumber,
-            Gender = userRegisterReqModel.Gender,
-            Avatar = userRegisterReqModel.Avatar,
+            Dob = request.Dob,
+            Address = request.Address,
+            PhoneNumber = request.PhoneNumber,
+            Gender = request.Gender,
+            Avatar = avatarUrl,
             Status = "Active"
         };
 
@@ -181,65 +235,169 @@ public class AuthenticationService : IAuthenticationService
         var student = new Student
         {
             UserId = user.UserId,
-            StudentId = user.UserId,
-            StudentCode = userRegisterReqModel.StudentCode,
-            IdentityCard = userRegisterReqModel.IdentityCard,
-            EnrollmentDate = userRegisterReqModel.EnrollmentDate
+            StudentCode = request.StudentCode,
+            IdentityCard = request.IdentityCard,
+            EnrollmentDate = request.EnrollmentDate
         };
 
         await _unitOfWork.Student.AddAsync(student);
         await _unitOfWork.SaveAsync();
 
-        return new UserRegisterResModel
-        {
-            UserId = user.UserId,
-            Email = user.Email,
-            RoleName = "Student",
-            Message = "Student registered successfully."
-        };
     }
 
-    public async Task<UserRegisterResModel> RegisterSponsor(SponsorRegisterReqModel sponsorRegisterReqModel)
+    public async Task Register(UserRegisterReqModel request)
     {
-        var existingUser = await _unitOfWork.Users.GetByEmailAsync(sponsorRegisterReqModel.Email);
+        var existingUser = await _unitOfWork.Users.GetByEmailAsync(request.Email);
         if (existingUser != null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
         }
 
-        var role = await _unitOfWork.Role.GetAllAsync();
-        var sponsorRole = role.FirstOrDefault(r => r.RoleName == "Sponsor");
-        if (sponsorRole == null)
+        var role = await _unitOfWork.Role.FirstOrDefaultAsync(r => r.RoleId == request.RoleId);
+        if (role == null)
         {
             throw new ApiException(HttpStatusCode.BadRequest, "Invalid role.");
         }
 
+        if (request.AvatarImage == null || request.AvatarImage.Length == 0)
+        {
+            throw new ApiException(HttpStatusCode.BadRequest, "Avatar image is required.");
+        }
+
+        using var stream = request.AvatarImage.OpenReadStream();
+        var uploadParams = new ImageUploadParams
+        {
+            File = new FileDescription(request.AvatarImage.FileName, stream),
+            Folder = "user_avatars"
+        };
+
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        if (uploadResult.Error != null)
+        {
+            throw new ApiException(HttpStatusCode.InternalServerError, uploadResult.Error.Message);
+        }
+
+        string avatarUrl = uploadResult.SecureUrl.ToString();
+
+
         var user = new User
         {
-            FullName = sponsorRegisterReqModel.FullName,
-            Email = sponsorRegisterReqModel.Email,
-            Password = PasswordHasher.HashPassword(sponsorRegisterReqModel.Password),
-            RoleId = 3,
+            FullName = request.FullName,
+            Email = request.Email,
+            Password = PasswordHasher.HashPassword(request.Password),
+            RoleId = request.RoleId,
             CreatedAt = DateTime.UtcNow,
-            Dob = sponsorRegisterReqModel.Dob,
-            Address = sponsorRegisterReqModel.Address,
-            PhoneNumber = sponsorRegisterReqModel.PhoneNumber,
-            Gender = sponsorRegisterReqModel.Gender,
-            Avatar = sponsorRegisterReqModel.Avatar,
+            Dob = request.Dob,
+            Address = request.Address,
+            PhoneNumber = request.PhoneNumber,
+            Gender = request.Gender,
+            Avatar = avatarUrl,
             Status = "Active"
         };
 
         await _unitOfWork.Users.AddAsync(user);
         await _unitOfWork.SaveAsync();      
-
-        return new UserRegisterResModel
-        {
-            UserId = user.UserId,
-            Email = user.Email,
-            RoleName = sponsorRole.RoleName,
-            Message = "Sponsor registered successfully."
-        };
+       
     }
 
-   
+    public async Task UpdateUserProfile(string token, UpdateProfileReqModel request)
+    {
+        var userId = _jwtService.decodeToken(token, "userId");
+
+
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
+        if (user == null)
+            throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+        
+        using var stream = request.AvatarImage.OpenReadStream();
+        var uploadParams = new ImageUploadParams
+        {
+            File = new FileDescription(request.AvatarImage.FileName, stream),
+            Folder = "user_avatars"
+        };
+
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        if (uploadResult.Error != null)
+        {
+            throw new ApiException(HttpStatusCode.InternalServerError, uploadResult.Error.Message);
+        }
+
+        string avatarUrl = uploadResult.SecureUrl.ToString();
+
+        if (!string.IsNullOrWhiteSpace(request.Dob))
+            user.Dob = request.Dob;
+
+        if (!string.IsNullOrWhiteSpace(request.Address))
+            user.Address = request.Address;
+
+        if (!string.IsNullOrWhiteSpace(request.PhoneNumber))
+            user.PhoneNumber = request.PhoneNumber;
+
+        if (!string.IsNullOrWhiteSpace(request.Gender))
+            user.Gender = request.Gender;
+
+        if (!string.IsNullOrWhiteSpace(avatarUrl))
+            user.Avatar = avatarUrl;
+
+
+        _unitOfWork.Users.Update(user);
+        await _unitOfWork.SaveAsync();
+    }
+
+    public async Task RegisterShop(ShopRegisterReqModel request)
+    {
+        var existingUser = await _unitOfWork.Users.GetByEmailAsync(request.Email);
+        if (existingUser != null)
+        {
+            throw new ApiException(HttpStatusCode.BadRequest, "Email already registered.");
+        }
+
+        using var stream = request.AvatarImage.OpenReadStream();
+        var uploadParams = new ImageUploadParams
+        {
+            File = new FileDescription(request.AvatarImage.FileName, stream),
+            Folder = "user_avatars"
+        };
+
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        if (uploadResult.Error != null)
+        {
+            throw new ApiException(HttpStatusCode.InternalServerError, uploadResult.Error.Message);
+        }
+
+        string avatarUrl = uploadResult.SecureUrl.ToString();
+
+        var user = new User
+        {
+            FullName = request.FullName,
+            Email = request.Email,
+            Password = PasswordHasher.HashPassword(request.Password),
+            RoleId = 6,
+            CreatedAt = DateTime.UtcNow,
+            Dob = request.Dob,
+            Address = request.Address,
+            PhoneNumber = request.PhoneNumber,
+            Gender = request.Gender,
+            Avatar = avatarUrl,          
+            Status = "Active"
+        };
+        await _unitOfWork.Users.AddAsync(user);
+        await _unitOfWork.SaveAsync();
+
+        var shop = new Shop
+        {
+            UserId = user.UserId,
+            ShopName = request.ShopName,
+            ShopAddress = request.ShopAddress,
+            ShopPhone = request.ShopPhone,
+            BankName = request.BankName,
+            BankNumber = request.BankNumber,
+            BusinessLicense = request.BusinessLicense,
+            CreatedDate = DateTime.UtcNow,
+            Status = "Active"
+        };
+
+        await _unitOfWork.Shop.AddAsync(shop);
+        await _unitOfWork.SaveAsync();
+    }
 }

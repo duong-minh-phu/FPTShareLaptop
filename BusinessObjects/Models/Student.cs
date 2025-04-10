@@ -13,9 +13,7 @@ public partial class Student
 
     public string IdentityCard { get; set; } = null!;
 
-    public DateTime EnrollmentDate { get; set; }
-
-    public string Status { get; set; } = null!;
+    public string EnrollmentDate { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
 }

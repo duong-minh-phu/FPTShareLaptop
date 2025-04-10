@@ -26,9 +26,24 @@ namespace Service.IService
         IGenericRepository<ItemImage> ItemImage { get; }
         IGenericRepository<Student> Student { get; }
         IGenericRepository<User> Users { get; }
+        IGenericRepository<ReportDamage> ReportDamage { get; }
+        IGenericRepository<CompensationTransaction> CompensationTransaction { get; }
+        IGenericRepository<DepositTransaction> DepositTransaction { get; }
         IGenericRepository<RefreshToken> RefreshToken { get; }
         IGenericRepository<ItemCondition> ItemCondition { get; }
         IGenericRepository<BorrowContract> BorrowContract { get; }
+
+        IGenericRepository<Wallet> Wallet { get; }
+        IGenericRepository<WalletTransaction> WalletTransaction { get; }
+        IGenericRepository<RefundTransaction> RefundTransaction { get; }
+        IGenericRepository<Payment> Payment { get; }
+        IGenericRepository<PaymentMethod> PaymentMethod { get; }
+        IGenericRepository<Shipment> Shipment { get; }
+        IGenericRepository<TrackingInfo> TrackingInfo { get; }
+
+
+        IGenericRepository<SettlementTransaction> SettlementTransaction { get; }
+        IGenericRepository<FeedbackProduct> FeedbackProduct { get; }
 
         Task<int> SaveAsync();
     }

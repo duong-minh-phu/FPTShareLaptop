@@ -11,8 +11,8 @@ namespace Service.IService
     {
         Task<List<FeedbackBorrowResModel>> GetAllFeedbacks(); 
         Task<FeedbackBorrowResModel> GetFeedbackById(int feedbackId); 
-        Task CreateFeedback(CreateFeedbackBorrowReqModel request, string token); 
+        Task<FeedbackBorrowResModel> CreateFeedback(string token, CreateFeedbackBorrowReqModel request); 
         Task UpdateFeedback(int feedbackId, UpdateFeedbackBorrowReqModel request, string token); 
-        Task DeleteFeedback(int feedbackId); 
+        Task DeleteFeedback(string token, int feedbackId); 
     }
 }
