@@ -12,7 +12,7 @@ namespace FPTShareLaptop_Controller.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            return new string[] { "value112312312312", "value2" };
         }
 
         // GET api/<ValuesController>/5
