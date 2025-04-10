@@ -43,52 +43,25 @@ namespace Service.Service
                 throw new ApiException(HttpStatusCode.NotFound, "Transaction not found.");
 
             return _mapper.Map<WalletTransactionResModel>(transaction);
-        }
-
-        // Tạo giao dịch mới
-        public async Task<WalletTransactionResModel> CreateTransaction(string token, WalletTransactionReqModel model)
-        {
-            var userId = _jwtService.decodeToken(token, "userId");
-            var user = await _unitOfWork.Users.GetByIdAsync(userId);
-            if (user == null)
-                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
-            var wallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.UserId == user.UserId);
-            if (wallet == null)
-                throw new ApiException(HttpStatusCode.NotFound, "Wallet not found.");
-
-            var transaction = new WalletTransaction
-            {
-                WalletId = wallet.WalletId,
-                TransactionType = model.TransactionType,
-                Amount = model.Amount,
-                CreatedDate = DateTime.UtcNow,
-                RelatedPaymentId = model.RelatedPaymentId,
-                Note = model.Note
-            };
-
-            await _unitOfWork.WalletTransaction.AddAsync(transaction);
-            await _unitOfWork.SaveAsync();
-
-            return _mapper.Map<WalletTransactionResModel>(transaction);
-        }
+        }   
 
         // Xóa giao dịch
-        public async Task DeleteTransaction(string token, int transactionId)
-        {
-            var userId = _jwtService.decodeToken(token, "userId");
-            var user = await _unitOfWork.Users.GetByIdAsync(userId);
-            if (user == null)
-                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
-            var wallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.UserId == user.UserId);
-            if (wallet == null)
-                throw new ApiException(HttpStatusCode.NotFound, "Wallet not found.");
-
+        public async Task DeleteTransaction(int transactionId)
+        {          
             var transaction = await _unitOfWork.WalletTransaction.GetByIdAsync(transactionId);
-            if (transaction == null || transaction.WalletId != wallet.WalletId)
+            if (transaction == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Transaction not found or unauthorized.");
 
             _unitOfWork.WalletTransaction.Delete(transaction);
             await _unitOfWork.SaveAsync();
+        }
+
+        //Lấy tất cả giao dịch
+        public async Task<List<WalletTransactionResModel>> GetAllTransactions()
+        {
+            var transactions = await _unitOfWork.WalletTransaction.GetAllAsync();
+            var result = _mapper.Map<List<WalletTransactionResModel>>(transactions);
+            return result;
         }
     }
 }

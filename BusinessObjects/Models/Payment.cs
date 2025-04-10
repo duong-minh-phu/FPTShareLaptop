@@ -24,6 +24,4 @@ public partial class Payment
     public virtual PaymentMethod PaymentMethod { get; set; } = null!;
 
     public virtual ICollection<RefundTransaction> RefundTransactions { get; set; } = new List<RefundTransaction>();
-
-    public virtual ICollection<WalletTransaction> WalletTransactions { get; set; } = new List<WalletTransaction>();
 }
