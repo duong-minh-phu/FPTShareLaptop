@@ -20,7 +20,7 @@ jobs:
 
     - name: Deploy via SSH
       run: |
-        ssh -o StrictHostKeyChecking=no root@14.225.207.80 << 'EOF'
+        ssh -tt -o StrictHostKeyChecking=no root@14.225.207.80 << 'EOF'
           cd /root/FPTShareLaptop
           git pull origin master
           docker-compose down
