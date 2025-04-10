@@ -3,7 +3,7 @@ name: Deploy to VPS via SSH
 on:
   push:
     branches:
-      - main  # nếu bạn dùng branch khác thì sửa tên ở đây
+      - master  # nếu bạn dùng branch khác thì sửa tên ở đây
 
 jobs:
   deploy:
