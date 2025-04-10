@@ -21,7 +21,7 @@ jobs:
     - name: Deploy via SSH
       run: |
         ssh -o StrictHostKeyChecking=no root@14.225.207.80 << 'EOF'
-          cd FPTShareLaptop
+          cd /root/FPTShareLaptop
           git pull origin master
           docker-compose down
           docker-compose up --build -d
