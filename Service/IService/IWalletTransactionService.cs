@@ -9,9 +9,9 @@ namespace Service.IService
 {
     public interface IWalletTransactionService
     {
+        Task<List<WalletTransactionResModel>> GetAllTransactions();
         Task<List<WalletTransactionResModel>> GetTransactionsByUser(string token);
         Task<WalletTransactionResModel> GetTransactionById(int transactionId);
-        Task<WalletTransactionResModel> CreateTransaction(string token, WalletTransactionReqModel model);
-        Task DeleteTransaction(string token, int transactionId);
+        Task DeleteTransaction(int transactionId);
     }
 }

@@ -67,35 +67,32 @@ namespace FPTShareLaptop_Controller.Controllers
             return StatusCode(response.Code, response);
         }
 
-        // Nạp tiền vào ví
-        [HttpPut]
-        [Route("deposit")]
-        public async Task<IActionResult> Deposit([FromBody] decimal amount)
+        //Chuyển tiền vào ví Manager sau khi Student thanh toán
+        [HttpPost("disburse")]
+        public async Task<IActionResult> DisburseToManager([FromQuery] decimal amount)
         {
-            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _walletService.Deposit(token, amount);
-            ResultModel response = new ResultModel
+            await _walletService.DisburseToManagerAsync(amount);
+            var response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Deposit successfull."
+                Message = "Disbursement to manager completed successfully."
             };
             return StatusCode(response.Code, response);
         }
 
-        // Rút tiền khỏi ví
-        [HttpPut]
-        [Route("withdraw")]
-        public async Task<IActionResult> Withdraw([FromBody] decimal amount)
+
+        //Manager chuyển tiền cho Shop sau khi trừ phí
+        [HttpPost("transfer-to-shop")]
+        public async Task<IActionResult> TransferToShop([FromQuery] decimal amount, [FromQuery] decimal feeRate)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _walletService.Withdraw(token, amount);
-
-            ResultModel response = new ResultModel
+            await _walletService.TransferFromManagerToShopAsync(token, amount, feeRate);
+            var response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Withdraw successfull."
+                Message = "Transfer to shop completed successfully."
             };
             return StatusCode(response.Code, response);
         }

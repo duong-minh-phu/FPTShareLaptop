@@ -88,6 +88,7 @@ namespace FPTShareLaptop_Controller.Controllers
         [HttpPost("{paymentId}/confirm")]
         public async Task<IActionResult> UpdatePayment(int paymentId)
         {
+            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
             var result = await _paymentService.UpdatePaymentAsync(paymentId);
             var response = new ResultModel
             {

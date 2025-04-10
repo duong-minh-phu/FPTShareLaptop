@@ -17,13 +17,15 @@ namespace Service.Service
         private readonly IMapper _mapper;
         private readonly IJWTService _jwtService;
         private readonly IPayOSService _payOSService;
+        private readonly IWalletService _walletService;
 
-        public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IJWTService jWTService, IPayOSService pOSService)
+        public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IJWTService jWTService, IPayOSService pOSService, IWalletService walletService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _jwtService = jWTService;
             _payOSService = pOSService;
+            _walletService = walletService;
         }
 
         public async Task<bool> UpdatePaymentAsync(int paymentId)
@@ -38,12 +40,11 @@ namespace Service.Service
             {
                 throw new ApiException(HttpStatusCode.BadRequest, "The payment has already been confirmed");
             }
-
-            // Cập nhật trạng thái thanh toán
+            
             currPayment.Status = "Paid";
             _unitOfWork.Payment.Update(currPayment);
             await _unitOfWork.SaveAsync();
-
+            await _walletService.DisburseToManagerAsync(currPayment.Amount);
             return true;
         }
 

@@ -768,11 +768,6 @@ public partial class Sep490Context : DbContext
             entity.Property(e => e.Note).HasMaxLength(255);
             entity.Property(e => e.TransactionType).HasMaxLength(50);
 
-            entity.HasOne(d => d.RelatedPayment).WithMany(p => p.WalletTransactions)
-                .HasForeignKey(d => d.RelatedPaymentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__WalletTra__Relat__2B0A656D");
-
             entity.HasOne(d => d.Wallet).WithMany(p => p.WalletTransactions)
                 .HasForeignKey(d => d.WalletId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
