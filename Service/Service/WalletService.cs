@@ -101,12 +101,12 @@ namespace Service.Service
             feeRate /= 100;
 
             // 4. Tính phí và số tiền thực chuyển
-            var fee = Math.Round(amount * feeRate, 2);
+            var fee = Math.Round(amount * feeRate, 2); 
             var transferAmount = amount - fee;
 
             // 5. Cập nhật số dư ví
-            managerWallet.Balance -= fee;
-            shopWallet.Balance += transferAmount;
+            managerWallet.Balance -= transferAmount;  
+            shopWallet.Balance += transferAmount;  
 
             _unitOfWork.Wallet.Update(managerWallet);
             _unitOfWork.Wallet.Update(shopWallet);
@@ -116,7 +116,7 @@ namespace Service.Service
             {
                 WalletId = managerWallet.WalletId,
                 TransactionType = "TransferOut",
-                Amount = -amount,
+                Amount = -transferAmount,
                 CreatedDate = DateTime.UtcNow,
                 Note = $"Transferred {amount} to Shop (Fee: {fee})"
             };
