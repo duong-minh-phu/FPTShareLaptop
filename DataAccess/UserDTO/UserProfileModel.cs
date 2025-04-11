@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace DataAccess.UserDTO
 {
@@ -16,8 +17,29 @@ namespace DataAccess.UserDTO
         public DateTime? CreatedAt { get; set; }
 
         // Thêm trường StudentCode, IdentityCard, EnrollmentDate vào UserProfile luôn
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? StudentCode { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? IdentityCard { get; set; }
-        public string EnrollmentDate { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? EnrollmentDate { get; set; }
+
+        // Thêm trường ShopName, ShopPhone, ShopAddress, BussinessLicense, BankName, BankNumber vào UserProfile luôn
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ShopName { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ShopAddress { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ShopPhone { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? BusinessLicense { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? BankName { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? BankNumber { get; set; }
     }
 }

@@ -88,6 +88,7 @@ public partial class Sep490Context : DbContext
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer(GetConnectionString());
 
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BorrowContract>(entity =>
@@ -237,6 +238,7 @@ public partial class Sep490Context : DbContext
 
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.DonateQuantity).HasDefaultValue(1);
+            entity.Property(e => e.ImageDonateForm).HasMaxLength(250);
             entity.Property(e => e.ItemDescription).HasMaxLength(255);
             entity.Property(e => e.ItemName).HasMaxLength(255);
             entity.Property(e => e.Status).HasMaxLength(50);
@@ -433,12 +435,9 @@ public partial class Sep490Context : DbContext
             entity.ToTable("Payment");
 
             entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.Note).HasMaxLength(255);
             entity.Property(e => e.PaymentDate).HasColumnType("datetime");
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.TransactionCode).HasMaxLength(255);
-            entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
             entity.HasOne(d => d.Order).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.OrderId)
@@ -768,11 +767,6 @@ public partial class Sep490Context : DbContext
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.Note).HasMaxLength(255);
             entity.Property(e => e.TransactionType).HasMaxLength(50);
-
-            entity.HasOne(d => d.RelatedPayment).WithMany(p => p.WalletTransactions)
-                .HasForeignKey(d => d.RelatedPaymentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__WalletTra__Relat__2B0A656D");
 
             entity.HasOne(d => d.Wallet).WithMany(p => p.WalletTransactions)
                 .HasForeignKey(d => d.WalletId)

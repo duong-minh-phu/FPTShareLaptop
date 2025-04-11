@@ -66,7 +66,7 @@ namespace FPTShareLaptop_Controller.Controllers
             await _unitOfWork.SaveAsync();
 
             var result = _mapper.Map<FeedbackProductDTO>(feedback);
-            return CreatedAtAction(nameof(GetById), new { id = feedback.ProductId }, ResultModel.Created(result));
+            return CreatedAtAction(nameof(GetById), new { id = feedback.FeedbackProductId }, ResultModel.Created(result));
         }
 
         // PUT: api/feedback-products/{id}

@@ -1,12 +1,16 @@
 ﻿using DataAccess.PasswordDTO;
 using DataAccess.RefreshTokenDTO;
 using DataAccess.ResultModel;
+using DataAccess.StudentDTO;
 using DataAccess.UserDTO;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
+using Service.Service;
 using Service.Utils.CustomException;
 using System.Net;
+using System.Security.Claims;
 
 namespace FPTShareLaptop_Controller.Controllers
 {
@@ -19,28 +23,29 @@ namespace FPTShareLaptop_Controller.Controllers
         public AuthenticationController(IAuthenticationService authenticationService)
         {
             _authenticationService = authenticationService;
+            
         }
 
         [HttpPost]
         [Route("register/student")]
-        public async Task<IActionResult> RegisterStudent([FromBody] StudentRegisterReqModel studentRegisterReqModel)
-        {
-           
-                await _authenticationService.RegisterStudent(studentRegisterReqModel);
-                ResultModel response = new ResultModel
-                {
-                    IsSuccess = true,
-                    Code = (int)HttpStatusCode.OK,
-                    Message = "Student registered successfully."
-                };
-                return StatusCode(response.Code, response);       
+        public async Task<IActionResult> RegisterStudent([FromForm] StudentRegisterReqModel request)
+        {          
+
+            await _authenticationService.RegisterStudent(request);
+            ResultModel response = new ResultModel
+            {
+                IsSuccess = true,
+                Code = (int)HttpStatusCode.OK,
+                Message = "Student registered successfully."
+            };
+            return StatusCode(response.Code, response);       
         }
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> RegisterSponsor([FromBody] UserRegisterReqModel userRegisterReqModel)
+        public async Task<IActionResult> Register([FromForm] UserRegisterReqModel request)
         {           
-                await _authenticationService.Register(userRegisterReqModel);
+                await _authenticationService.Register(request);
                 ResultModel response = new ResultModel
                 {
                     IsSuccess = true,
@@ -50,6 +55,19 @@ namespace FPTShareLaptop_Controller.Controllers
                 return StatusCode(response.Code, response);
         }
 
+        [HttpPost]
+        [Route("register/shop")]
+        public async Task<IActionResult> RegisterShop([FromForm] ShopRegisterReqModel request)
+        {
+            await _authenticationService.RegisterShop(request);
+            ResultModel response = new ResultModel
+            {
+                IsSuccess = true,
+                Code = (int)HttpStatusCode.OK,
+                Message = "Shop registered successfully."
+            };
+            return StatusCode(response.Code, response);
+        }
 
 
         [HttpPost]
@@ -139,5 +157,24 @@ namespace FPTShareLaptop_Controller.Controllers
 
             return StatusCode(response.Code, response);
         }
+
+        [HttpPut]
+        [Route("update-profile")]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileReqModel request)
+        {
+            string token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            await _authenticationService.UpdateUserProfile(token, request);
+
+            ResultModel response = new ResultModel
+            {
+                IsSuccess = true,
+                Code = (int)HttpStatusCode.OK,
+                Message = "Profile updated successfully",
+            };
+
+            return StatusCode(response.Code, response);
+        }
+
+
     }
 }

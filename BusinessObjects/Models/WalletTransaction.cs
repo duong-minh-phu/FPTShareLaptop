@@ -13,13 +13,9 @@ public partial class WalletTransaction
 
     public decimal Amount { get; set; }
 
-    public int RelatedPaymentId { get; set; }
-
     public DateTime CreatedDate { get; set; }
 
     public string Note { get; set; } = null!;
-
-    public virtual Payment RelatedPayment { get; set; } = null!;
 
     public virtual Wallet Wallet { get; set; } = null!;
 }

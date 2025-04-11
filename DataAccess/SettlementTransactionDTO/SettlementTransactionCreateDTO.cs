@@ -27,6 +27,5 @@ namespace DataAccess.SettlementTransactionDTO
         [Range(0, double.MaxValue, ErrorMessage = "Fee cannot be negative.")]
         public decimal Fee { get; set; }
 
-        public SettlementStatus Status { get; set; } = SettlementStatus.Pending;
     }
 }
