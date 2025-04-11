@@ -30,6 +30,7 @@ namespace Service.Service
                 DonationFormId = d.DonateFormId,
                 SponsorId = d.UserId,  
                 ItemName = d.ItemName,
+                ImageDonateForm=d.ImageDonateForm,
                 ItemDescription = d.ItemDescription,
                 Quantity = d.DonateQuantity,  
                 Status = d.Status,
@@ -47,6 +48,8 @@ namespace Service.Service
                 DonationFormId = donation.DonateFormId,
                 SponsorId = donation.UserId,
                 ItemName = donation.ItemName,
+                ImageDonateForm = donation.ImageDonateForm,
+
                 ItemDescription = donation.ItemDescription,
                 Quantity = donation.DonateQuantity,
                 Status = donation.Status,
