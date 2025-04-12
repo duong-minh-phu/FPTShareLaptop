@@ -66,13 +66,14 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> CreateFeedback([FromBody] CreateFeedbackBorrowReqModel model)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _feedbackBorrowService.CreateFeedback(model, token);
+            var result = await _feedbackBorrowService.CreateFeedback(token, model);
 
             return Ok(new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Feedback created successfully"
+                Message = "Feedback created successfully",
+                Data = result
             });
         }
 
@@ -97,7 +98,8 @@ namespace FPTShareLaptop_Controller.Controllers
         [Route("delete/{id}")]
         public async Task<IActionResult> DeleteFeedback(int id)
         {
-            await _feedbackBorrowService.DeleteFeedback(id);
+            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
+            await _feedbackBorrowService.DeleteFeedback(token, id);
             return Ok(new ResultModel
             {
                 IsSuccess = true,

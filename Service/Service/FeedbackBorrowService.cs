@@ -9,10 +9,12 @@ namespace Service.Service
     public class FeedbackBorrowService : IFeedbackBorrowService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IJWTService _jwtService;
 
-        public FeedbackBorrowService(IUnitOfWork unitOfWork)
+        public FeedbackBorrowService(IUnitOfWork unitOfWork, IJWTService jwtService)
         {
             _unitOfWork = unitOfWork;
+            _jwtService = jwtService;
         }
 
         // Lấy tất cả feedbacks
@@ -53,27 +55,57 @@ namespace Service.Service
         }
 
         // Tạo feedback mới
-        public async Task CreateFeedback(CreateFeedbackBorrowReqModel model, string token)
+        public async Task<FeedbackBorrowResModel> CreateFeedback(string token, CreateFeedbackBorrowReqModel model)
         {
+            var userId = _jwtService.decodeToken(token, "userId");
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null)
+                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+
+            var borrowHistory = await _unitOfWork.BorrowHistory.GetByIdAsync(model.BorrowHistoryId);
+            if (borrowHistory == null)
+                throw new ApiException(HttpStatusCode.BadRequest, "Invalid BorrowHistoryId.");
+
+            var item = await _unitOfWork.DonateItem.GetByIdAsync(model.ItemId);
+            if (item == null)
+                throw new ApiException(HttpStatusCode.BadRequest, "Invalid ItemId.");
+
             var newFeedback = new FeedbackBorrow
             {
                 BorrowHistoryId = model.BorrowHistoryId,
                 ItemId = model.ItemId,
-                UserId = model.UserId,
+                UserId = user.UserId,
                 FeedbackDate = DateTime.UtcNow,
                 Rating = model.Rating,
                 Comments = model.Comments,
-                IsAnonymous = model.IsAnonymous
+                IsAnonymous = false
             };
 
             await _unitOfWork.FeedbackBorrow.AddAsync(newFeedback);
             await _unitOfWork.SaveAsync();
+
+            return new FeedbackBorrowResModel
+            {
+                FeedbackBorrowId = newFeedback.FeedbackBorrowId,
+                BorrowHistoryId = newFeedback.BorrowHistoryId,
+                ItemId = newFeedback.ItemId,
+                UserId = newFeedback.UserId,
+                FeedbackDate = newFeedback.FeedbackDate,
+                Rating = newFeedback.Rating,
+                Comments = newFeedback.Comments,
+                IsAnonymous = newFeedback.IsAnonymous
+            };
         }
 
 
         // Cập nhật feedback
         public async Task UpdateFeedback(int feedbackId, UpdateFeedbackBorrowReqModel model,string token)
         {
+            var userId = _jwtService.decodeToken(token, "userId");
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null)
+                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+
             var feedback = await _unitOfWork.FeedbackBorrow.GetByIdAsync(feedbackId);
             if (feedback == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Feedback not found.");
@@ -87,8 +119,13 @@ namespace Service.Service
         }
 
         // Xóa feedback
-        public async Task DeleteFeedback(int feedbackId)
+        public async Task DeleteFeedback(string token ,int feedbackId)
         {
+            var userId = _jwtService.decodeToken(token, "userId");
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null)
+                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+
             var feedback = await _unitOfWork.FeedbackBorrow.GetByIdAsync(feedbackId);
             if (feedback == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Feedback not found.");

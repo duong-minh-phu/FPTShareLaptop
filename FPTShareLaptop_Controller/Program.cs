@@ -2,6 +2,7 @@
 using System.Text;
 using BusinessObjects.Models;
 using CloudinaryDotNet;
+using FPTShareLaptop_Controller.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -29,10 +30,13 @@ builder.Services.AddCors(options =>
         });
 });
 builder.Services.AddControllers();
+//-----------------------------------------MIDDLEWARE---------------------------------------
+builder.Services.AddSingleton<GlobalExceptionMiddleware>();
 //-----------------------------------------SERVICES-----------------------------------------
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IJWTService, JWTService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
@@ -42,6 +46,16 @@ builder.Services.AddScoped<IBorrowRequestService, BorrowRequestService>();
 builder.Services.AddScoped<IItemConditionService, ItemConditionService>();
 builder.Services.AddScoped<IBorrowContractService, BorrowContractService>();
 builder.Services.AddScoped<IFeedbackBorrowService, FeedbackBorrowService>();
+builder.Services.AddScoped<IWalletService, WalletService>();
+builder.Services.AddScoped<IWalletTransactionService, WalletTransactionService>();
+builder.Services.AddScoped<IRefundTransactionService, RefundTransactionService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IPayOSService, PayOSService>();
+builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+builder.Services.AddScoped<IShipmentService, ShipmentService>();
+builder.Services.AddScoped<ITrackingInfoService, TrackingInfoService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<IComputerVisionService, ComputerVisionService>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
@@ -125,4 +139,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.Run();

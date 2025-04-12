@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
+using System.Net;
 using BusinessObjects.Enums;
 using BusinessObjects.Models;
 using DataAccess.BorrowRequestDTO;
@@ -20,11 +22,17 @@ public class BorrowRequestService : IBorrowRequestService
     // Lấy tất cả yêu cầu mượn
     public async Task<List<BorrowRequestResModel>> GetAllBorrowRequests()
     {
-        var borrowRequests = await _unitOfWork.BorrowRequest.GetAllAsync(includeProperties: b => b.Item);
+        var borrowRequests = await _unitOfWork.BorrowRequest.GetAllAsync(includeProperties: new Expression<Func<BorrowRequest, object>>[] {
+        b => b.Item,
+        b => b.User
+    });
         return borrowRequests.Select(b => new BorrowRequestResModel
         {
             RequestId = b.RequestId,
             UserId = b.UserId,
+            FullName = b.User.FullName,
+            Email = b.User.Email,
+            PhoneNumber =b.User.PhoneNumber,
             ItemId = b.ItemId,
             ItemName = b.Item.ItemName,
             Status = b.Status,
@@ -36,7 +44,11 @@ public class BorrowRequestService : IBorrowRequestService
     // Lấy yêu cầu mượn theo ID
     public async Task<BorrowRequestResModel> GetBorrowRequestById(int requestId)
     {
-        var borrowRequest = await _unitOfWork.BorrowRequest.GetByIdAsync(requestId, includeProperties: b => b.Item);
+        var borrowRequest = await _unitOfWork.BorrowRequest.GetByIdAsync(requestId, includeProperties: new Expression<Func<BorrowRequest, object>>[] {
+        b => b.Item,
+        b => b.User
+        });
+
         if (borrowRequest == null)
             throw new ApiException(HttpStatusCode.NotFound, "Yêu cầu mượn không tồn tại.");
 
@@ -44,6 +56,9 @@ public class BorrowRequestService : IBorrowRequestService
         {
             RequestId = borrowRequest.RequestId,
             UserId = borrowRequest.UserId,
+            FullName = borrowRequest.User.FullName,
+            Email = borrowRequest.User.Email,
+            PhoneNumber = borrowRequest.User.PhoneNumber,
             ItemId = borrowRequest.ItemId,
             ItemName = borrowRequest.Item.ItemName,
             Status = borrowRequest.Status,
@@ -53,7 +68,7 @@ public class BorrowRequestService : IBorrowRequestService
     }
 
     // Tạo yêu cầu mượn mới
-    public async Task CreateBorrowRequest(string token, CreateBorrowRequestReqModel requestModel)
+    public async Task<BorrowRequestResModel> CreateBorrowRequest(string token, CreateBorrowRequestReqModel requestModel)
     {
         var userId = _jwtService.decodeToken(token, "userId");
         var user = await _unitOfWork.Users.GetByIdAsync(userId);
@@ -63,6 +78,16 @@ public class BorrowRequestService : IBorrowRequestService
         var item = await _unitOfWork.DonateItem.GetByIdAsync(requestModel.ItemId);
         if (item == null)
             throw new ApiException(HttpStatusCode.NotFound, "Laptop not found.");
+        
+        var existingRequest = await _unitOfWork.BorrowRequest.FirstOrDefaultAsync(br =>
+        br.UserId == int.Parse(userId) &&
+        br.ItemId == requestModel.ItemId &&
+        (br.Status == DonateStatus.Pending.ToString()));
+
+        if (existingRequest != null)
+        {
+            throw new ApiException(HttpStatusCode.BadRequest, "Bạn đã có một yêu cầu mượn laptop đang chờ xử lý hoặc đã được duyệt.");
+        }
 
         var borrowRequest = new BorrowRequest
         {
@@ -76,6 +101,20 @@ public class BorrowRequestService : IBorrowRequestService
 
         await _unitOfWork.BorrowRequest.AddAsync(borrowRequest);
         await _unitOfWork.SaveAsync(); // Lưu lại vào DB
+
+        return new BorrowRequestResModel
+        {
+            RequestId = borrowRequest.RequestId,
+            UserId = borrowRequest.UserId,
+            FullName = borrowRequest.User.FullName,
+            Email = borrowRequest.User.Email,
+            PhoneNumber = borrowRequest.User.PhoneNumber,
+            ItemId = borrowRequest.ItemId,
+            ItemName = borrowRequest.Item.ItemName,
+            Status = borrowRequest.Status,
+            StartDate = borrowRequest.StartDate,
+            EndDate = borrowRequest.EndDate
+        };
     }
 
 
