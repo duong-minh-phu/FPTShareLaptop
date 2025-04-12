@@ -88,7 +88,6 @@ public partial class Sep490Context : DbContext
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer(GetConnectionString());
 
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BorrowContract>(entity =>
@@ -255,20 +254,49 @@ public partial class Sep490Context : DbContext
 
             entity.ToTable("DonateItem");
 
+            entity.Property(e => e.Battery)
+                .HasMaxLength(100)
+                .HasDefaultValue("");
+            entity.Property(e => e.CategoryId).HasDefaultValue(1);
+            entity.Property(e => e.Color)
+                .HasMaxLength(50)
+                .HasDefaultValue("");
             entity.Property(e => e.ConditionItem).HasMaxLength(255);
             entity.Property(e => e.Cpu)
                 .HasMaxLength(50)
                 .HasColumnName("CPU");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasDefaultValue("");
+            entity.Property(e => e.GraphicsCard)
+                .HasMaxLength(100)
+                .HasDefaultValue("");
             entity.Property(e => e.ItemImage).HasMaxLength(255);
             entity.Property(e => e.ItemName).HasMaxLength(255);
+            entity.Property(e => e.Model)
+                .HasMaxLength(100)
+                .HasDefaultValue("");
+            entity.Property(e => e.OperatingSystem)
+                .HasMaxLength(100)
+                .HasDefaultValue("");
+            entity.Property(e => e.Ports)
+                .HasMaxLength(255)
+                .HasDefaultValue("");
+            entity.Property(e => e.ProductionYear).HasDefaultValue(2000);
             entity.Property(e => e.Ram)
                 .HasMaxLength(50)
                 .HasColumnName("RAM");
             entity.Property(e => e.ScreenSize).HasMaxLength(50);
+            entity.Property(e => e.SerialNumber)
+                .HasMaxLength(100)
+                .HasDefaultValue("");
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.Storage).HasMaxLength(50);
             entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Category).WithMany(p => p.DonateItems)
+                .HasForeignKey(d => d.CategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_DonateItem_Category");
 
             entity.HasOne(d => d.DonateForm).WithMany(p => p.DonateItems)
                 .HasForeignKey(d => d.DonateFormId)
@@ -467,11 +495,17 @@ public partial class Sep490Context : DbContext
 
             entity.ToTable("Product");
 
+            entity.Property(e => e.Battery).HasMaxLength(255);
+            entity.Property(e => e.Color).HasMaxLength(100);
             entity.Property(e => e.Cpu)
                 .HasMaxLength(50)
                 .HasColumnName("CPU");
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.GraphicsCard).HasMaxLength(255);
             entity.Property(e => e.ImageProduct).HasMaxLength(255);
+            entity.Property(e => e.Model).HasMaxLength(255);
+            entity.Property(e => e.OperatingSystem).HasMaxLength(255);
+            entity.Property(e => e.Ports).HasMaxLength(255);
             entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.ProductName).HasMaxLength(255);
             entity.Property(e => e.Ram)
