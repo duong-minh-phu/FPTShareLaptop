@@ -12,7 +12,6 @@ namespace DataAccess.WalletTransaction
         public int WalletId { get; set; }
         public string TransactionType { get; set; } = null!;
         public decimal Amount { get; set; }
-        public int RelatedPaymentId { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Note { get; set; } = null!;
     }
