@@ -32,6 +32,7 @@ namespace Service.Service
                 ItemName = d.ItemName,
                 ImageDonateForm=d.ImageDonateForm,
                 ItemDescription = d.ItemDescription,
+                ImageDonateForm = d.ImageDonateForm,
                 Quantity = d.DonateQuantity,  
                 Status = d.Status,
                 CreatedAt = DateTime.UtcNow
@@ -51,6 +52,7 @@ namespace Service.Service
                 ImageDonateForm = donation.ImageDonateForm,
 
                 ItemDescription = donation.ItemDescription,
+                ImageDonateForm = donation.ImageDonateForm,
                 Quantity = donation.DonateQuantity,
                 Status = donation.Status,
                 CreatedAt = DateTime.UtcNow

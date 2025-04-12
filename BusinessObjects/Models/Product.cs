@@ -31,6 +31,22 @@ public partial class Product
 
     public int ShopId { get; set; }
 
+    public string Model { get; set; } = null!;
+
+    public string Color { get; set; } = null!;
+
+    public string GraphicsCard { get; set; } = null!;
+
+    public string Battery { get; set; } = null!;
+
+    public string Ports { get; set; } = null!;
+
+    public int ProductionYear { get; set; }
+
+    public string OperatingSystem { get; set; } = null!;
+
+    public string Description { get; set; } = null!;
+
     public virtual Category Category { get; set; } = null!;
 
     public virtual ICollection<FeedbackProduct> FeedbackProducts { get; set; } = new List<FeedbackProduct>();
