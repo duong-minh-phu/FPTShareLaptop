@@ -16,7 +16,16 @@ namespace DataAccess.DonateItemDTO
         public string? Storage { get; set; }
         public string? ScreenSize { get; set; }
         public string? ConditionItem { get; set; }
-        public int? TotalBorrowedCount { get; set; }
         public string? Status { get; set; }
+        public string? SerialNumber { get; set; }
+        public string? Model { get; set; }
+        public string? Color { get; set; }
+        public string? GraphicsCard { get; set; }
+        public string? Battery { get; set; }
+        public string? Ports { get; set; }
+        public int? ProductionYear { get; set; }
+        public string? OperatingSystem { get; set; }
+        public string? Description { get; set; }
+        public int? CategoryId { get; set; }
     }
 }

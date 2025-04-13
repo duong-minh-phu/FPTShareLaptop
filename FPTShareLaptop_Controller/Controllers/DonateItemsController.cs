@@ -31,7 +31,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> GetAll()
         {
             var items = await _unitOfWork.DonateItem.GetAllAsync();
-            var itemDTOs = _mapper.Map<IEnumerable<DonateItemDTO>>(items);
+            var itemDTOs = _mapper.Map<IEnumerable<DonateItemReadDTO>>(items);
             return Ok(ResultModel.Success(itemDTOs));
         }
 
@@ -44,7 +44,7 @@ namespace FPTShareLaptop_Controller.Controllers
             {
                 return NotFound(ResultModel.NotFound());
             }
-            var itemDTO = _mapper.Map<DonateItemDTO>(item);
+            var itemDTO = _mapper.Map<DonateItemReadDTO>(item);
             return Ok(ResultModel.Success(itemDTO));
         }
 
@@ -55,6 +55,11 @@ namespace FPTShareLaptop_Controller.Controllers
             if (itemDTO == null)
             {
                 return BadRequest(ResultModel.BadRequest("Invalid data."));
+            }
+            var donateForm = await _unitOfWork.DonateForm.GetByIdAsync(itemDTO.DonateFormId);
+            if (donateForm == null)
+            {
+                return BadRequest(ResultModel.BadRequest("DonateFormId không tồn tại."));
             }
 
             // Upload ảnh lên Cloudinary
@@ -84,7 +89,7 @@ namespace FPTShareLaptop_Controller.Controllers
             await _unitOfWork.DonateItem.AddAsync(item);
             await _unitOfWork.SaveAsync();
 
-            var result = _mapper.Map<DonateItemDTO>(item);
+            var result = _mapper.Map<DonateItemReadDTO>(item);
             return CreatedAtAction(nameof(GetById), new { id = item.ItemId }, ResultModel.Created(result));
         }
 

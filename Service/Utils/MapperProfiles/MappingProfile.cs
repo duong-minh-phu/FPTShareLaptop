@@ -38,10 +38,11 @@ namespace Service.Utils.MapperProfiles
     {
         public MappingProfile()
         {
-            CreateMap<DonateItem, DonateItemDTO>();
+            CreateMap<DonateItem, DonateItemReadDTO>();
             CreateMap<DonateItemCreateDTO, DonateItem>();
-            CreateMap<DonateItemUpdateDTO, DonateItem>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
-        
+            CreateMap<DonateItemUpdateDTO, DonateItem>()
+            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
             CreateMap<ItemImage, ItemImageDTO>().ReverseMap();
             CreateMap<CreateItemImageDTO, ItemImage>().ReverseMap();
             CreateMap<UpdateItemImageDTO, ItemImage>().ReverseMap();
