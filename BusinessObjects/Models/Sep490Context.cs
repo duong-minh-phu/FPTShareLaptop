@@ -40,6 +40,8 @@ public partial class Sep490Context : DbContext
 
     public virtual DbSet<ItemImage> ItemImages { get; set; }
 
+    public virtual DbSet<Major> Majors { get; set; }
+
     public virtual DbSet<Order> Orders { get; set; }
 
     public virtual DbSet<OrderDetail> OrderDetails { get; set; }
@@ -87,6 +89,7 @@ public partial class Sep490Context : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer(GetConnectionString());
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -160,6 +163,11 @@ public partial class Sep490Context : DbContext
                 .HasForeignKey(d => d.ItemId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__BorrowReq__ItemI__7E37BEF6");
+
+            entity.HasOne(d => d.Major).WithMany(p => p.BorrowRequests)
+                .HasForeignKey(d => d.MajorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BorrowRequest_Major");
 
             entity.HasOne(d => d.User).WithMany(p => p.BorrowRequests)
                 .HasForeignKey(d => d.UserId)
@@ -416,6 +424,20 @@ public partial class Sep490Context : DbContext
                 .HasForeignKey(d => d.ItemId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__ItemImage__ItemI__1332DBDC");
+        });
+
+        modelBuilder.Entity<Major>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Major__3214EC07D027C40A");
+
+            entity.ToTable("Major");
+
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Order>(entity =>
