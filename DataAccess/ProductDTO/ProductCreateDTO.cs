@@ -19,6 +19,8 @@ namespace DataAccess.ProductDTO
         [Required]
         public decimal Price { get; set; }
 
+        public IFormFile? ImageFile { get; set; }
+
         [Required]
         public string ScreenSize { get; set; } = null!;
 
@@ -32,11 +34,33 @@ namespace DataAccess.ProductDTO
         public string Cpu { get; set; } = null!;
 
         [Required]
+        public string Model { get; set; } = null!;
+
+        [Required]
+        public string Color { get; set; } = null!;
+
+        [Required]
+        public string GraphicsCard { get; set; } = null!;
+
+        [Required]
+        public string Battery { get; set; } = null!;
+
+        [Required]
+        public string Ports { get; set; } = null!;
+
+        [Required]
+        public int ProductionYear { get; set; }
+
+        [Required]
+        public string OperatingSystem { get; set; } = null!;
+
+        [Required]
+        public string Description { get; set; } = null!;
+
+        [Required]
         public int CategoryId { get; set; }
 
         [Required]
         public int ShopId { get; set; }
-
-        public IFormFile? ImageFile { get; set; } // Ảnh tải lên Cloudinary
     }
 }
