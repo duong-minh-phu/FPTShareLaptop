@@ -17,6 +17,8 @@ public partial class SponsorFund
 
     public string? ProofImageUrl { get; set; }
 
+    public string Status { get; set; } = null!;
+
     public virtual ICollection<PurchasedLaptop> PurchasedLaptops { get; set; } = new List<PurchasedLaptop>();
 
     public virtual User Sponsor { get; set; } = null!;

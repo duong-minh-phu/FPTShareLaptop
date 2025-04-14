@@ -27,6 +27,7 @@ public class BorrowRequestService : IBorrowRequestService
         b => b.User,
         b => b.Major
     });
+
         return borrowRequests.Select(b => new BorrowRequestResModel
         {
             RequestId = b.RequestId,
