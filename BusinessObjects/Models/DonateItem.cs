@@ -69,6 +69,8 @@ public partial class DonateItem
 
     public virtual ICollection<ItemImage> ItemImages { get; set; } = new List<ItemImage>();
 
+    public virtual ICollection<PurchasedLaptop> PurchasedLaptops { get; set; } = new List<PurchasedLaptop>();
+
     public virtual ICollection<ReportDamage> ReportDamages { get; set; } = new List<ReportDamage>();
 
     public virtual User User { get; set; } = null!;

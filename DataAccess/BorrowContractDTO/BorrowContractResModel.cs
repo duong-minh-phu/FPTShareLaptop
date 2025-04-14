@@ -21,5 +21,6 @@ namespace DataAccess.BorrowContractDTO
         public string ConditionBorrow { get; set; }
         public decimal ItemValue { get; set; }
         public DateTime ExpectedReturnDate { get; set; }
+        public List<string> ContractImages { get; set; } = new List<string>();
     }
 }

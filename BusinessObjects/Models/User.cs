@@ -57,6 +57,8 @@ public partial class User
 
     public virtual Shop? Shop { get; set; }
 
+    public virtual ICollection<SponsorFund> SponsorFunds { get; set; } = new List<SponsorFund>();
+
     public virtual Student? Student { get; set; }
 
     public virtual ICollection<Wallet> Wallets { get; set; } = new List<Wallet>();

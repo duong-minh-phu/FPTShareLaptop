@@ -4,6 +4,11 @@ using Service.IService;
 using BusinessObjects.Enums;
 using DataAccess.BorrowContractDTO;
 using Service.Utils.CustomException;
+using CloudinaryDotNet.Actions;
+using CloudinaryDotNet;
+using Microsoft.AspNetCore.Http;
+using DataAccess.BorrowRequestDTO;
+using System.Linq.Expressions;
 
 namespace Service.Service
 {
@@ -11,17 +16,24 @@ namespace Service.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJWTService _jwtService;
+        private readonly Cloudinary _cloudinary;
 
-        public BorrowContractService(IUnitOfWork unitOfWork, IJWTService jwtService)
+        public BorrowContractService(IUnitOfWork unitOfWork, IJWTService jwtService, Cloudinary cloudinary)
         {
             _unitOfWork = unitOfWork;
             _jwtService = jwtService;
+            _cloudinary = cloudinary;
         }
 
         // Lấy tất cả hợp đồng mượn
         public async Task<List<BorrowContractResponseModel>> GetAllBorrowContracts()
         {
-            var contracts = await _unitOfWork.BorrowContract.GetAllAsync(includeProperties: c => c.User);
+            var contracts = await _unitOfWork.BorrowContract.GetAllAsync(
+                includeProperties: new Expression<Func<BorrowContract, object>>[] {
+                    c => c.User,
+                    c => c.ContractImages
+                });
+
             return contracts.Select(contract => new BorrowContractResponseModel
             {
                 ContractId = contract.ContractId,
@@ -36,7 +48,8 @@ namespace Service.Service
                 Terms = contract.Terms,
                 ConditionBorrow = contract.ConditionBorrow,
                 ItemValue = contract.ItemValue,
-                ExpectedReturnDate = contract.ExpectedReturnDate
+                ExpectedReturnDate = contract.ExpectedReturnDate,
+                ContractImages = contract.ContractImages.Select(ci => ci.ImageUrl).ToList()
             }).ToList();
         }
 
@@ -44,7 +57,12 @@ namespace Service.Service
         // Lấy hợp đồng theo ID
         public async Task<BorrowContractResponseModel> GetBorrowContractById(int contractId)
         {
-            var contract = await _unitOfWork.BorrowContract.GetByIdAsync(contractId, includeProperties: c => c.User);
+            var contract = await _unitOfWork.BorrowContract.GetByIdAsync(contractId,
+               includeProperties: new Expression<Func<BorrowContract, object>>[] {
+                    c => c.User,
+                    c => c.ContractImages
+               });
+
             if (contract == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Borrow contract not found.");
 
@@ -62,7 +80,8 @@ namespace Service.Service
                 Terms = contract.Terms,
                 ConditionBorrow = contract.ConditionBorrow,
                 ItemValue = contract.ItemValue,
-                ExpectedReturnDate = contract.ExpectedReturnDate
+                ExpectedReturnDate = contract.ExpectedReturnDate,
+                ContractImages = contract.ContractImages.Select(ci => ci.ImageUrl).ToList()
             };
         }
 
@@ -156,5 +175,44 @@ namespace Service.Service
             _unitOfWork.BorrowContract.Delete(contract);
             await _unitOfWork.SaveAsync();
         }
+
+        public async Task UploadSignedContractImage(string token, int contractId, UploadBorrowContractReqModel requestModel)
+        {
+            var userId = _jwtService.decodeToken(token, "userId");
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null)
+                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+
+            var contract = await _unitOfWork.BorrowContract.GetByIdAsync(contractId, includeProperties: c => c.ContractImages);
+            if (contract == null)
+                throw new ApiException(HttpStatusCode.NotFound, "Borrow contract not found.");          
+
+            // Upload ảnh
+            using var stream = requestModel.ImageBorrowConract.OpenReadStream();
+            var uploadParams = new ImageUploadParams
+            {
+                File = new FileDescription(requestModel.ImageBorrowConract.FileName, stream),
+                Folder = "contract_images"
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            if (uploadResult.Error != null)
+                throw new ApiException(HttpStatusCode.InternalServerError, uploadResult.Error.Message);
+
+            // Thêm ảnh vào danh sách
+            contract.ContractImages.Add(new ContractImage
+            {
+                ImageUrl = uploadResult.SecureUrl.ToString(),
+                BorrowContractId = contract.ContractId,
+                CreatedDate = DateTime.UtcNow
+            });
+
+            // Cập nhật trạng thái
+            contract.Status = ContractStatus.Signed.ToString();
+
+            _unitOfWork.BorrowContract.Update(contract);
+            await _unitOfWork.SaveAsync();
+        }
+
     }
 }

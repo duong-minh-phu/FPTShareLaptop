@@ -14,12 +14,14 @@ namespace Service.Service
         private readonly IUnitOfWork _unitOfWork;
         private readonly Cloudinary _cloudinary;
         private readonly IJWTService _jwtService;
+        private readonly IEmailService _emailService;
 
-        public DonationFormService(IUnitOfWork unitOfWork, Cloudinary cloudinary, IJWTService jWTService)
+        public DonationFormService(IUnitOfWork unitOfWork, Cloudinary cloudinary, IJWTService jWTService, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _cloudinary = cloudinary;
             _jwtService = jWTService;
+            _emailService = emailService;
         }
 
         public async Task<List<DonateFormResModel>> GetAllDonationsAsync()
@@ -90,7 +92,13 @@ namespace Service.Service
 
             await _unitOfWork.DonateForm.AddAsync(newDonate);
             await _unitOfWork.SaveAsync();
-            
+
+            var sponsor = await _unitOfWork.Users.GetByIdAsync(request.SponsorId);
+            if (sponsor != null && !string.IsNullOrEmpty(sponsor.Email))
+            {
+                await _emailService.SendUnifiedAppointmentEmailToSponsor(sponsor.FullName, sponsor.Email);
+            }
+
             return new DonateFormResModel
             {
                 DonationFormId = newDonate.DonateFormId,
