@@ -41,7 +41,7 @@ namespace Service.IService
         IGenericRepository<Shipment> Shipment { get; }
         IGenericRepository<TrackingInfo> TrackingInfo { get; }
 
-
+        IGenericRepository<Major> Major { get; }
         IGenericRepository<SettlementTransaction> SettlementTransaction { get; }
         IGenericRepository<FeedbackProduct> FeedbackProduct { get; }
 
