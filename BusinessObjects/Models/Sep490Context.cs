@@ -97,6 +97,7 @@ public partial class Sep490Context : DbContext
         => optionsBuilder.UseSqlServer(GetConnectionString());
 
 
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BorrowContract>(entity =>
@@ -136,6 +137,9 @@ public partial class Sep490Context : DbContext
 
             entity.Property(e => e.BorrowDate).HasColumnType("datetime");
             entity.Property(e => e.ReturnDate).HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasDefaultValue("Pending");
 
             entity.HasOne(d => d.Item).WithMany(p => p.BorrowHistories)
                 .HasForeignKey(d => d.ItemId)
@@ -594,6 +598,7 @@ public partial class Sep490Context : DbContext
 
             entity.Property(e => e.PurchaseAmount).HasColumnType("money");
             entity.Property(e => e.PurchaseDate).HasColumnType("datetime");
+            entity.Property(e => e.Status).HasMaxLength(50);
 
             entity.HasOne(d => d.DonateItem).WithMany(p => p.PurchasedLaptops)
                 .HasForeignKey(d => d.DonateItemId)
@@ -765,6 +770,7 @@ public partial class Sep490Context : DbContext
 
             entity.Property(e => e.Amount).HasColumnType("money");
             entity.Property(e => e.ProofImageUrl).HasMaxLength(500);
+            entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.TransferDate).HasColumnType("datetime");
 
             entity.HasOne(d => d.Sponsor).WithMany(p => p.SponsorFunds)
