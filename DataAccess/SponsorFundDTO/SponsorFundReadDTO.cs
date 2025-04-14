@@ -14,5 +14,6 @@ namespace DataAccess.SponsorFundDTO
         public string? Description { get; set; }
         public DateTime TransferDate { get; set; }
         public string? ProofImageUrl { get; set; }
+        public string? Status { get; set; }
     }
 }
