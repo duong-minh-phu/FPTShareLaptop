@@ -24,7 +24,8 @@ public class BorrowRequestService : IBorrowRequestService
     {
         var borrowRequests = await _unitOfWork.BorrowRequest.GetAllAsync(includeProperties: new Expression<Func<BorrowRequest, object>>[] {
         b => b.Item,
-        b => b.User
+        b => b.User,
+        b => b.Major
     });
         return borrowRequests.Select(b => new BorrowRequestResModel
         {
@@ -37,7 +38,8 @@ public class BorrowRequestService : IBorrowRequestService
             ItemName = b.Item.ItemName,
             Status = b.Status,
             StartDate = b.StartDate,
-            EndDate = b.EndDate
+            EndDate = b.EndDate,
+            MajorName = b.Major?.Name
         }).ToList();
     }
 
@@ -46,7 +48,8 @@ public class BorrowRequestService : IBorrowRequestService
     {
         var borrowRequest = await _unitOfWork.BorrowRequest.GetByIdAsync(requestId, includeProperties: new Expression<Func<BorrowRequest, object>>[] {
         b => b.Item,
-        b => b.User
+        b => b.User,
+        b => b.Major
         });
 
         if (borrowRequest == null)
@@ -63,7 +66,8 @@ public class BorrowRequestService : IBorrowRequestService
             ItemName = borrowRequest.Item.ItemName,
             Status = borrowRequest.Status,
             StartDate = borrowRequest.StartDate,
-            EndDate = borrowRequest.EndDate
+            EndDate = borrowRequest.EndDate,
+            MajorName = borrowRequest.Major?.Name
         };
     }
 
@@ -93,6 +97,7 @@ public class BorrowRequestService : IBorrowRequestService
         {
             UserId = user.UserId,  // Chỉ cần lấy từ token
             ItemId = requestModel.ItemId,
+            MajorId = requestModel.MajorId,
             Status = DonateStatus.Pending.ToString(),
             StartDate = requestModel.StartDate,
             EndDate = requestModel.EndDate,
@@ -113,7 +118,8 @@ public class BorrowRequestService : IBorrowRequestService
             ItemName = borrowRequest.Item.ItemName,
             Status = borrowRequest.Status,
             StartDate = borrowRequest.StartDate,
-            EndDate = borrowRequest.EndDate
+            EndDate = borrowRequest.EndDate,
+            MajorName = borrowRequest.Major?.Name
         };
     }
 
