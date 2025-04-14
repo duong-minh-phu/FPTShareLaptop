@@ -32,6 +32,7 @@ using DataAccess.ShopDTO;
 using DataAccess.UserDTO;
 using DataAccess.MajorDTO;
 using DataAccess.SponsorFundDTO;
+using DataAccess.PurchasedLaptopDTO;
 
 
 namespace Service.Utils.MapperProfiles
@@ -128,6 +129,12 @@ namespace Service.Utils.MapperProfiles
             CreateMap<SponsorFund, SponsorFundReadDTO>();
             CreateMap<SponsorFundCreateDTO, SponsorFund>();
             CreateMap<SponsorFundUpdateDTO, SponsorFund>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+
+            CreateMap<PurchasedLaptop, PurchasedLaptopDTO>().ReverseMap();
+            CreateMap<PurchasedLaptopCreateDTO, PurchasedLaptop>();
+            CreateMap<PurchasedLaptopUpdateDTO, PurchasedLaptop>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
 
