@@ -33,6 +33,9 @@ builder.Services.AddControllers();
 //-----------------------------------------MIDDLEWARE---------------------------------------
 builder.Services.AddSingleton<GlobalExceptionMiddleware>();
 //-----------------------------------------SERVICES-----------------------------------------
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient<OpenAIService>();
+builder.Services.AddScoped<OpenAIService>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IJWTService, JWTService>();
