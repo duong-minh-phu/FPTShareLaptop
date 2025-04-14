@@ -16,7 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 //-----------------------------------------DB-----------------------------------------
 builder.Services.AddDbContext<Sep490Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 // Add services to the container.
 // Thêm dịch vụ CORS
 builder.Services.AddCors(options =>
