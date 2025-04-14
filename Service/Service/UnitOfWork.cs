@@ -82,6 +82,9 @@ namespace Service.Service
         public IGenericRepository<SettlementTransaction> SettlementTransaction => Repository<SettlementTransaction>();
         public IGenericRepository<FeedbackProduct> FeedbackProduct => Repository<FeedbackProduct>();
         public IGenericRepository<Major> Major => Repository<Major>();
+        public IGenericRepository<SponsorFund> SponsorFund => Repository<SponsorFund>();
+        public IGenericRepository<PurchasedLaptop> PurchasedLaptop => Repository<PurchasedLaptop>();
+
 
 
         public async Task<int> SaveAsync()

@@ -31,6 +31,7 @@ using DataAccess.SettlementTransactionDTO;
 using DataAccess.ShopDTO;
 using DataAccess.UserDTO;
 using DataAccess.MajorDTO;
+using DataAccess.SponsorFundDTO;
 
 
 namespace Service.Utils.MapperProfiles
@@ -122,6 +123,12 @@ namespace Service.Utils.MapperProfiles
             CreateMap<Major, MajorReadDTO>();
             CreateMap<MajorCreateDTO, Major>();
             CreateMap<MajorUpdateDTO, Major>();
+
+
+            CreateMap<SponsorFund, SponsorFundReadDTO>();
+            CreateMap<SponsorFundCreateDTO, SponsorFund>();
+            CreateMap<SponsorFundUpdateDTO, SponsorFund>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
 
             CreateMap<FeedbackProduct, FeedbackProductDTO>()

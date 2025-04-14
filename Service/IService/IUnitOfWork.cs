@@ -44,6 +44,8 @@ namespace Service.IService
         IGenericRepository<Major> Major { get; }
         IGenericRepository<SettlementTransaction> SettlementTransaction { get; }
         IGenericRepository<FeedbackProduct> FeedbackProduct { get; }
+        IGenericRepository<PurchasedLaptop> PurchasedLaptop { get; }
+        IGenericRepository<SponsorFund> SponsorFund { get; }
 
         Task<int> SaveAsync();
     }
