@@ -30,6 +30,9 @@ using DataAccess.ReportDamageDTO;
 using DataAccess.SettlementTransactionDTO;
 using DataAccess.ShopDTO;
 using DataAccess.UserDTO;
+using DataAccess.MajorDTO;
+using DataAccess.SponsorFundDTO;
+using DataAccess.PurchasedLaptopDTO;
 
 
 namespace Service.Utils.MapperProfiles
@@ -38,10 +41,11 @@ namespace Service.Utils.MapperProfiles
     {
         public MappingProfile()
         {
-            CreateMap<DonateItem, DonateItemDTO>();
+            CreateMap<DonateItem, DonateItemReadDTO>();
             CreateMap<DonateItemCreateDTO, DonateItem>();
-            CreateMap<DonateItemUpdateDTO, DonateItem>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
-        
+            CreateMap<DonateItemUpdateDTO, DonateItem>()
+            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
             CreateMap<ItemImage, ItemImageDTO>().ReverseMap();
             CreateMap<CreateItemImageDTO, ItemImage>().ReverseMap();
             CreateMap<UpdateItemImageDTO, ItemImage>().ReverseMap();
@@ -117,6 +121,23 @@ namespace Service.Utils.MapperProfiles
             CreateMap<SettlementTransactionUpdateDTO, SettlementTransaction>();
 
 
+            CreateMap<Major, MajorReadDTO>();
+            CreateMap<MajorCreateDTO, Major>();
+            CreateMap<MajorUpdateDTO, Major>();
+
+
+            CreateMap<SponsorFund, SponsorFundReadDTO>();
+            CreateMap<SponsorFundCreateDTO, SponsorFund>();
+            CreateMap<SponsorFundUpdateDTO, SponsorFund>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+
+            CreateMap<PurchasedLaptop, PurchasedLaptopDTO>().ReverseMap();
+            CreateMap<PurchasedLaptopCreateDTO, PurchasedLaptop>();
+            CreateMap<PurchasedLaptopUpdateDTO, PurchasedLaptop>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+
             CreateMap<FeedbackProduct, FeedbackProductDTO>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.FeedbackProductId))
             .ForMember(dest => dest.OrderDetailId, opt => opt.MapFrom(src => src.OrderItemId))
@@ -138,6 +159,9 @@ namespace Service.Utils.MapperProfiles
                 .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.Avatar))
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.RoleName))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+
+
+
 
                 // Mapping thông tin từ bảng Student nếu có
                 .ForMember(dest => dest.StudentCode, opt => opt.MapFrom(src => src.Student != null ? src.Student.StudentCode : null))
