@@ -71,8 +71,7 @@ namespace FPTShareLaptop_Controller.Controllers
             await _unitOfWork.ReportDamage.AddAsync(report);
             await _unitOfWork.SaveAsync();
 
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = report.ReportId },
-                ResultModel.Created(_mapper.Map<ReportDamageDTO>(report), "Report created successfully."));
+            return StatusCode(201, ResultModel.Created(_mapper.Map<ReportDamageDTO>(report), "Report created successfully."));
         }
 
         [HttpPut("{id}")]
