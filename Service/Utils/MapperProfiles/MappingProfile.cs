@@ -134,8 +134,7 @@ namespace Service.Utils.MapperProfiles
 
             CreateMap<PurchasedLaptop, PurchasedLaptopDTO>().ReverseMap();
             CreateMap<PurchasedLaptopCreateDTO, PurchasedLaptop>();
-            CreateMap<PurchasedLaptopUpdateDTO, PurchasedLaptop>()
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<PurchasedLaptopUpdateDTO, PurchasedLaptop>();
 
 
             CreateMap<FeedbackProduct, FeedbackProductDTO>()

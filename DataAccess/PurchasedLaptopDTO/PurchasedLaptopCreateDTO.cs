@@ -11,6 +11,7 @@ namespace DataAccess.PurchasedLaptopDTO
         public int DonateItemId { get; set; }
         public int SponsorFundId { get; set; }
         public decimal PurchaseAmount { get; set; }
-        public DateTime PurchaseDate { get; set; }
+        
+        
     }
 }
