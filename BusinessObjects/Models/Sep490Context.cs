@@ -26,6 +26,8 @@ public partial class Sep490Context : DbContext
 
     public virtual DbSet<CompensationTransaction> CompensationTransactions { get; set; }
 
+    public virtual DbSet<ContractImage> ContractImages { get; set; }
+
     public virtual DbSet<DepositTransaction> DepositTransactions { get; set; }
 
     public virtual DbSet<DonateForm> DonateForms { get; set; }
@@ -54,6 +56,8 @@ public partial class Sep490Context : DbContext
 
     public virtual DbSet<ProductImage> ProductImages { get; set; }
 
+    public virtual DbSet<PurchasedLaptop> PurchasedLaptops { get; set; }
+
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
     public virtual DbSet<RefundTransaction> RefundTransactions { get; set; }
@@ -67,6 +71,8 @@ public partial class Sep490Context : DbContext
     public virtual DbSet<Shipment> Shipments { get; set; }
 
     public virtual DbSet<Shop> Shops { get; set; }
+
+    public virtual DbSet<SponsorFund> SponsorFunds { get; set; }
 
     public virtual DbSet<Student> Students { get; set; }
 
@@ -214,6 +220,21 @@ public partial class Sep490Context : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Compensat__UserI__02FC7413");
+        });
+
+        modelBuilder.Entity<ContractImage>(entity =>
+        {
+            entity.HasKey(e => e.ContractImageId).HasName("PK__Contract__0952C38C3D7D9E11");
+
+            entity.ToTable("ContractImage");
+
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.ImageUrl).HasMaxLength(255);
+
+            entity.HasOne(d => d.BorrowContract).WithMany(p => p.ContractImages)
+                .HasForeignKey(d => d.BorrowContractId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ContractImage_BorrowContract");
         });
 
         modelBuilder.Entity<DepositTransaction>(entity =>
@@ -565,6 +586,26 @@ public partial class Sep490Context : DbContext
                 .HasConstraintName("FK__ProductIm__Produ__1AD3FDA4");
         });
 
+        modelBuilder.Entity<PurchasedLaptop>(entity =>
+        {
+            entity.HasKey(e => e.PurchasedLaptopId).HasName("PK__Purchase__B254BA9FE367494F");
+
+            entity.ToTable("PurchasedLaptop");
+
+            entity.Property(e => e.PurchaseAmount).HasColumnType("money");
+            entity.Property(e => e.PurchaseDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.DonateItem).WithMany(p => p.PurchasedLaptops)
+                .HasForeignKey(d => d.DonateItemId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Purchased__Donat__214BF109");
+
+            entity.HasOne(d => d.SponsorFund).WithMany(p => p.PurchasedLaptops)
+                .HasForeignKey(d => d.SponsorFundId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Purchased__Spons__22401542");
+        });
+
         modelBuilder.Entity<RefreshToken>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__RefreshT__3214EC071104B986");
@@ -714,6 +755,22 @@ public partial class Sep490Context : DbContext
                 .HasForeignKey<Shop>(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Shop__UserId__25518C17");
+        });
+
+        modelBuilder.Entity<SponsorFund>(entity =>
+        {
+            entity.HasKey(e => e.SponsorFundId).HasName("PK__SponsorF__F969C5C5F57B6BC3");
+
+            entity.ToTable("SponsorFund");
+
+            entity.Property(e => e.Amount).HasColumnType("money");
+            entity.Property(e => e.ProofImageUrl).HasMaxLength(500);
+            entity.Property(e => e.TransferDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Sponsor).WithMany(p => p.SponsorFunds)
+                .HasForeignKey(d => d.SponsorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__SponsorFu__Spons__1E6F845E");
         });
 
         modelBuilder.Entity<Student>(entity =>
