@@ -32,8 +32,8 @@ namespace Service.Service
                 DonationFormId = d.DonateFormId,
                 SponsorId = d.UserId,  
                 ItemName = d.ItemName,
+                ImageDonateForm=d.ImageDonateForm,
                 ItemDescription = d.ItemDescription,
-                ImageDonateForm = d.ImageDonateForm,
                 Quantity = d.DonateQuantity,  
                 Status = d.Status,
                 CreatedAt = DateTime.UtcNow
@@ -50,8 +50,9 @@ namespace Service.Service
                 DonationFormId = donation.DonateFormId,
                 SponsorId = donation.UserId,
                 ItemName = donation.ItemName,
-                ItemDescription = donation.ItemDescription,
                 ImageDonateForm = donation.ImageDonateForm,
+
+                ItemDescription = donation.ItemDescription,
                 Quantity = donation.DonateQuantity,
                 Status = donation.Status,
                 CreatedAt = DateTime.UtcNow

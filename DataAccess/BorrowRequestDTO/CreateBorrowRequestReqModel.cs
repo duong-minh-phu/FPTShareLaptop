@@ -16,5 +16,8 @@ namespace DataAccess.BorrowRequestDTO
         public DateTime StartDate { get; set; }
         [Required(ErrorMessage = "EndDate is required")]
         public DateTime EndDate { get; set; }
+
+        [Required(ErrorMessage = "MajorId is required")]
+        public int MajorId { get; set; }
     }
 }
