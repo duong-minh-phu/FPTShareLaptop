@@ -25,7 +25,7 @@ public class BorrowRequestService : IBorrowRequestService
         var borrowRequests = await _unitOfWork.BorrowRequest.GetAllAsync(includeProperties: new Expression<Func<BorrowRequest, object>>[] {
         b => b.Item,
         b => b.User
-    });
+        });
         return borrowRequests.Select(b => new BorrowRequestResModel
         {
             RequestId = b.RequestId,

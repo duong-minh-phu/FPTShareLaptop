@@ -9,7 +9,8 @@ namespace BusinessObjects.Enums
     public enum ContractStatus
     {
         Pending,  
-        Active,    
+        Active,  
+        Signed,
         Completed, 
         Canceled   
     }

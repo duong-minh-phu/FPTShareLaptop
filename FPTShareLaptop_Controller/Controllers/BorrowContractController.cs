@@ -1,4 +1,5 @@
 ﻿using DataAccess.BorrowContractDTO;
+using DataAccess.BorrowRequestDTO;
 using DataAccess.ResultModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -96,5 +97,24 @@ namespace FPTShareLaptop_Controller.Controllers
             };
             return StatusCode(response.Code, response);
         }
+
+        [HttpPost("upload-image/{contractId}")]
+        [Authorize]
+        public async Task<IActionResult> UploadSignedContractImage(int contractId, [FromForm] UploadBorrowContractReqModel request)
+        {
+            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
+
+            await _borrowContractService.UploadSignedContractImage(token, contractId, request);
+
+            ResultModel response = new ResultModel
+            {
+                IsSuccess = true,
+                Code = (int)HttpStatusCode.OK,
+                Message = "Signed contract image uploaded successfully."
+            };
+
+            return StatusCode(response.Code, response);
+        }
+
     }
 }
