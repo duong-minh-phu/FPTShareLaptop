@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BusinessObjects.Models;
 using DataAccess.PasswordDTO;
 using DataAccess.UserDTO;
 
@@ -15,7 +16,9 @@ namespace Service.IService
         Task ChangePassword(string token, ChangePasswordReqModel changePasswordReqModel);
         Task ForgotPassword(string email);
         Task<UserProfileModel> GetUserInfor(string token);
-        Task<UserRegisterResModel> RegisterStudent(UserRegisterReqModel studentRegisterReqModel);
-        Task<UserRegisterResModel> RegisterSponsor(SponsorRegisterReqModel sponsorRegisterReqModel);
+        Task RegisterStudent(StudentRegisterReqModel request);
+        Task Register(UserRegisterReqModel request);
+        Task RegisterShop(ShopRegisterReqModel request);
+        Task UpdateUserProfile(string token, UpdateProfileReqModel request);
     }
 }

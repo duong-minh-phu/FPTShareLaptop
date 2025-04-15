@@ -19,6 +19,8 @@ public partial class DonateForm
 
     public int DonateQuantity { get; set; }
 
+    public string? ImageDonateForm { get; set; }
+
     public virtual ICollection<DonateItem> DonateItems { get; set; } = new List<DonateItem>();
 
     public virtual User User { get; set; } = null!;
