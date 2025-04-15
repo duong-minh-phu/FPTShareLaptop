@@ -56,7 +56,14 @@ namespace Service.Utils.MapperProfiles
             CreateMap<ReportDamage, ReportDamageDTO>().ReverseMap();
             CreateMap<ReportDamageCreateDTO, ReportDamage>();
             CreateMap<ReportDamageUpdateDTO, ReportDamage>();
+
+
             CreateMap<CompensationTransaction, CompensationTransactionDTO>().ReverseMap();
+            CreateMap<CompensationTransactionCreateDTO, CompensationTransaction>();
+            CreateMap<CompensationTransactionUpdateDTO, CompensationTransaction>();
+
+
+
             CreateMap<DepositTransaction, DepositTransactionDTO>();
             CreateMap<DepositTransactionCreateDTO, DepositTransaction>();
             CreateMap<DepositTransactionUpdateDTO, DepositTransaction>();
