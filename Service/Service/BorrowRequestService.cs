@@ -139,11 +139,11 @@ public class BorrowRequestService : IBorrowRequestService
             throw new ApiException(HttpStatusCode.NotFound, "Borrow request not found.");
 
         // Kiểm tra xem laptop đã được mượn chưa
-        if (updateModel.Status == DonateStatus.Approved.ToString())
+        if (borrowRequest.Status == DonateStatus.Approved.ToString())
         {
             var isBorrowed = await _unitOfWork.BorrowRequest
-                .AnyAsync(br => br.ItemId == borrowRequest.ItemId && br.Status == DonateStatus.Approved.ToString());
-
+                .AnyAsync(br => br.ItemId == borrowRequest.ItemId
+                                && br.Status == DonateStatus.Approved.ToString()); 
             if (isBorrowed)
                 throw new ApiException(HttpStatusCode.BadRequest, "Laptop is borrowed.");
         }
