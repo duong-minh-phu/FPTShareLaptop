@@ -106,6 +106,8 @@ public class BorrowRequestService : IBorrowRequestService
         };
 
         await _unitOfWork.BorrowRequest.AddAsync(borrowRequest);
+        item.Status = "NotAvailable";
+        _unitOfWork.DonateItem.Update(item);
         await _unitOfWork.SaveAsync(); // Lưu lại vào DB
 
         return new BorrowRequestResModel
@@ -149,6 +151,18 @@ public class BorrowRequestService : IBorrowRequestService
         }
 
         borrowRequest.Status = updateModel.Status;
+        if (borrowRequest.Status == "Rejected")
+        {
+            var item = await _unitOfWork.DonateItem.GetByIdAsync(borrowRequest.ItemId);
+            item.Status = "Available";
+            _unitOfWork.DonateItem.Update(item);
+        }
+        if (borrowRequest.Status == "Approved")
+        {
+            var item = await _unitOfWork.DonateItem.GetByIdAsync(borrowRequest.ItemId);
+            item.Status = "Borrow";
+            _unitOfWork.DonateItem.Update(item);
+        }
         _unitOfWork.BorrowRequest.Update(borrowRequest);
         await _unitOfWork.SaveAsync();
     }
