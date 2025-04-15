@@ -15,7 +15,7 @@ namespace Service.IService
         IGenericRepository<Category> Category { get; }
         IGenericRepository<DonateForm> DonateForm { get; }
         IGenericRepository<FeedbackBorrow> FeedbackBorrow { get; }
-
+        IGenericRepository<ContractImage> ContractImage { get; }
         IGenericRepository<Order> Order { get; }
         IGenericRepository<OrderDetail> OrderDetail { get; }
         IGenericRepository<Product> Product { get; }
