@@ -166,19 +166,18 @@ namespace FPTShareLaptop_Controller.Controllers
         }
 
         [HttpGet("summary/{userId}")]
-        public async Task<IActionResult> GetSponsorSummaryadmin(int userId)
+        public async Task<IActionResult> GetSponsorSummaryAdmin(int userId)
         {
             var sponsorFunds = await _context.SponsorFunds
                 .Where(sf => sf.UserId == userId)
                 .Include(sf => sf.SponsorContributions)
+                    .ThenInclude(sc => sc.PurchasedLaptop)  // Bao gồm PurchasedLaptop
+                        .ThenInclude(pl => pl.Item)        // Bao gồm DonateItem (Item)
                 .ToListAsync();
 
             if (!sponsorFunds.Any())
             {
-                return NotFound(new
-                {
-                    Message = $"Không tìm thấy khoản tài trợ nào cho UserId = {userId}"
-                });
+                return NotFound(ResultModel.NotFound($"Không tìm thấy khoản tài trợ nào cho UserId = {userId}"));
             }
 
             var totalDonated = sponsorFunds.Sum(sf => sf.Amount);
@@ -202,13 +201,151 @@ namespace FPTShareLaptop_Controller.Controllers
                     {
                         c.SponsorContributionId,
                         c.PurchasedLaptopId,
-                        c.ContributedAmount
+                        c.ContributedAmount,
+                        DonateItem = new
+                        {
+                            // Thêm thông tin từ DonateItem liên kết với PurchasedLaptop
+                            c.PurchasedLaptop.Item.ItemId,
+                            c.PurchasedLaptop.Item.ItemName,
+                            c.PurchasedLaptop.Item.ItemImage,
+                            c.PurchasedLaptop.Item.SerialNumber,
+                            c.PurchasedLaptop.Item.Model,
+                            c.PurchasedLaptop.Item.Color,
+                            c.PurchasedLaptop.Item.ConditionItem,
+                            c.PurchasedLaptop.Item.TotalBorrowedCount,
+                            c.PurchasedLaptop.Item.Status
+                        }
                     })
                 })
             };
 
-            return Ok(result);
+            return Ok(ResultModel.Success(result, "Lấy thông tin tài trợ thành công"));
         }
+
+
+        [HttpGet("fund-summary")]
+        public async Task<IActionResult> GetFundSummary()
+        {
+            // Lấy tổng số tiền nhận được từ các khoản tài trợ
+            var sponsorFunds = await _context.SponsorFunds.ToListAsync();
+            var totalReceived = sponsorFunds.Sum(sf => sf.Amount); // Tổng số tiền nhận được từ các khoản tài trợ
+
+            // Lấy tổng số tiền đã chi tiêu từ các laptop đã mua
+            var purchasedLaptops = await _context.PurchasedLaptops.ToListAsync();
+            var totalUsed = purchasedLaptops.Sum(pl => pl.TotalPrice); // Tổng số tiền đã chi tiêu từ việc mua laptop
+
+            // Tính số tiền còn lại
+            var remainingAmount = totalReceived - totalUsed;
+
+            // Trả về kết quả
+            var result = new
+            {
+                TotalReceived = totalReceived,
+                TotalUsed = totalUsed,
+                RemainingAmount = remainingAmount
+            };
+
+            return Ok(ResultModel.Success(result, "Tổng kết quỹ tài trợ"));
+        }
+
+
+        [HttpGet("users-with-remaining-funds")]
+        public async Task<IActionResult> GetUsersWithRemainingFunds()
+        {
+            // Lấy tất cả các khoản tài trợ và đóng góp cho laptop đã mua
+            var sponsorFunds = await _context.SponsorFunds.Include(sf => sf.User).ToListAsync();
+            var sponsorContributions = await _context.SponsorContributions.Include(sc => sc.PurchasedLaptop).ToListAsync();
+
+            // Tính toán số tiền nhận được và đã chi tiêu cho từng user
+            var userSummary = sponsorFunds
+                .GroupBy(sf => sf.UserId)
+                .Select(group => new
+                {
+                    UserId = group.Key,
+                    TotalReceived = group.Sum(sf => sf.Amount), // Tổng số tiền nhận được từ SponsorFund
+                    TotalUsed = sponsorContributions
+                        .Where(sc => sc.SponsorFundId == group.Key) // Lọc các khoản đóng góp của user này
+                        .Sum(sc => sc.ContributedAmount), // Tổng số tiền đã chi tiêu
+                    RemainingAmount = group.Sum(sf => sf.Amount) - sponsorContributions
+                        .Where(sc => sc.SponsorFundId == group.Key)
+                        .Sum(sc => sc.ContributedAmount) // Số tiền còn lại
+                })
+                .Where(user => user.RemainingAmount > 0) // Chỉ lấy những người dùng còn tiền
+                .ToList();
+
+            if (!userSummary.Any())
+            {
+                return NotFound(new { Message = "Không có người dùng nào có tiền còn lại." });
+            }
+
+            // Trả về kết quả
+            return Ok(ResultModel.Success(userSummary, "Danh sách người dùng còn dư tiền"));
+        }
+
+        [HttpGet("buyers-of-laptop/{laptopId}")]
+        public async Task<IActionResult> GetBuyersOfLaptop(int laptopId)
+        {
+            // Lấy tất cả các đóng góp liên quan đến laptop có ID bằng laptopId
+            var contributions = await _context.SponsorContributions
+                .Where(sc => sc.PurchasedLaptopId == laptopId)
+                .Include(sc => sc.SponsorFund) // Lấy thông tin quỹ tài trợ liên quan đến từng đóng góp
+                .ThenInclude(sf => sf.User) // Lấy thông tin người dùng từ SponsorFund
+                .ToListAsync();
+
+            // Kiểm tra nếu không có ai đã đóng góp cho laptop này
+            if (!contributions.Any())
+            {
+                return NotFound(new { Message = $"Không có người dùng nào đóng góp cho laptop có ID = {laptopId}" });
+            }
+
+            // Lấy thông tin người dùng đã đóng góp
+            var buyers = contributions.Select(sc => new
+            {
+                UserId = sc.SponsorFund.UserId,
+                UserName = sc.SponsorFund.User.FullName, // Giả sử bạn có thuộc tính Name trong User
+                ContributedAmount = sc.ContributedAmount,
+                PurchasedLaptopId = sc.PurchasedLaptopId
+            }).ToList();
+
+            // Trả về kết quả
+            return Ok(ResultModel.Success(buyers, "Danh sách người dùng đã đóng góp cho laptop"));
+        }
+
+        [HttpGet("donate-items-by-user/{userId}")]
+        public async Task<IActionResult> GetDonateItemsByUserId(int userId)
+        {
+            // Lấy tất cả các quỹ tài trợ của userId
+            var sponsorFunds = await _context.SponsorFunds
+                .Where(sf => sf.UserId == userId)
+                .Include(sf => sf.SponsorContributions)
+                .ThenInclude(sc => sc.PurchasedLaptop) // Bao gồm PurchasedLaptop để tìm laptop đã mua
+                .ToListAsync();
+
+            if (!sponsorFunds.Any())
+            {
+                return NotFound(new { Message = $"Không tìm thấy quỹ tài trợ nào cho UserId = {userId}" });
+            }
+
+            // Lấy tất cả các PurchasedLaptops từ SponsorContributions
+            var purchasedLaptops = sponsorFunds
+                .SelectMany(sf => sf.SponsorContributions)
+                .Select(sc => sc.PurchasedLaptop)
+                .Distinct()
+                .ToList();
+
+            // Tìm tất cả các DonateItem liên quan đến các PurchasedLaptop này
+            var donatedItems = _context.DonateItems
+                .Where(di => di.PurchasedLaptops.Any(pl => purchasedLaptops.Contains(pl)))
+                .ToList();
+
+            if (!donatedItems.Any())
+            {
+                return NotFound(new { Message = $"Không tìm thấy DonateItem nào được mua bằng tiền của UserId = {userId}" });
+            }
+
+            return Ok(ResultModel.Success(donatedItems, "Danh sách DonateItems đã được mua bằng tiền của User"));
+        }
+
 
 
     }
