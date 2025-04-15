@@ -46,6 +46,7 @@ namespace Service.IService
         IGenericRepository<FeedbackProduct> FeedbackProduct { get; }
         IGenericRepository<PurchasedLaptop> PurchasedLaptop { get; }
         IGenericRepository<SponsorFund> SponsorFund { get; }
+        IGenericRepository<ContractImage> ContractImage { get; }
 
         Task<int> SaveAsync();
     }

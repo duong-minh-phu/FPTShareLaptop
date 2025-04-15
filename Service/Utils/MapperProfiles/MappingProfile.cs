@@ -33,6 +33,7 @@ using DataAccess.UserDTO;
 using DataAccess.MajorDTO;
 using DataAccess.SponsorFundDTO;
 using DataAccess.PurchasedLaptopDTO;
+using DataAccess.ContractImageDTO;
 
 
 namespace Service.Utils.MapperProfiles
@@ -84,7 +85,8 @@ namespace Service.Utils.MapperProfiles
             CreateMap<PaymentMethod, PaymentMethodResModel>().ReverseMap();
             CreateMap<PaymentMethodReqModel, PaymentMethod>().ReverseMap();
 
-
+            CreateMap<ContractImage, ContractImageDTO>().ReverseMap();
+            CreateMap<ContractImageCreateDTO, ContractImage>();
 
 
             CreateMap<Shop, ShopReadDTO>();
