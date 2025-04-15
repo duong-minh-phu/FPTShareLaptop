@@ -13,5 +13,7 @@ namespace DataAccess.BorrowContractDTO
         [Required(ErrorMessage = "Status is required.")]
         [StringLength(50, ErrorMessage = "Status cannot be longer than 50 characters.")]
         public string Status { get; set; }
+
+        //
     }
 }
