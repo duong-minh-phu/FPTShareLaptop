@@ -18,7 +18,7 @@ namespace Service.Service
     public class OpenAIService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey;  // Lưu API Key vào một biến
+        private readonly IConfiguration _configuration;
         private static Dictionary<string, (string result, DateTime createdAt)> _cache = new();
         private static int _dailyRequestCount = 0;
         private static DateTime _lastReset = DateTime.UtcNow.Date;
@@ -26,18 +26,12 @@ namespace Service.Service
 
         public OpenAIService(HttpClient httpClient, IConfiguration configuration, IMapper mapper)
         {
-            _httpClient = httpClient;
-            _mapper = mapper;
+            _configuration = configuration;
+            _mapper = mapper; // ✅ Gán mapper
+            _httpClient = httpClient; // Không cần tạo HttpClient mới nữa, sử dụng DI HttpClient.
             _cache = new Dictionary<string, (string, DateTime)>();
             _dailyRequestCount = 0;
             _lastReset = DateTime.UtcNow.Date;
-
-            // Lấy API Key từ biến môi trường
-            _apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-            if (string.IsNullOrEmpty(_apiKey))
-            {
-                throw new Exception("OpenAI API key is not set in environment variables.");
-            }
         }
 
         public async Task<LaptopSuggestionResultDTO> GetLaptopSuggestionAsync(string major, List<DonateItem> donateItems)
@@ -53,7 +47,15 @@ namespace Service.Service
 
             if (_cache.ContainsKey(major) && DateTime.UtcNow - _cache[major].createdAt < TimeSpan.FromDays(1))
             {
+                // Deserialize lại dữ liệu nếu cache dùng JSON hoặc object
                 return System.Text.Json.JsonSerializer.Deserialize<LaptopSuggestionResultDTO>(_cache[major].result)!;
+            }
+
+            // Lấy API key từ môi trường (Environment Variable)
+            var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                throw new Exception("API key không hợp lệ hoặc chưa được cấu hình.");
             }
 
             var url = "https://api.openai.com/v1/chat/completions";
@@ -70,7 +72,7 @@ namespace Service.Service
 
             var json = System.Text.Json.JsonSerializer.Serialize(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
             var response = await _httpClient.PostAsync(url, content);
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -130,10 +132,32 @@ namespace Service.Service
                 SuitableLaptops = suitableDtos
             };
 
+            // Cache kết quả (có thể Serialize JSON nếu cache kiểu chuỗi)
             _cache[major] = (System.Text.Json.JsonSerializer.Serialize(result), DateTime.UtcNow);
             _dailyRequestCount++;
 
             return result;
+        }
+
+        // Helper: chuẩn hóa chuỗi
+        private string Normalize(string text)
+        {
+            return string.IsNullOrWhiteSpace(text)
+                ? ""
+                : text.ToLower().Replace("®", "").Replace("™", "").Trim();
+        }
+
+        // Helper: trích số RAM (ví dụ "16GB", "2 x 8GB")
+        private int ExtractRamInGB(string ramText)
+        {
+            if (string.IsNullOrWhiteSpace(ramText)) return 0;
+
+            var multiMatch = Regex.Match(ramText, @"(\d+)\s*x\s*(\d+)", RegexOptions.IgnoreCase);
+            if (multiMatch.Success)
+                return int.Parse(multiMatch.Groups[1].Value) * int.Parse(multiMatch.Groups[2].Value);
+
+            var singleMatch = Regex.Match(ramText, @"(\d+)\s*GB", RegexOptions.IgnoreCase);
+            return singleMatch.Success ? int.Parse(singleMatch.Groups[1].Value) : 0;
         }
     }
 }
