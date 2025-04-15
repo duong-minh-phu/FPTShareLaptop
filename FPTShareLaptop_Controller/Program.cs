@@ -11,8 +11,10 @@ using Microsoft.OpenApi.Models;
 using Service.IService;
 using Service.Service;
 using Service.Utils.MapperProfiles;
-
+using DotNetEnv;
 var builder = WebApplication.CreateBuilder(args);
+
+var openaiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 //-----------------------------------------DB-----------------------------------------
 builder.Services.AddDbContext<Sep490Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
