@@ -11,9 +11,9 @@ public partial class Wallet
 
     public decimal Balance { get; set; }
 
-    public string Type { get; set; } = null!;
+    public string Type { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string Status { get; set; }
 
     public DateTime CreatedDate { get; set; }
 
@@ -23,7 +23,7 @@ public partial class Wallet
 
     public virtual ICollection<SettlementTransaction> SettlementTransactionShopWallets { get; set; } = new List<SettlementTransaction>();
 
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 
     public virtual ICollection<WalletTransaction> WalletTransactions { get; set; } = new List<WalletTransaction>();
 }

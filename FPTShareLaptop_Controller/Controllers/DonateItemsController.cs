@@ -92,7 +92,7 @@ namespace FPTShareLaptop_Controller.Controllers
 
             await _unitOfWork.DonateItem.AddAsync(item);
             await _unitOfWork.SaveAsync();
-
+            Console.WriteLine("Mapped UserId: " + item.UserId);
             var result = _mapper.Map<DonateItemReadDTO>(item);
             return CreatedAtAction(nameof(GetById), new { id = item.ItemId }, ResultModel.Created(result));
         }
@@ -216,26 +216,26 @@ namespace FPTShareLaptop_Controller.Controllers
             return (cpu, ram);
         }
 
-        [HttpGet("top-donors")]
-        public async Task<IActionResult> GetTopDonors()
-        {
-            var items = await _unitOfWork.DonateItem.GetAllAsync(includeProperties: x => x.User);
+        //[HttpGet("top-donors")]
+        //public async Task<IActionResult> GetTopDonors()
+        //{
+        //    var items = await _unitOfWork.DonateItem.GetAllAsync(includeProperties: x => x.User);
 
-            var topDonors = items
-                .Where(x => x.Status != "Deleted") // Nếu bạn lọc như vậy
-                .GroupBy(item => new { item.UserId, item.User.FullName })
-                .Select(group => new TopDonorDTO
-                {
-                    DonorId = group.Key.UserId,
-                    DonorName = group.Key.FullName,
-                    TotalLaptops = group.Count()
-                })
-                .OrderByDescending(dto => dto.TotalLaptops)
-                .Take(5)
-                .ToList();
+        //    var topDonors = items
+        //        .Where(x => x.Status != "Deleted") // Nếu bạn lọc như vậy
+        //        .GroupBy(item => new { item.UserId, item.User.FullName })
+        //        .Select(group => new TopDonorDTO
+        //        {
+        //            DonorId = group.Key.UserId,
+        //            DonorName = group.Key.FullName,
+        //            TotalLaptops = group.Count()
+        //        })
+        //        .OrderByDescending(dto => dto.TotalLaptops)
+        //        .Take(5)
+        //        .ToList();
 
-            return Ok(ResultModel.Success(topDonors, "Top 5 người donate nhiều laptop nhất"));
-        }
+        //    return Ok(ResultModel.Success(topDonors, "Top 5 người donate nhiều laptop nhất"));
+        //}
     }
 
 }

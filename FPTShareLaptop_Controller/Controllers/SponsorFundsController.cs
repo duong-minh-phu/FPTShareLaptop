@@ -7,6 +7,8 @@ using DataAccess.SponsorFundDTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace FPTShareLaptop_Controller.Controllers
 {
@@ -17,12 +19,13 @@ namespace FPTShareLaptop_Controller.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly Cloudinary _cloudinary;
-
-        public SponsorFundsController(IUnitOfWork unitOfWork, IMapper mapper, Cloudinary cloudinary)
+        private readonly Sep490Context _context;
+        public SponsorFundsController(IUnitOfWork unitOfWork, IMapper mapper, Cloudinary cloudinary, Sep490Context context)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _cloudinary = cloudinary;
+            _context = context;
         }
 
         [HttpGet]
@@ -43,27 +46,7 @@ namespace FPTShareLaptop_Controller.Controllers
             var fundDTO = _mapper.Map<SponsorFundReadDTO>(fund);
             return Ok(ResultModel.Success(fundDTO));
         }
-
-        [HttpGet("top-sponsors")]
-        public async Task<IActionResult> GetTopSponsors()
-        {
-            var sponsorFunds = await _unitOfWork.SponsorFund.GetAllAsync(includeProperties: x => x.Sponsor);
-
-            var topSponsors = sponsorFunds
-                .GroupBy(sf => new { sf.SponsorId, sf.Sponsor.FullName }) // hoặc sf.Sponsor.UserName nếu dùng tên đăng nhập
-                .Select(g => new TopSponsorDTO
-                {
-                    SponsorId = g.Key.SponsorId,
-                    SponsorName = g.Key.FullName, // đổi nếu cần
-                    TotalAmount = g.Sum(x => x.Amount)
-                })
-                .OrderByDescending(x => x.TotalAmount)
-                .Take(5)
-                .ToList();
-
-            return Ok(ResultModel.Success(topSponsors));
-        }
-
+        
         [HttpPost]
         public async Task<IActionResult> Create(IFormFile? file, [FromForm] SponsorFundCreateDTO dto)
         {
@@ -145,24 +128,88 @@ namespace FPTShareLaptop_Controller.Controllers
             return Ok(ResultModel.Success(null, "Deleted successfully"));
         }
 
-        [HttpGet("today")]
-        public async Task<IActionResult> GetTodaySponsorFunds()
+
+        [HttpGet("sponsor-summary/{userId}")]
+        public async Task<IActionResult> GetSponsorSummary(int userId)
         {
-            var today = DateTime.Today;
+            // 1. Lấy toàn bộ các SponsorFund của user đó
+            var sponsorFunds = await _context.SponsorFunds
+    .Where(sf => sf.UserId == userId)
+    .Include(sf => sf.SponsorContributions)
+    .ToListAsync();
 
-            var sponsorFunds = await _unitOfWork.SponsorFund.GetAllAsync(includeProperties: x => x.Sponsor);
 
-            var todaySponsors = sponsorFunds
-                .Where(x => x.Status == "true" && x.TransferDate.Date == today)
-                .Select(x => new SponsorTodayDTO
-                {
-                    SponsorId = x.SponsorId,
-                    SponsorName = x.Sponsor.FullName,
-                    Amount = x.Amount
-                })
-                .ToList();
+            if (!sponsorFunds.Any())
+            {
+                return NotFound(ResultModel.NotFound("Không tìm thấy dữ liệu tài trợ cho người dùng này."));
+            }
 
-            return Ok(ResultModel.Success(todaySponsors, "Lấy danh sách người tài trợ hôm nay thành công"));
+            // 2. Tổng số tiền đã donate
+            var totalDonated = sponsorFunds.Sum(sf => sf.Amount);
+
+            // 3. Tổng số tiền đã dùng để mua laptop
+            var totalUsed = sponsorFunds
+                .SelectMany(sf => sf.SponsorContributions)
+                .Sum(sc => sc.ContributedAmount);
+
+            // 4. Số dư còn lại
+            var remainingAmount = totalDonated - totalUsed;
+
+            var result = new
+            {
+                TotalDonated = totalDonated,
+                TotalUsed = totalUsed,
+                RemainingAmount = remainingAmount
+            };
+
+            return Ok(ResultModel.Success(result));
         }
+
+        [HttpGet("summary/{userId}")]
+        public async Task<IActionResult> GetSponsorSummaryadmin(int userId)
+        {
+            var sponsorFunds = await _context.SponsorFunds
+                .Where(sf => sf.UserId == userId)
+                .Include(sf => sf.SponsorContributions)
+                .ToListAsync();
+
+            if (!sponsorFunds.Any())
+            {
+                return NotFound(new
+                {
+                    Message = $"Không tìm thấy khoản tài trợ nào cho UserId = {userId}"
+                });
+            }
+
+            var totalDonated = sponsorFunds.Sum(sf => sf.Amount);
+            var totalContributed = sponsorFunds
+                .SelectMany(sf => sf.SponsorContributions)
+                .Sum(sc => sc.ContributedAmount);
+            var remaining = totalDonated - totalContributed;
+
+            var result = new
+            {
+                UserId = userId,
+                TotalDonated = totalDonated,
+                TotalContributed = totalContributed,
+                RemainingAmount = remaining,
+                FundDetails = sponsorFunds.Select(f => new
+                {
+                    f.SponsorFundId,
+                    f.Amount,
+                    f.CreatedDate,
+                    Contributions = f.SponsorContributions.Select(c => new
+                    {
+                        c.SponsorContributionId,
+                        c.PurchasedLaptopId,
+                        c.ContributedAmount
+                    })
+                })
+            };
+
+            return Ok(result);
+        }
+
+
     }
 }

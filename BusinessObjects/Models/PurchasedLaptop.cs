@@ -7,19 +7,15 @@ public partial class PurchasedLaptop
 {
     public int PurchasedLaptopId { get; set; }
 
-    public int DonateItemId { get; set; }
+    public int ItemId { get; set; }
 
-    public int SponsorFundId { get; set; }
+    public decimal TotalPrice { get; set; }
 
-    public decimal PurchaseAmount { get; set; }
+    public DateTime PurchasedDate { get; set; }
 
-    public DateTime PurchaseDate { get; set; }
+    public string InvoiceImageUrl { get; set; }
 
-    public string Status { get; set; } = null!;
+    public virtual DonateItem Item { get; set; }
 
-    public string? PurchasedImageUrl { get; set; }
-
-    public virtual DonateItem DonateItem { get; set; } = null!;
-
-    public virtual SponsorFund SponsorFund { get; set; } = null!;
+    public virtual ICollection<SponsorContribution> SponsorContributions { get; set; } = new List<SponsorContribution>();
 }

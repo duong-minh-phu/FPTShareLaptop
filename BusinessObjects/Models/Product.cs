@@ -7,47 +7,47 @@ public partial class Product
 {
     public int ProductId { get; set; }
 
-    public string ProductName { get; set; } = null!;
+    public string ProductName { get; set; }
 
     public int Quantity { get; set; }
 
     public decimal Price { get; set; }
 
-    public string ImageProduct { get; set; } = null!;
+    public string ImageProduct { get; set; }
 
-    public string ScreenSize { get; set; } = null!;
+    public string ScreenSize { get; set; }
 
-    public string Storage { get; set; } = null!;
+    public string Storage { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
 
     public DateTime CreatedDate { get; set; }
 
-    public string Ram { get; set; } = null!;
+    public string Ram { get; set; }
 
-    public string Cpu { get; set; } = null!;
+    public string Cpu { get; set; }
 
     public int CategoryId { get; set; }
 
     public int ShopId { get; set; }
 
-    public string Model { get; set; } = null!;
+    public string Model { get; set; }
 
-    public string Color { get; set; } = null!;
+    public string Color { get; set; }
 
-    public string GraphicsCard { get; set; } = null!;
+    public string GraphicsCard { get; set; }
 
-    public string Battery { get; set; } = null!;
+    public string Battery { get; set; }
 
-    public string Ports { get; set; } = null!;
+    public string Ports { get; set; }
 
     public int ProductionYear { get; set; }
 
-    public string OperatingSystem { get; set; } = null!;
+    public string OperatingSystem { get; set; }
 
-    public string Description { get; set; } = null!;
+    public string Description { get; set; }
 
-    public virtual Category Category { get; set; } = null!;
+    public virtual Category Category { get; set; }
 
     public virtual ICollection<FeedbackProduct> FeedbackProducts { get; set; } = new List<FeedbackProduct>();
 
@@ -55,5 +55,5 @@ public partial class Product
 
     public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 
-    public virtual Shop Shop { get; set; } = null!;
+    public virtual Shop Shop { get; set; }
 }

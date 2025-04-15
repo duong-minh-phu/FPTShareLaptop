@@ -19,13 +19,13 @@ public partial class BorrowHistory
 
     public virtual ICollection<FeedbackBorrow> FeedbackBorrows { get; set; } = new List<FeedbackBorrow>();
 
-    public virtual DonateItem Item { get; set; } = null!;
+    public virtual DonateItem Item { get; set; }
 
     public virtual ICollection<ItemCondition> ItemConditions { get; set; } = new List<ItemCondition>();
 
     public virtual ICollection<ReportDamage> ReportDamages { get; set; } = new List<ReportDamage>();
 
-    public virtual BorrowRequest Request { get; set; } = null!;
+    public virtual BorrowRequest Request { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 }

@@ -17,13 +17,13 @@ public partial class FeedbackBorrow
 
     public int Rating { get; set; }
 
-    public string Comments { get; set; } = null!;
+    public string Comments { get; set; }
 
     public bool IsAnonymous { get; set; }
 
-    public virtual BorrowHistory BorrowHistory { get; set; } = null!;
+    public virtual BorrowHistory BorrowHistory { get; set; }
 
-    public virtual DonateItem Item { get; set; } = null!;
+    public virtual DonateItem Item { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 }

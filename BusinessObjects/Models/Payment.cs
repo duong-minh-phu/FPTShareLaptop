@@ -15,13 +15,13 @@ public partial class Payment
 
     public DateTime PaymentDate { get; set; }
 
-    public string TransactionCode { get; set; } = null!;
+    public string TransactionCode { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string Status { get; set; }
 
-    public virtual Order Order { get; set; } = null!;
+    public virtual Order Order { get; set; }
 
-    public virtual PaymentMethod PaymentMethod { get; set; } = null!;
+    public virtual PaymentMethod PaymentMethod { get; set; }
 
     public virtual ICollection<RefundTransaction> RefundTransactions { get; set; } = new List<RefundTransaction>();
 }

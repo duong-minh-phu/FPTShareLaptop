@@ -25,34 +25,38 @@ namespace FPTShareLaptop_Controller.Controllers
             _cloudinary = cloudinary;
         }
 
+        // GET: api/purchased-laptops
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var laptops = await _unitOfWork.PurchasedLaptop.GetAllAsync();
-            var dto = _mapper.Map<IEnumerable<PurchasedLaptopDTO>>(laptops);
-            return Ok(ResultModel.Success(dto));
+            var purchasedLaptops = await _unitOfWork.PurchasedLaptop.GetAllAsync();
+            var purchasedLaptopDTOs = _mapper.Map<IEnumerable<PurchasedLaptopReadDTO>>(purchasedLaptops);
+            return Ok(ResultModel.Success(purchasedLaptopDTOs));
         }
 
+        // GET: api/purchased-laptops/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var laptop = await _unitOfWork.PurchasedLaptop.GetByIdAsync(id);
-            if (laptop == null)
+            var purchasedLaptop = await _unitOfWork.PurchasedLaptop.GetByIdAsync(id);
+            if (purchasedLaptop == null)
                 return NotFound(ResultModel.NotFound());
 
-            var dto = _mapper.Map<PurchasedLaptopDTO>(laptop);
-            return Ok(ResultModel.Success(dto));
+            var purchasedLaptopDTO = _mapper.Map<PurchasedLaptopReadDTO>(purchasedLaptop);
+            return Ok(ResultModel.Success(purchasedLaptopDTO));
         }
 
+        // POST: api/purchased-laptops
         [HttpPost]
         public async Task<IActionResult> Create(IFormFile? file, [FromForm] PurchasedLaptopCreateDTO dto)
         {
             if (dto == null)
                 return BadRequest(ResultModel.BadRequest("Invalid data."));
 
-            string? imageUrl = null;
+            string? invoiceImageUrl = null;
             if (file != null && file.Length > 0)
             {
+                // Upload image to Cloudinary
                 using var stream = file.OpenReadStream();
                 var uploadParams = new ImageUploadParams
                 {
@@ -64,30 +68,37 @@ namespace FPTShareLaptop_Controller.Controllers
                 if (uploadResult.Error != null)
                     return BadRequest(ResultModel.BadRequest(uploadResult.Error.Message));
 
-                imageUrl = uploadResult.SecureUrl.ToString();
+                invoiceImageUrl = uploadResult.SecureUrl.ToString();  // Get URL of uploaded image
             }
 
-            var laptop = _mapper.Map<PurchasedLaptop>(dto);
-            laptop.PurchasedImageUrl = imageUrl;
-            laptop.PurchaseDate = DateTime.UtcNow;
-            laptop.Status = "true";
+            // Map DTO to entity and set image URL
+            var purchasedLaptop = _mapper.Map<PurchasedLaptop>(dto);
+            purchasedLaptop.InvoiceImageUrl = invoiceImageUrl;
+            purchasedLaptop.PurchasedDate = DateTime.UtcNow;  // Set current date for purchased date
 
-            await _unitOfWork.PurchasedLaptop.AddAsync(laptop);
+            // Add to the database
+            await _unitOfWork.PurchasedLaptop.AddAsync(purchasedLaptop);
             await _unitOfWork.SaveAsync();
 
-            var result = _mapper.Map<PurchasedLaptopDTO>(laptop);
-            return CreatedAtAction(nameof(GetById), new { id = laptop.PurchasedLaptopId }, ResultModel.Created(result));
+            // Return result
+            var result = _mapper.Map<PurchasedLaptopReadDTO>(purchasedLaptop);
+            return CreatedAtAction(nameof(GetById), new { id = purchasedLaptop.PurchasedLaptopId }, ResultModel.Created(result));
         }
 
+        // PUT: api/purchased-laptops/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, IFormFile? file, [FromForm] PurchasedLaptopUpdateDTO dto)
         {
-            var laptop = await _unitOfWork.PurchasedLaptop.GetByIdAsync(id);
-            if (laptop == null)
+            if (dto == null)
+                return BadRequest(ResultModel.BadRequest("Invalid data."));
+
+            var purchasedLaptop = await _unitOfWork.PurchasedLaptop.GetByIdAsync(id);
+            if (purchasedLaptop == null)
                 return NotFound(ResultModel.NotFound());
 
             if (file != null && file.Length > 0)
             {
+                // Upload image to Cloudinary
                 using var stream = file.OpenReadStream();
                 var uploadParams = new ImageUploadParams
                 {
@@ -99,27 +110,33 @@ namespace FPTShareLaptop_Controller.Controllers
                 if (uploadResult.Error != null)
                     return BadRequest(ResultModel.BadRequest(uploadResult.Error.Message));
 
-                laptop.PurchasedImageUrl = uploadResult.SecureUrl.ToString();
+                purchasedLaptop.InvoiceImageUrl = uploadResult.SecureUrl.ToString();  // Set new image URL
             }
 
-            _mapper.Map(dto, laptop);
-            _unitOfWork.PurchasedLaptop.Update(laptop);
+            // Map updated fields to the existing purchased laptop
+            _mapper.Map(dto, purchasedLaptop);
+
+            // Update database
+            _unitOfWork.PurchasedLaptop.Update(purchasedLaptop);
             await _unitOfWork.SaveAsync();
 
             return Ok(ResultModel.Success(null, "Updated successfully"));
         }
 
+        // DELETE: api/purchased-laptops/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var laptop = await _unitOfWork.PurchasedLaptop.GetByIdAsync(id);
-            if (laptop == null)
+            var purchasedLaptop = await _unitOfWork.PurchasedLaptop.GetByIdAsync(id);
+            if (purchasedLaptop == null)
                 return NotFound(ResultModel.NotFound());
 
-            _unitOfWork.PurchasedLaptop.Delete(laptop);
+            // Delete the purchased laptop from the database
+            _unitOfWork.PurchasedLaptop.Delete(purchasedLaptop);
             await _unitOfWork.SaveAsync();
 
             return Ok(ResultModel.Success(null, "Deleted successfully"));
         }
     }
+
 }

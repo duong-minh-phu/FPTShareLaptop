@@ -7,19 +7,21 @@ public partial class SponsorFund
 {
     public int SponsorFundId { get; set; }
 
-    public int SponsorId { get; set; }
+    public int UserId { get; set; }
 
     public decimal Amount { get; set; }
 
-    public string? Description { get; set; }
+    public DateTime CreatedDate { get; set; }
 
-    public DateTime TransferDate { get; set; }
+    public bool Status { get; set; }
 
-    public string? ProofImageUrl { get; set; }
+    public string Note { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string ProofImageUrl { get; set; }
 
-    public virtual ICollection<PurchasedLaptop> PurchasedLaptops { get; set; } = new List<PurchasedLaptop>();
+    public DateTime? TransferDate { get; set; }
 
-    public virtual User Sponsor { get; set; } = null!;
+    public virtual ICollection<SponsorContribution> SponsorContributions { get; set; } = new List<SponsorContribution>();
+
+    public virtual User User { get; set; }
 }

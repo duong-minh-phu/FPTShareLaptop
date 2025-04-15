@@ -9,11 +9,11 @@ public partial class Student
 
     public int UserId { get; set; }
 
-    public string StudentCode { get; set; } = null!;
+    public string StudentCode { get; set; }
 
-    public string IdentityCard { get; set; } = null!;
+    public string IdentityCard { get; set; }
 
-    public string EnrollmentDate { get; set; } = null!;
+    public string EnrollmentDate { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 }

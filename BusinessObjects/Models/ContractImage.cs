@@ -9,9 +9,9 @@ public partial class ContractImage
 
     public int BorrowContractId { get; set; }
 
-    public string ImageUrl { get; set; } = null!;
+    public string ImageUrl { get; set; }
 
     public DateTime CreatedDate { get; set; }
 
-    public virtual BorrowContract BorrowContract { get; set; } = null!;
+    public virtual BorrowContract BorrowContract { get; set; }
 }

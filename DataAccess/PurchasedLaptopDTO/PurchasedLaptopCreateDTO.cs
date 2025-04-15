@@ -8,10 +8,8 @@ namespace DataAccess.PurchasedLaptopDTO
 {
     public class PurchasedLaptopCreateDTO
     {
-        public int DonateItemId { get; set; }
-        public int SponsorFundId { get; set; }
-        public decimal PurchaseAmount { get; set; }
-        
-        
+        public int ItemId { get; set; }
+        public decimal TotalPrice { get; set; }
+        public string InvoiceImageUrl { get; set; } = null!;
     }
 }

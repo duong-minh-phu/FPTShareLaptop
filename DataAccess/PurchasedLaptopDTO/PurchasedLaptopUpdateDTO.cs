@@ -8,9 +8,7 @@ namespace DataAccess.PurchasedLaptopDTO
 {
     public class PurchasedLaptopUpdateDTO
     {
-        public int DonateItemId { get; set; }
-        public int SponsorFundId { get; set; }
-        public decimal PurchaseAmount { get; set; }
-        public string Status { get; set; } = null!;
+        public decimal TotalPrice { get; set; }
+        public string InvoiceImageUrl { get; set; } = null!;
     }
 }

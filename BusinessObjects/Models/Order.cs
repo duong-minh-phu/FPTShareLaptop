@@ -15,11 +15,11 @@ public partial class Order
 
     public decimal TotalPrice { get; set; }
 
-    public string OrderAddress { get; set; } = null!;
+    public string OrderAddress { get; set; }
 
-    public string Field { get; set; } = null!;
+    public string Field { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string Status { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
@@ -33,5 +33,5 @@ public partial class Order
 
     public virtual ICollection<TrackingInfo> TrackingInfos { get; set; } = new List<TrackingInfo>();
 
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 }

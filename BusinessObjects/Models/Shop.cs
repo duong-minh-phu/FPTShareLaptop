@@ -9,19 +9,19 @@ public partial class Shop
 
     public int UserId { get; set; }
 
-    public string ShopName { get; set; } = null!;
+    public string ShopName { get; set; }
 
-    public string ShopAddress { get; set; } = null!;
+    public string ShopAddress { get; set; }
 
-    public string ShopPhone { get; set; } = null!;
+    public string ShopPhone { get; set; }
 
-    public string BusinessLicense { get; set; } = null!;
+    public string BusinessLicense { get; set; }
 
-    public string BankName { get; set; } = null!;
+    public string BankName { get; set; }
 
-    public string BankNumber { get; set; } = null!;
+    public string BankNumber { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string Status { get; set; }
 
     public DateTime CreatedDate { get; set; }
 
@@ -29,5 +29,5 @@ public partial class Shop
 
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 }

@@ -7,23 +7,23 @@ public partial class User
 {
     public int UserId { get; set; }
 
-    public string Email { get; set; } = null!;
+    public string Email { get; set; }
 
-    public string FullName { get; set; } = null!;
+    public string FullName { get; set; }
 
-    public string Dob { get; set; } = null!;
+    public string Dob { get; set; }
 
-    public string Address { get; set; } = null!;
+    public string Address { get; set; }
 
-    public string PhoneNumber { get; set; } = null!;
+    public string PhoneNumber { get; set; }
 
-    public string Gender { get; set; } = null!;
+    public string Gender { get; set; }
 
-    public string Avatar { get; set; } = null!;
+    public string Avatar { get; set; }
 
-    public string Password { get; set; } = null!;
+    public string Password { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string Status { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
@@ -53,13 +53,13 @@ public partial class User
 
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
-    public virtual Role Role { get; set; } = null!;
+    public virtual Role Role { get; set; }
 
-    public virtual Shop? Shop { get; set; }
+    public virtual Shop Shop { get; set; }
 
     public virtual ICollection<SponsorFund> SponsorFunds { get; set; } = new List<SponsorFund>();
 
-    public virtual Student? Student { get; set; }
+    public virtual Student Student { get; set; }
 
     public virtual ICollection<Wallet> Wallets { get; set; } = new List<Wallet>();
 

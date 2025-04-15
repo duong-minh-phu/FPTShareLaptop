@@ -21,13 +21,13 @@ public partial class CompensationTransaction
 
     public decimal ExtraPaymentRequired { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string Status { get; set; }
 
-    public virtual BorrowContract Contract { get; set; } = null!;
+    public virtual BorrowContract Contract { get; set; }
 
-    public virtual DepositTransaction DepositTransaction { get; set; } = null!;
+    public virtual DepositTransaction DepositTransaction { get; set; }
 
-    public virtual ReportDamage ReportDamage { get; set; } = null!;
+    public virtual ReportDamage ReportDamage { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 }

@@ -13,13 +13,13 @@ public partial class BorrowContract
 
     public int UserId { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string Status { get; set; }
 
     public DateTime ContractDate { get; set; }
 
-    public string Terms { get; set; } = null!;
+    public string Terms { get; set; }
 
-    public string ConditionBorrow { get; set; } = null!;
+    public string ConditionBorrow { get; set; }
 
     public decimal ItemValue { get; set; }
 
@@ -31,11 +31,11 @@ public partial class BorrowContract
 
     public virtual ICollection<DepositTransaction> DepositTransactions { get; set; } = new List<DepositTransaction>();
 
-    public virtual DonateItem Item { get; set; } = null!;
+    public virtual DonateItem Item { get; set; }
 
     public virtual ICollection<ItemCondition> ItemConditions { get; set; } = new List<ItemCondition>();
 
-    public virtual BorrowRequest Request { get; set; } = null!;
+    public virtual BorrowRequest Request { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 }

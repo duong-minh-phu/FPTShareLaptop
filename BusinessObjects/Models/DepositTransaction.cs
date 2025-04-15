@@ -11,7 +11,7 @@ public partial class DepositTransaction
 
     public int UserId { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string Status { get; set; }
 
     public decimal Amount { get; set; }
 
@@ -19,7 +19,7 @@ public partial class DepositTransaction
 
     public virtual ICollection<CompensationTransaction> CompensationTransactions { get; set; } = new List<CompensationTransaction>();
 
-    public virtual BorrowContract Contract { get; set; } = null!;
+    public virtual BorrowContract Contract { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 }

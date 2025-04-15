@@ -34,6 +34,7 @@ using DataAccess.MajorDTO;
 using DataAccess.SponsorFundDTO;
 using DataAccess.PurchasedLaptopDTO;
 using DataAccess.ContractImageDTO;
+using DataAccess.SponsorContributionDTO;
 
 
 namespace Service.Utils.MapperProfiles
@@ -43,7 +44,8 @@ namespace Service.Utils.MapperProfiles
         public MappingProfile()
         {
             CreateMap<DonateItem, DonateItemReadDTO>();
-            CreateMap<DonateItemCreateDTO, DonateItem>();
+            CreateMap<DonateItemCreateDTO, DonateItem>()
+            .ForMember(dest => dest.UserId, opt => opt.Condition(src => src.UserId.HasValue));
             CreateMap<DonateItemUpdateDTO, DonateItem>()
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
@@ -134,9 +136,14 @@ namespace Service.Utils.MapperProfiles
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
 
-            CreateMap<PurchasedLaptop, PurchasedLaptopDTO>().ReverseMap();
+            CreateMap<PurchasedLaptop, PurchasedLaptopReadDTO>();
             CreateMap<PurchasedLaptopCreateDTO, PurchasedLaptop>();
             CreateMap<PurchasedLaptopUpdateDTO, PurchasedLaptop>();
+
+
+            CreateMap<SponsorContribution, SponsorContributionReadDTO>();
+            CreateMap<SponsorContributionCreateDTO, SponsorContribution>();
+            CreateMap<SponsorContributionUpdateDTO, SponsorContribution>();
 
 
             CreateMap<FeedbackProduct, FeedbackProductDTO>()

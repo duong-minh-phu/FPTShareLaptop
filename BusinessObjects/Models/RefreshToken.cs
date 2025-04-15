@@ -9,13 +9,13 @@ public partial class RefreshToken
 
     public int UserId { get; set; }
 
-    public string Token { get; set; } = null!;
+    public string Token { get; set; }
 
     public DateTime ExpiredAt { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string Status { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 }

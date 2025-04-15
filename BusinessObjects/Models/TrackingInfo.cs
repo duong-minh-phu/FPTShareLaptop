@@ -11,13 +11,13 @@ public partial class TrackingInfo
 
     public int ShipmentId { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string Status { get; set; }
 
-    public string Location { get; set; } = null!;
+    public string Location { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual Order Order { get; set; } = null!;
+    public virtual Order Order { get; set; }
 
-    public virtual Shipment Shipment { get; set; } = null!;
+    public virtual Shipment Shipment { get; set; }
 }

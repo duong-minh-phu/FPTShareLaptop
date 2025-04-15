@@ -15,7 +15,7 @@ namespace DataAccess.DonateItemDTO
         public string Storage { get; set; } = null!;
         public string ScreenSize { get; set; } = null!;
         public string ConditionItem { get; set; } = null!;
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         public int DonateFormId { get; set; }
         public string SerialNumber { get; set; } = null!;
         public string Model { get; set; } = null!;

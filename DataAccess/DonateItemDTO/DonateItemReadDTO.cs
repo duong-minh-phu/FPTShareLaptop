@@ -20,7 +20,7 @@ namespace DataAccess.DonateItemDTO
         public string ConditionItem { get; set; } = null!;
         public int TotalBorrowedCount { get; set; }
         public string Status { get; set; } = null!;
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         public int DonateFormId { get; set; }
         public string SerialNumber { get; set; } = null!;
         public string Model { get; set; } = null!;

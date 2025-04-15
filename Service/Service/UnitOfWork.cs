@@ -85,6 +85,7 @@ namespace Service.Service
         public IGenericRepository<SponsorFund> SponsorFund => Repository<SponsorFund>();
         public IGenericRepository<PurchasedLaptop> PurchasedLaptop => Repository<PurchasedLaptop>();
         public IGenericRepository<ContractImage> ContractImage => Repository<ContractImage>();
+        public IGenericRepository<SponsorContribution> SponsorContribution => Repository<SponsorContribution>();
 
 
 

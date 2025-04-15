@@ -9,9 +9,9 @@ public partial class ItemImage
 
     public int ItemId { get; set; }
 
-    public string ImageUrl { get; set; } = null!;
+    public string ImageUrl { get; set; }
 
     public DateTime CreatedDate { get; set; }
 
-    public virtual DonateItem Item { get; set; } = null!;
+    public virtual DonateItem Item { get; set; }
 }

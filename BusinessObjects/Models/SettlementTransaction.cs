@@ -17,13 +17,13 @@ public partial class SettlementTransaction
 
     public decimal Fee { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string Status { get; set; }
 
     public DateTime CreatedDate { get; set; }
 
-    public virtual Wallet ManagerWallet { get; set; } = null!;
+    public virtual Wallet ManagerWallet { get; set; }
 
-    public virtual Order Order { get; set; } = null!;
+    public virtual Order Order { get; set; }
 
-    public virtual Wallet ShopWallet { get; set; } = null!;
+    public virtual Wallet ShopWallet { get; set; }
 }
