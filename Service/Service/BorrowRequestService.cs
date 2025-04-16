@@ -157,12 +157,7 @@ public class BorrowRequestService : IBorrowRequestService
             item.Status = "Available";
             _unitOfWork.DonateItem.Update(item);
         }
-        if (borrowRequest.Status == "Approved")
-        {
-            var item = await _unitOfWork.DonateItem.GetByIdAsync(borrowRequest.ItemId);
-            item.Status = "Borrow";
-            _unitOfWork.DonateItem.Update(item);
-        }
+        
         _unitOfWork.BorrowRequest.Update(borrowRequest);
         await _unitOfWork.SaveAsync();
     }
