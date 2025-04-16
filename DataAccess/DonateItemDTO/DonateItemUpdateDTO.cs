@@ -9,7 +9,7 @@ namespace DataAccess.DonateItemDTO
 {
     public class DonateItemUpdateDTO
     {
-        public int ItemId { get; set; }
+        
         public string? ItemName { get; set; }
         public string? Cpu { get; set; }
         public string? Ram { get; set; }
