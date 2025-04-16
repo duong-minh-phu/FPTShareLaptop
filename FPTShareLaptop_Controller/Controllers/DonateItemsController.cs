@@ -91,6 +91,9 @@ namespace FPTShareLaptop_Controller.Controllers
             item.UpdatedDate = DateTime.UtcNow;
 
             await _unitOfWork.DonateItem.AddAsync(item);
+
+            donateForm.Status = "Done";
+            _unitOfWork.DonateForm.Update(donateForm);
             await _unitOfWork.SaveAsync();
 
             var result = _mapper.Map<DonateItemReadDTO>(item);
