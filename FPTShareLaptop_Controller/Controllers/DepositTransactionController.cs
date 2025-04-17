@@ -58,7 +58,7 @@ namespace FPTShareLaptop_Controller.Controllers
             await _unitOfWork.SaveAsync();
 
             var createdDTO = _mapper.Map<DepositTransactionDTO>(transaction);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = transaction.DepositId }, ResultModel.Created(createdDTO));
+            return Ok(ResultModel.Created(createdDTO));
         }
 
         // PUT: api/deposit-transactions/{id}
