@@ -98,6 +98,28 @@ namespace FPTShareLaptop_Controller.Controllers
 
             return Ok(ResultModel.Success(null, "Borrow history deleted successfully."));
         }
+
+        [HttpGet("by-sponsor/{sponsorUserId}")]
+        public async Task<IActionResult> GetBorrowHistoriesBySponsorAsync(int sponsorUserId)
+        {
+            // 1. Lấy tất cả DonateItem của Sponsor
+            var allDonateItems = await _unitOfWork.DonateItem.GetAllAsync();
+            var donateItems = allDonateItems.Where(d => d.UserId == sponsorUserId).ToList();
+            var donateItemIds = donateItems.Select(d => d.ItemId).ToList();
+
+            if (!donateItemIds.Any())
+            {
+                return Ok(ResultModel.Success(new List<BorrowHistoryReadDTO>(), "No items donated by this sponsor."));
+            }
+
+            // 2. Lấy tất cả BorrowHistory liên quan các ItemId đó
+            var allBorrowHistories = await _unitOfWork.BorrowHistory.GetAllAsync();
+            var borrowHistories = allBorrowHistories.Where(bh => donateItemIds.Contains(bh.ItemId)).ToList();
+
+            var borrowHistoryDTOs = _mapper.Map<IEnumerable<BorrowHistoryReadDTO>>(borrowHistories);
+
+            return Ok(ResultModel.Success(borrowHistoryDTOs));
+        }
     }
 
 }
