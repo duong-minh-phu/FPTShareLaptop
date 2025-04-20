@@ -21,5 +21,7 @@ public partial class DepositTransaction
 
     public virtual BorrowContract Contract { get; set; } = null!;
 
+    public virtual ICollection<RefundTransaction> RefundTransactions { get; set; } = new List<RefundTransaction>();
+
     public virtual User User { get; set; } = null!;
 }

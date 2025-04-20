@@ -30,4 +30,6 @@ public partial class ReportDamage
     public virtual DonateItem Item { get; set; } = null!;
 
     public virtual ICollection<ItemCondition> ItemConditions { get; set; } = new List<ItemCondition>();
+
+    public virtual ICollection<RefundTransaction> RefundTransactions { get; set; } = new List<RefundTransaction>();
 }

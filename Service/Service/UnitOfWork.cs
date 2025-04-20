@@ -85,7 +85,7 @@ namespace Service.Service
         public IGenericRepository<SponsorFund> SponsorFund => Repository<SponsorFund>();
         public IGenericRepository<PurchasedLaptop> PurchasedLaptop => Repository<PurchasedLaptop>();
 
-
+        public IGenericRepository<TransactionLog> TransactionLog => Repository<TransactionLog>();
 
         public async Task<int> SaveAsync()
         {

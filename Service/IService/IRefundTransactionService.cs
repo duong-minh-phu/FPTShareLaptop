@@ -12,9 +12,8 @@ namespace Service.IService
     {
         Task<List<RefundTransactionResModel>> GetAllAsync();
         Task<RefundTransactionResModel> GetByIdAsync(int id);
-        Task<List<RefundTransactionResModel>> GetByWalletIdAsync(int walletId);
-        Task AddAsync(RefundTransactionReqModel refund);
-        Task UpdateAsync(string token, RefundTransactionReqModel refund, int refundId);
-        Task DeleteAsync(string token, int refundId);
+        Task AddAsync(string token, RefundTransactionReqModel refund);
+        Task UpdateAsync(RefundTransactionReqModel refund, int refundId);
+        Task DeleteAsync(int refundId);
     }
 }

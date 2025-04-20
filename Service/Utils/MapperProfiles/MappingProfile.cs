@@ -33,6 +33,7 @@ using DataAccess.UserDTO;
 using DataAccess.MajorDTO;
 using DataAccess.SponsorFundDTO;
 using DataAccess.PurchasedLaptopDTO;
+using DataAccess.TransactionLogDTO;
 
 
 namespace Service.Utils.MapperProfiles
@@ -160,13 +161,13 @@ namespace Service.Utils.MapperProfiles
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.RoleName))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
 
-
-
-
                 // Mapping thông tin từ bảng Student nếu có
                 .ForMember(dest => dest.StudentCode, opt => opt.MapFrom(src => src.Student != null ? src.Student.StudentCode : null))
                 .ForMember(dest => dest.IdentityCard, opt => opt.MapFrom(src => src.Student != null ? src.Student.IdentityCard : null))
                 .ForMember(dest => dest.EnrollmentDate, opt => opt.MapFrom(src => src.Student != null ? src.Student.EnrollmentDate : null));
+
+
+            CreateMap<TransactionLog, TransactionLogResModel>().ReverseMap();
 
         }
     }
