@@ -12,7 +12,7 @@ namespace Service.IService
         Task<List<BorrowRequestResModel>> GetAllBorrowRequests();
         Task<BorrowRequestResModel> GetBorrowRequestById(int requestId);
         Task<BorrowRequestResModel> CreateBorrowRequest(string token ,CreateBorrowRequestReqModel requestModel);
-        Task UpdateBorrowRequest(string token,int requestId, UpdateBorrowRequestReqModel updateModel);
-        Task DeleteBorrowRequest(string token, int requestId);
+        Task UpdateBorrowRequest(int requestId, UpdateBorrowRequestReqModel updateModel);
+        Task DeleteBorrowRequest(int requestId);
     }
 }

@@ -71,7 +71,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> UpdateBorrowContract(int id, [FromBody] UpdateBorrowContractReqModel request)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _borrowContractService.UpdateBorrowContract(token, id, request);
+            await _borrowContractService.UpdateBorrowContract(id, request);
 
             ResultModel response = new ResultModel
             {
@@ -87,7 +87,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> DeleteBorrowContract(int id)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _borrowContractService.DeleteBorrowContract(token, id);
+            await _borrowContractService.DeleteBorrowContract(id);
 
             ResultModel response = new ResultModel
             {
@@ -104,7 +104,7 @@ namespace FPTShareLaptop_Controller.Controllers
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
 
-            await _borrowContractService.UploadSignedContractImage(token, contractId, request);
+            await _borrowContractService.UploadSignedContractImage(contractId, request);
 
             ResultModel response = new ResultModel
             {
