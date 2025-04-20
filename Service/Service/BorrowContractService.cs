@@ -87,10 +87,9 @@ namespace Service.Service
 
 
         // Tạo hợp đồng mới
-        public async Task<BorrowContractResponseModel> CreateBorrowContract(string token, CreateBorrowContractReqModel request)
+        public async Task<BorrowContractResponseModel> CreateBorrowContract(CreateBorrowContractReqModel request)
         {
-            var userId = _jwtService.decodeToken(token, "userId");
-            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            var user = await _unitOfWork.Users.GetByIdAsync(request.UserId);
             if (user == null)
                 throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
@@ -99,7 +98,7 @@ namespace Service.Service
                 throw new ApiException(HttpStatusCode.NotFound, "Borrow request not found.");
 
             var existingContract = await _unitOfWork.BorrowContract.FirstOrDefaultAsync(br =>
-            br.UserId == int.Parse(userId) &&
+            br.UserId == request.UserId &&
             br.ItemId == request.ItemId &&
             (br.Status == DonateStatus.Pending.ToString()));
             if (existingContract != null)
@@ -111,7 +110,7 @@ namespace Service.Service
             {
                 RequestId = request.RequestId,
                 ItemId = request.ItemId,
-                UserId = user.UserId,
+                UserId = request.UserId,
                 Status = ContractStatus.Pending.ToString(),
                 ContractDate = DateTime.UtcNow,
                 Terms = request.Terms,

@@ -9,6 +9,9 @@ namespace DataAccess.BorrowContractDTO
 {
     public class CreateBorrowContractReqModel
     {
+        [Required(ErrorMessage = "UserId is required.")]
+        public int UserId { get; set; }
+
         [Required(ErrorMessage = "RequestId is required.")]
         public int RequestId { get; set; }
 
