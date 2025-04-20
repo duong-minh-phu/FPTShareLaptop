@@ -151,7 +151,7 @@ public class BorrowRequestService : IBorrowRequestService
         }
 
         borrowRequest.Status = updateModel.Status;
-        if (borrowRequest.Status == "Rejected")
+        if (borrowRequest.Status == "Rejected" || borrowRequest.Status == "Cancel")
         {
             var item = await _unitOfWork.DonateItem.GetByIdAsync(borrowRequest.ItemId);
             item.Status = "Available";
