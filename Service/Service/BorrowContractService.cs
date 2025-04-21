@@ -120,6 +120,12 @@ namespace Service.Service
             };
 
             await _unitOfWork.BorrowContract.AddAsync(contract);
+            var item = await _unitOfWork.DonateItem.GetByIdAsync(request.ItemId);
+            if (item == null)
+                throw new ApiException(HttpStatusCode.NotFound, "Laptop not found.");
+
+            item.Status = "Borrwing";
+            _unitOfWork.DonateItem.Update(item);
             await _unitOfWork.SaveAsync();
 
             // Trả về BorrowContractResponseDTO

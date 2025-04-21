@@ -33,7 +33,9 @@ using DataAccess.UserDTO;
 using DataAccess.MajorDTO;
 using DataAccess.SponsorFundDTO;
 using DataAccess.PurchasedLaptopDTO;
+
 using DataAccess.TransactionLogDTO;
+
 
 
 namespace Service.Utils.MapperProfiles
@@ -57,7 +59,15 @@ namespace Service.Utils.MapperProfiles
             CreateMap<ReportDamage, ReportDamageDTO>().ReverseMap();
             CreateMap<ReportDamageCreateDTO, ReportDamage>();
             CreateMap<ReportDamageUpdateDTO, ReportDamage>();
+
+
             CreateMap<CompensationTransaction, CompensationTransactionDTO>().ReverseMap();
+            CreateMap<CompensationTransactionCreateDTO, CompensationTransaction>();
+            CreateMap<CompensationTransactionUpdateDTO, CompensationTransaction>();
+
+            CreateMap<ContractImage, ContractImageDTO>().ReverseMap();
+            CreateMap<ContractImageCreateDTO, ContractImage>();
+
             CreateMap<DepositTransaction, DepositTransactionDTO>();
             CreateMap<DepositTransactionCreateDTO, DepositTransaction>();
             CreateMap<DepositTransactionUpdateDTO, DepositTransaction>();
@@ -135,8 +145,7 @@ namespace Service.Utils.MapperProfiles
 
             CreateMap<PurchasedLaptop, PurchasedLaptopDTO>().ReverseMap();
             CreateMap<PurchasedLaptopCreateDTO, PurchasedLaptop>();
-            CreateMap<PurchasedLaptopUpdateDTO, PurchasedLaptop>()
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<PurchasedLaptopUpdateDTO, PurchasedLaptop>();
 
 
             CreateMap<FeedbackProduct, FeedbackProductDTO>()

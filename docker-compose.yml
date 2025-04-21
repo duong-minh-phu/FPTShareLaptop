@@ -25,6 +25,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnectionString=Server=FPTShareLaptopSP.mssql.somee.com;Database=FPTShareLaptopSP;User Id=phudmse161044_SQLLogin_1;Password=lowlzu76pd;TrustServerCertificate=True;MultipleActiveResultSets=true;
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
 
 networks:
   fptnet:
