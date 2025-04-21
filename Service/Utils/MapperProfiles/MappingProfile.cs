@@ -65,8 +65,7 @@ namespace Service.Utils.MapperProfiles
             CreateMap<CompensationTransactionCreateDTO, CompensationTransaction>();
             CreateMap<CompensationTransactionUpdateDTO, CompensationTransaction>();
 
-            CreateMap<ContractImage, ContractImageDTO>().ReverseMap();
-            CreateMap<ContractImageCreateDTO, ContractImage>();
+            
 
             CreateMap<DepositTransaction, DepositTransactionDTO>();
             CreateMap<DepositTransactionCreateDTO, DepositTransaction>();
