@@ -88,7 +88,7 @@ namespace Service.Service
 
         public IGenericRepository<TransactionLog> TransactionLog => Repository<TransactionLog>();
 
-
+        public IGenericRepository<ContractImage> ContractImage => Repository<ContractImage>();
 
         public async Task<int> SaveAsync()
         {
