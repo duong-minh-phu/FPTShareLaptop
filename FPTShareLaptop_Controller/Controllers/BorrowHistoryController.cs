@@ -54,7 +54,14 @@ namespace FPTShareLaptop_Controller.Controllers
             }
 
             var borrowHistory = _mapper.Map<BorrowHistory>(borrowHistoryDTO);
-            await _unitOfWork.BorrowHistory.AddAsync(borrowHistory);
+            await _unitOfWork.BorrowHistory.AddAsync(borrowHistory);            
+            var donateItem = await _unitOfWork.DonateItem.GetByIdAsync(borrowHistoryDTO.ItemId);
+            if (donateItem != null)
+            {
+                donateItem.TotalBorrowedCount += 1;
+                _unitOfWork.DonateItem.Update(donateItem);
+            }
+
             await _unitOfWork.SaveAsync();
 
             var createdDTO = _mapper.Map<BorrowHistoryReadDTO>(borrowHistory);

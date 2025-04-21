@@ -255,6 +255,47 @@ namespace FPTShareLaptop_Controller.Controllers
 
             return Ok(ResultModel.Success(topDonors, "Top 5 người donate nhiều laptop nhất"));
         }
+
+
+        // GET: api/donate-items/borrowed
+        [HttpGet("borrowed")]
+        public async Task<IActionResult> GetBorrowedItems()
+        {
+            var contracts = await _unitOfWork.BorrowContract.GetAllAsync(
+                includeProperties: x => x.Item
+            );
+
+            var items = contracts
+                .Where(x => x.Item != null)
+                .Select(x => x.Item)
+                .Distinct()
+                .ToList();
+
+            var itemDTOs = _mapper.Map<IEnumerable<DonateItemReadDTO>>(items);
+            return Ok(ResultModel.Success(itemDTOs, "Danh sách laptop đã có hợp đồng"));
+        }
+
+        // GET: api/donate-items/approved
+        [HttpGet("approved")]
+        public async Task<IActionResult> GetApprovedBorrowItems()
+        {
+            var approvedRequests = await _unitOfWork.BorrowRequest.GetAllAsync(
+                filter: x => x.Status == "Approved",
+                includeProperties: x => x.Item
+            );
+
+            // Lấy ra danh sách DonateItem từ các BorrowRequest đã Approved
+            var approvedItems = approvedRequests
+                .Where(x => x.Item != null)
+                .Select(x => x.Item)
+                .Distinct() // Nếu một item được duyệt nhiều lần thì chỉ lấy 1 lần
+                .ToList();
+
+            var approvedItemDTOs = _mapper.Map<IEnumerable<DonateItemReadDTO>>(approvedItems);
+            return Ok(ResultModel.Success(approvedItemDTOs, "Danh sách laptop đã được duyệt mượn"));
+        }
+
+
     }
 
 }

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using BusinessObjects.Models;
 using DataAccess.OrderDetailDTO;
+using DataAccess.ProductDTO;
 using DataAccess.ResultModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Service.IService;
 
 namespace FPTShareLaptop_Controller.Controllers
@@ -96,5 +98,33 @@ namespace FPTShareLaptop_Controller.Controllers
 
             return Ok(ResultModel.Success($"Chi tiết đơn hàng với ID {id} đã được xóa."));
         }
+
+
+        [HttpGet("product-sales")]
+        public async Task<IActionResult> GetProductSalesStatistics()
+        {
+            // Lấy tất cả chi tiết đơn hàng
+            var orderDetails = await _unitOfWork.OrderDetail.GetAllAsync();
+
+            // Kiểm tra nếu không có dữ liệu
+            if (orderDetails == null || !orderDetails.Any())
+            {
+                return NotFound(ResultModel.NotFound("Không có thông tin bán hàng cho sản phẩm."));
+            }
+
+            // Nhóm theo ProductId và tính tổng số lượng bán được
+            var productSalesStatistics = orderDetails
+                .GroupBy(od => od.ProductId)
+                .Select(g => new
+                {
+                    ProductId = g.Key,
+                    TotalQuantitySold = g.Sum(od => od.Quantity) // Sử dụng trực tiếp Quantity vì đã chắc chắn là int
+                })
+                .ToList();
+
+            return Ok(ResultModel.Success(productSalesStatistics));
+        }
+
+
     }
 }
