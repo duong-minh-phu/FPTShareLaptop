@@ -7,7 +7,17 @@ using System.Threading.Tasks;
 namespace DataAccess.RefundTransactionDTO
 {
     public class RefundTransactionReqModel
-    {
-        public decimal Amount { get; set; }
+    { 
+        public int ContractId { get; set; }      
+
+        public int DepositId { get; set; }
+        
+        public int? ReportId { get; set; }
+
+        public decimal RefundAmount { get; set; }
+
+        public string? RefundNote { get; set; }
+
+        public DateTime RefundDate { get; set; }
     }
 }

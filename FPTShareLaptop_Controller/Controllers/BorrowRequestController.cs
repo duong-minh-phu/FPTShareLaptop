@@ -80,7 +80,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> UpdateBorrowRequest(int id, [FromBody] UpdateBorrowRequestReqModel request)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _borrowRequestService.UpdateBorrowRequest(token, id, request);
+            await _borrowRequestService.UpdateBorrowRequest(id, request);
 
             return Ok(new ResultModel
             {
@@ -95,7 +95,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> SoftDeleteBorrowRequest(int id)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _borrowRequestService.DeleteBorrowRequest(token, id);
+            await _borrowRequestService.DeleteBorrowRequest(id);
 
             return Ok(new ResultModel
             {

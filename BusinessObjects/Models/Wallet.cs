@@ -17,8 +17,6 @@ public partial class Wallet
 
     public DateTime CreatedDate { get; set; }
 
-    public virtual ICollection<RefundTransaction> RefundTransactions { get; set; } = new List<RefundTransaction>();
-
     public virtual ICollection<SettlementTransaction> SettlementTransactionManagerWallets { get; set; } = new List<SettlementTransaction>();
 
     public virtual ICollection<SettlementTransaction> SettlementTransactionShopWallets { get; set; } = new List<SettlementTransaction>();

@@ -148,12 +148,8 @@ namespace Service.Service
         }
 
         // Cập nhật hợp đồng
-        public async Task UpdateBorrowContract(string token, int contractId, UpdateBorrowContractReqModel updateModel)
-        {
-            var userId = _jwtService.decodeToken(token, "userId");
-            var user = await _unitOfWork.Users.GetByIdAsync(userId);
-            if (user == null)
-                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+        public async Task UpdateBorrowContract(int contractId, UpdateBorrowContractReqModel updateModel)
+        {          
 
             var contract = await _unitOfWork.BorrowContract.GetByIdAsync(contractId);
             if (contract == null)
@@ -166,13 +162,8 @@ namespace Service.Service
         }
 
         // Xóa hợp đồng (soft delete)
-        public async Task DeleteBorrowContract(string token, int contractId)
-        {
-            var userId = _jwtService.decodeToken(token, "userId");
-            var user = await _unitOfWork.Users.GetByIdAsync(userId);
-            if (user == null)
-                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
-
+        public async Task DeleteBorrowContract(int contractId)
+        {         
             var contract = await _unitOfWork.BorrowContract.GetByIdAsync(contractId);
             if (contract == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Borrow contract not found.");
@@ -181,12 +172,8 @@ namespace Service.Service
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task UploadSignedContractImage(string token, int contractId, UploadBorrowContractReqModel requestModel)
-        {
-            var userId = _jwtService.decodeToken(token, "userId");
-            var user = await _unitOfWork.Users.GetByIdAsync(userId);
-            if (user == null)
-                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+        public async Task UploadSignedContractImage(int contractId, UploadBorrowContractReqModel requestModel)
+        {           
 
             var contract = await _unitOfWork.BorrowContract.GetByIdAsync(contractId, includeProperties: c => c.ContractImages);
             if (contract == null)

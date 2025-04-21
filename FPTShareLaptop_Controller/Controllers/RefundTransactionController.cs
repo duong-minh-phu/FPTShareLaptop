@@ -48,30 +48,15 @@ namespace FPTShareLaptop_Controller.Controllers
                 Data = result
             };
             return StatusCode(response.Code, response);
-        }
-
-        // Lấy giao dịch hoàn tiền theo WalletId
-        [HttpGet]
-        [Route("get-by-wallet/{walletId}")]
-        public async Task<IActionResult> GetRefundTransactionByWalletId(int walletId)
-        {
-            var result = await _refundTransactionService.GetByWalletIdAsync(walletId);
-            ResultModel response = new ResultModel
-            {
-                IsSuccess = true,
-                Code = (int)HttpStatusCode.OK,
-                Message = "Refund transactions retrieved successfully.",
-                Data = result
-            };
-            return StatusCode(response.Code, response);
-        }
+        }    
 
         // Thêm mới giao dịch hoàn tiền
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> CreateRefundTransaction([FromBody] RefundTransactionReqModel request)
         {
-            await _refundTransactionService.AddAsync(request);
+            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
+            await _refundTransactionService.AddAsync(token, request);
             ResultModel response = new ResultModel
             {
                 IsSuccess = true,
@@ -87,7 +72,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> UpdateRefundTransaction([FromBody] RefundTransactionReqModel request, int refundId)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _refundTransactionService.UpdateAsync(token, request, refundId);
+            await _refundTransactionService.UpdateAsync(request, refundId);
 
             ResultModel response = new ResultModel
             {
@@ -104,7 +89,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> DeleteRefundTransaction(int refundId)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _refundTransactionService.DeleteAsync(token, refundId);
+            await _refundTransactionService.DeleteAsync(refundId);
 
             ResultModel response = new ResultModel
             {

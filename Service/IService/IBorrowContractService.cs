@@ -14,8 +14,8 @@ namespace Service.IService
         Task<List<BorrowContractResponseModel>> GetAllBorrowContracts();
         Task<BorrowContractResponseModel> GetBorrowContractById(int contractId);
         Task<BorrowContractResponseModel> CreateBorrowContract(CreateBorrowContractReqModel requestModel);
-        Task UpdateBorrowContract(string token, int contractId, UpdateBorrowContractReqModel requestModel);
-        Task DeleteBorrowContract(string token, int contractId);
-        Task UploadSignedContractImage(string token, int contractId, UploadBorrowContractReqModel requestModel);
+        Task UpdateBorrowContract(int contractId, UpdateBorrowContractReqModel requestModel);
+        Task DeleteBorrowContract(int contractId);
+        Task UploadSignedContractImage(int contractId, UploadBorrowContractReqModel requestModel);
     }
 }

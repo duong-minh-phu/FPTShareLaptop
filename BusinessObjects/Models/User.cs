@@ -61,6 +61,8 @@ public partial class User
 
     public virtual Student? Student { get; set; }
 
+    public virtual ICollection<TransactionLog> TransactionLogs { get; set; } = new List<TransactionLog>();
+
     public virtual ICollection<Wallet> Wallets { get; set; } = new List<Wallet>();
 
     public virtual ICollection<Role> Roles { get; set; } = new List<Role>();

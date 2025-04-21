@@ -25,8 +25,6 @@ public partial class Order
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
-    public virtual ICollection<RefundTransaction> RefundTransactions { get; set; } = new List<RefundTransaction>();
-
     public virtual ICollection<SettlementTransaction> SettlementTransactions { get; set; } = new List<SettlementTransaction>();
 
     public virtual ICollection<Shipment> Shipments { get; set; } = new List<Shipment>();

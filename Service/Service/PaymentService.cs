@@ -80,6 +80,21 @@ namespace Service.Service
             await _unitOfWork.Payment.AddAsync(newPayment);
             await _unitOfWork.SaveAsync();
 
+            var log = new TransactionLog
+            {
+                UserId = user.UserId,
+                TransactionType = "Payment",
+                Amount = newPayment.Amount,
+                CreatedDate = DateTime.UtcNow,
+                Note = $"Payment for Order #{order.OrderId}",
+                ReferenceId = newPayment.PaymentId,
+                SourceTable = "Payment"
+            };
+
+            await _unitOfWork.TransactionLog.AddAsync(log);
+
+            await _unitOfWork.SaveAsync();
+
             return new PaymentViewResModel
             {
                 PaymentId = newPayment.PaymentId,

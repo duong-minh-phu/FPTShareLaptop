@@ -129,12 +129,8 @@ public class BorrowRequestService : IBorrowRequestService
 
 
     // Cập nhật yêu cầu mượn
-    public async Task UpdateBorrowRequest(string token, int requestId, UpdateBorrowRequestReqModel updateModel)
-    {
-        var userId = _jwtService.decodeToken(token, "userId");
-        var user = await _unitOfWork.Users.GetByIdAsync(userId);
-        if (user == null)
-            throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+    public async Task UpdateBorrowRequest(int requestId, UpdateBorrowRequestReqModel updateModel)
+    {      
 
         var borrowRequest = await _unitOfWork.BorrowRequest.GetByIdAsync(requestId);
         if (borrowRequest == null)
@@ -164,12 +160,8 @@ public class BorrowRequestService : IBorrowRequestService
 
 
     // Xóa yêu cầu mượn
-    public async Task DeleteBorrowRequest(string token, int requestId)
-    {
-        var userId = _jwtService.decodeToken(token, "userId");
-        var user = await _unitOfWork.Users.GetByIdAsync(userId);
-        if (user == null)
-            throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+    public async Task DeleteBorrowRequest(int requestId)
+    {       
 
         var borrowRequest = await _unitOfWork.BorrowRequest.GetByIdAsync(requestId);
         if (borrowRequest == null)

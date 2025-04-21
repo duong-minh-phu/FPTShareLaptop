@@ -57,6 +57,19 @@ namespace FPTShareLaptop_Controller.Controllers
             await _unitOfWork.DepositTransaction.AddAsync(transaction);
             await _unitOfWork.SaveAsync();
 
+            var log = new TransactionLog
+            {
+                UserId = transaction.UserId, // Ghi nhận UserId từ token
+                TransactionType = "Deposit", // Loại giao dịch là Deposit
+                Amount = transaction.Amount, // Số tiền giao dịch
+                CreatedDate = DateTime.UtcNow, // Thời gian tạo log
+                Note = $"Deposit transaction created for contract {transaction.ContractId}, amount: {transaction.Amount}", // Ghi chú
+                ReferenceId = transaction.DepositId, // Sử dụng DepositId làm ReferenceId
+                SourceTable = "DepositTransaction" // Ghi lại bảng nguồn
+            };
+
+            await _unitOfWork.TransactionLog.AddAsync(log);
+            await _unitOfWork.SaveAsync();
             var createdDTO = _mapper.Map<DepositTransactionDTO>(transaction);
             return Ok(ResultModel.Created(createdDTO));
         }

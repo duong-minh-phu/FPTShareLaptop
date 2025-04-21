@@ -25,6 +25,8 @@ public partial class BorrowContract
 
     public DateTime ExpectedReturnDate { get; set; }
 
+    public int? BorrowContractId { get; set; }
+
     public virtual ICollection<CompensationTransaction> CompensationTransactions { get; set; } = new List<CompensationTransaction>();
 
     public virtual ICollection<ContractImage> ContractImages { get; set; } = new List<ContractImage>();
@@ -34,6 +36,8 @@ public partial class BorrowContract
     public virtual DonateItem Item { get; set; } = null!;
 
     public virtual ICollection<ItemCondition> ItemConditions { get; set; } = new List<ItemCondition>();
+
+    public virtual ICollection<RefundTransaction> RefundTransactions { get; set; } = new List<RefundTransaction>();
 
     public virtual BorrowRequest Request { get; set; } = null!;
 

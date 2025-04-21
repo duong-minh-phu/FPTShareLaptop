@@ -78,6 +78,8 @@ public partial class Sep490Context : DbContext
 
     public virtual DbSet<TrackingInfo> TrackingInfos { get; set; }
 
+    public virtual DbSet<TransactionLog> TransactionLogs { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<Wallet> Wallets { get; set; }
@@ -95,8 +97,6 @@ public partial class Sep490Context : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer(GetConnectionString());
-
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -633,28 +633,33 @@ public partial class Sep490Context : DbContext
 
         modelBuilder.Entity<RefundTransaction>(entity =>
         {
-            entity.HasKey(e => e.RefundId).HasName("PK__RefundTr__725AB920C851ED11");
+            entity.HasKey(e => e.RefundTransactionId).HasName("PK__RefundTr__4745915E9A25A176");
 
             entity.ToTable("RefundTransaction");
 
-            entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.RefundAmount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.RefundDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.RefundNote).HasMaxLength(255);
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasDefaultValue("Pending");
 
-            entity.HasOne(d => d.Order).WithMany(p => p.RefundTransactions)
-                .HasForeignKey(d => d.OrderId)
+            entity.HasOne(d => d.Contract).WithMany(p => p.RefundTransactions)
+                .HasForeignKey(d => d.ContractId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__RefundTra__Order__1CBC4616");
+                .HasConstraintName("FK_Refund_Contract");
 
-            entity.HasOne(d => d.Payment).WithMany(p => p.RefundTransactions)
-                .HasForeignKey(d => d.PaymentId)
+            entity.HasOne(d => d.Deposit).WithMany(p => p.RefundTransactions)
+                .HasForeignKey(d => d.DepositId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__RefundTra__Payme__1DB06A4F");
+                .HasConstraintName("FK_Refund_Deposit");
 
-            entity.HasOne(d => d.Wallet).WithMany(p => p.RefundTransactions)
-                .HasForeignKey(d => d.WalletId)
+            entity.HasOne(d => d.Report).WithMany(p => p.RefundTransactions)
+                .HasForeignKey(d => d.ReportId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__RefundTra__Walle__1EA48E88");
+                .HasConstraintName("FK_Refund_Report");
         });
 
         modelBuilder.Entity<ReportDamage>(entity =>
@@ -816,6 +821,28 @@ public partial class Sep490Context : DbContext
                 .HasForeignKey(d => d.ShipmentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__TrackingI__Shipm__282DF8C2");
+        });
+
+        modelBuilder.Entity<TransactionLog>(entity =>
+        {
+            entity.HasKey(e => e.TransactionId).HasName("PK__Transact__55433A6B70DF4440");
+
+            entity.ToTable("TransactionLog");
+
+            entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.CreatedDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ExtraPaymentRequired).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Note).HasMaxLength(255);
+            entity.Property(e => e.SourceTable).HasMaxLength(100);
+            entity.Property(e => e.TransactionType).HasMaxLength(50);
+            entity.Property(e => e.UsedDepositAmount).HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.User).WithMany(p => p.TransactionLogs)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TransactionLog_User");
         });
 
         modelBuilder.Entity<User>(entity =>

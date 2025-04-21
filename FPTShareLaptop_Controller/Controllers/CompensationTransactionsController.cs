@@ -54,8 +54,27 @@ namespace FPTShareLaptop_Controller.Controllers
             await _unitOfWork.CompensationTransaction.AddAsync(transaction);
             await _unitOfWork.SaveAsync();
 
+
+            var log = new TransactionLog
+            {
+                UserId = transaction.UserId,
+                TransactionType = "Compensation",
+                Amount = transaction.CompensationAmount,
+                ExtraPaymentRequired = transactionDTO.ExtraPaymentRequired,
+                UsedDepositAmount = transactionDTO.UsedDepositAmount,
+                CreatedDate = DateTime.UtcNow,
+                Note = $"Compensation transaction created for contract {transaction.ContractId}, amount: {transaction.CompensationAmount}, used deposit: {transaction.UsedDepositAmount}, extra payment required: {transaction.ExtraPaymentRequired}",
+                ReferenceId = transaction.CompensationId,
+                SourceTable = "CompensationTransaction"
+            };
+
+            await _unitOfWork.TransactionLog.AddAsync(log);
+            await _unitOfWork.SaveAsync();
+            
+
             var result = _mapper.Map<CompensationTransactionDTO>(transaction);
             return Ok(ResultModel.Created(result, "Tạo giao dịch bồi thường thành công"));
+
         }
 
         // PUT: api/compensation-transactions/{id}
