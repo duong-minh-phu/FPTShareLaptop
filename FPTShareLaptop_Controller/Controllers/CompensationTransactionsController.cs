@@ -54,12 +54,15 @@ namespace FPTShareLaptop_Controller.Controllers
             await _unitOfWork.CompensationTransaction.AddAsync(transaction);
             await _unitOfWork.SaveAsync();
 
+            var deposit = await _unitOfWork.DepositTransaction.GetByIdAsync(transaction.DepositTransactionId);
 
+            // Nếu không có thiệt hại, hoàn lại toàn bộ tiền cọc
+            decimal refundAmount = transaction.CompensationAmount == 0 ? deposit.Amount : transaction.CompensationAmount;
             var log = new TransactionLog
             {
                 UserId = transaction.UserId,
                 TransactionType = "Compensation",
-                Amount = transaction.CompensationAmount,
+                Amount = refundAmount,
                 ExtraPaymentRequired = transactionDTO.ExtraPaymentRequired,
                 UsedDepositAmount = transactionDTO.UsedDepositAmount,
                 CreatedDate = DateTime.UtcNow,
