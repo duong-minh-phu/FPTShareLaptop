@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace DataAccess.SponsorFundDTO
 {
-    public class SponsorFundCreateDTO
+    public class SponsorTodayDTO
     {
         public int SponsorId { get; set; }
+        public string SponsorName { get; set; } = null!;
         public decimal Amount { get; set; }
-        public string? Description { get; set; }
-        public DateTime TransferDate { get; set; }
-        public string? Status { get; set; }
     }
 }

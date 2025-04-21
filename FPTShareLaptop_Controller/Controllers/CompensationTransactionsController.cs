@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BusinessObjects.Models;
 using DataAccess.CompensationTransactionDTO;
+using DataAccess.ResultModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
@@ -25,7 +26,9 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> GetAll()
         {
             var transactions = await _unitOfWork.CompensationTransaction.GetAllAsync();
-            return Ok(_mapper.Map<IEnumerable<CompensationTransactionDTO>>(transactions));
+            var result = _mapper.Map<IEnumerable<CompensationTransactionDTO>>(transactions);
+
+            return Ok(ResultModel.Success(result, "Lấy danh sách giao dịch bồi thường thành công"));
         }
 
         // GET: api/compensation-transactions/{id}
@@ -33,20 +36,24 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var transaction = await _unitOfWork.CompensationTransaction.GetByIdAsync(id);
-            if (transaction == null) return NotFound();
+            if (transaction == null)
+                return NotFound(ResultModel.NotFound("Không tìm thấy giao dịch bồi thường"));
 
-            return Ok(_mapper.Map<CompensationTransactionDTO>(transaction));
+            var result = _mapper.Map<CompensationTransactionDTO>(transaction);
+            return Ok(ResultModel.Success(result, "Lấy chi tiết giao dịch bồi thường thành công"));
         }
 
         // POST: api/compensation-transactions
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CompensationTransactionCreateDTO transactionDTO)
         {
-            if (transactionDTO == null) return BadRequest("Invalid data.");
+            if (transactionDTO == null)
+                return BadRequest(ResultModel.BadRequest("Dữ liệu không hợp lệ"));
 
             var transaction = _mapper.Map<CompensationTransaction>(transactionDTO);
             await _unitOfWork.CompensationTransaction.AddAsync(transaction);
             await _unitOfWork.SaveAsync();
+
 
             var log = new TransactionLog
             {
@@ -63,8 +70,11 @@ namespace FPTShareLaptop_Controller.Controllers
 
             await _unitOfWork.TransactionLog.AddAsync(log);
             await _unitOfWork.SaveAsync();
-            return CreatedAtAction(nameof(GetById), new { id = transaction.CompensationId },
-                _mapper.Map<CompensationTransactionDTO>(transaction));
+            
+
+            var result = _mapper.Map<CompensationTransactionDTO>(transaction);
+            return Ok(ResultModel.Created(result, "Tạo giao dịch bồi thường thành công"));
+
         }
 
         // PUT: api/compensation-transactions/{id}
@@ -72,16 +82,17 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] CompensationTransactionUpdateDTO transactionDTO)
         {
             if (transactionDTO == null || transactionDTO.CompensationId != id)
-                return BadRequest("ID mismatch.");
+                return BadRequest(ResultModel.BadRequest("ID không khớp hoặc dữ liệu không hợp lệ"));
 
-            var existingTransaction = await _unitOfWork.CompensationTransaction.GetByIdAsync(id);
-            if (existingTransaction == null) return NotFound();
+            var existing = await _unitOfWork.CompensationTransaction.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound(ResultModel.NotFound("Không tìm thấy giao dịch để cập nhật"));
 
-            _mapper.Map(transactionDTO, existingTransaction);
-            _unitOfWork.CompensationTransaction.Update(existingTransaction);
+            _mapper.Map(transactionDTO, existing);
+            _unitOfWork.CompensationTransaction.Update(existing);
             await _unitOfWork.SaveAsync();
 
-            return NoContent();
+            return Ok(ResultModel.Success(null, "Cập nhật giao dịch bồi thường thành công"));
         }
 
         // DELETE: api/compensation-transactions/{id}
@@ -89,12 +100,13 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var transaction = await _unitOfWork.CompensationTransaction.GetByIdAsync(id);
-            if (transaction == null) return NotFound();
+            if (transaction == null)
+                return NotFound(ResultModel.NotFound("Không tìm thấy giao dịch để xóa"));
 
             _unitOfWork.CompensationTransaction.Delete(transaction);
             await _unitOfWork.SaveAsync();
 
-            return NoContent();
+            return Ok(ResultModel.Success(null, "Xóa giao dịch bồi thường thành công"));
         }
     }
 }

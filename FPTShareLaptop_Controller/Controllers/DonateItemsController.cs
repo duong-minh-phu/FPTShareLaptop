@@ -91,6 +91,9 @@ namespace FPTShareLaptop_Controller.Controllers
             item.UpdatedDate = DateTime.UtcNow;
 
             await _unitOfWork.DonateItem.AddAsync(item);
+
+            donateForm.Status = "Done";
+            _unitOfWork.DonateForm.Update(donateForm);
             await _unitOfWork.SaveAsync();
 
             var result = _mapper.Map<DonateItemReadDTO>(item);
@@ -99,20 +102,15 @@ namespace FPTShareLaptop_Controller.Controllers
 
         // PUT: api/donate-items/{id} (Cập nhật thông tin + upload ảnh mới)
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, IFormFile? file, [FromForm] DonateItemUpdateDTO itemDTO)
+        public async Task<IActionResult> UpdateDonateItem(int id, IFormFile? file, [FromForm] DonateItemUpdateDTO dto)
         {
-            if (itemDTO == null || itemDTO.ItemId != id)
-            {
-                return BadRequest(ResultModel.BadRequest("ID mismatch."));
-            }
-
             var existingItem = await _unitOfWork.DonateItem.GetByIdAsync(id);
             if (existingItem == null)
             {
-                return NotFound(ResultModel.NotFound());
+                return NotFound(ResultModel.NotFound("Không tìm thấy DonateItem."));
             }
 
-            // Upload ảnh mới lên Cloudinary nếu có file mới
+            // Upload ảnh nếu có file mới
             if (file != null && file.Length > 0)
             {
                 using var stream = file.OpenReadStream();
@@ -129,14 +127,35 @@ namespace FPTShareLaptop_Controller.Controllers
                 existingItem.ItemImage = uploadResult.SecureUrl.ToString();
             }
 
-            _mapper.Map(itemDTO, existingItem);
+            // Cập nhật các thuộc tính có giá trị
+            if (!string.IsNullOrEmpty(dto.ItemName)) existingItem.ItemName = dto.ItemName;
+            if (!string.IsNullOrEmpty(dto.Cpu)) existingItem.Cpu = dto.Cpu;
+            if (!string.IsNullOrEmpty(dto.Ram)) existingItem.Ram = dto.Ram;
+            if (!string.IsNullOrEmpty(dto.Storage)) existingItem.Storage = dto.Storage;
+            if (!string.IsNullOrEmpty(dto.ScreenSize)) existingItem.ScreenSize = dto.ScreenSize;
+            if (!string.IsNullOrEmpty(dto.ConditionItem)) existingItem.ConditionItem = dto.ConditionItem;
+            if (!string.IsNullOrEmpty(dto.Status)) existingItem.Status = dto.Status;
+            if (!string.IsNullOrEmpty(dto.SerialNumber)) existingItem.SerialNumber = dto.SerialNumber;
+            if (!string.IsNullOrEmpty(dto.Model)) existingItem.Model = dto.Model;
+            if (!string.IsNullOrEmpty(dto.Color)) existingItem.Color = dto.Color;
+            if (!string.IsNullOrEmpty(dto.GraphicsCard)) existingItem.GraphicsCard = dto.GraphicsCard;
+            if (!string.IsNullOrEmpty(dto.Battery)) existingItem.Battery = dto.Battery;
+            if (!string.IsNullOrEmpty(dto.Ports)) existingItem.Ports = dto.Ports;
+            if (dto.ProductionYear.HasValue) existingItem.ProductionYear = dto.ProductionYear.Value;
+            if (!string.IsNullOrEmpty(dto.OperatingSystem)) existingItem.OperatingSystem = dto.OperatingSystem;
+            if (!string.IsNullOrEmpty(dto.Description)) existingItem.Description = dto.Description;
+            if (dto.CategoryId.HasValue) existingItem.CategoryId = dto.CategoryId.Value;
+
+            // Cập nhật ngày sửa
             existingItem.UpdatedDate = DateTime.UtcNow;
 
+            // Lưu thay đổi
             _unitOfWork.DonateItem.Update(existingItem);
             await _unitOfWork.SaveAsync();
 
-            return Ok(ResultModel.Success(null, "Updated successfully"));
+            return Ok(ResultModel.Success(null, "Cập nhật thành công"));
         }
+
 
         // DELETE: api/donate-items/{id}
         [HttpDelete("{id}")]
@@ -215,6 +234,68 @@ namespace FPTShareLaptop_Controller.Controllers
 
             return (cpu, ram);
         }
+
+        [HttpGet("top-donors")]
+        public async Task<IActionResult> GetTopDonors()
+        {
+            var items = await _unitOfWork.DonateItem.GetAllAsync(includeProperties: x => x.User);
+
+            var topDonors = items
+                .Where(x => x.Status != "Deleted") // Nếu bạn lọc như vậy
+                .GroupBy(item => new { item.UserId, item.User.FullName })
+                .Select(group => new TopDonorDTO
+                {
+                    DonorId = group.Key.UserId,
+                    DonorName = group.Key.FullName,
+                    TotalLaptops = group.Count()
+                })
+                .OrderByDescending(dto => dto.TotalLaptops)
+                .Take(5)
+                .ToList();
+
+            return Ok(ResultModel.Success(topDonors, "Top 5 người donate nhiều laptop nhất"));
+        }
+
+
+        // GET: api/donate-items/borrowed
+        [HttpGet("borrowed")]
+        public async Task<IActionResult> GetBorrowedItems()
+        {
+            var contracts = await _unitOfWork.BorrowContract.GetAllAsync(
+                includeProperties: x => x.Item
+            );
+
+            var items = contracts
+                .Where(x => x.Item != null)
+                .Select(x => x.Item)
+                .Distinct()
+                .ToList();
+
+            var itemDTOs = _mapper.Map<IEnumerable<DonateItemReadDTO>>(items);
+            return Ok(ResultModel.Success(itemDTOs, "Danh sách laptop đã có hợp đồng"));
+        }
+
+        // GET: api/donate-items/approved
+        [HttpGet("approved")]
+        public async Task<IActionResult> GetApprovedBorrowItems()
+        {
+            var approvedRequests = await _unitOfWork.BorrowRequest.GetAllAsync(
+                filter: x => x.Status == "Approved",
+                includeProperties: x => x.Item
+            );
+
+            // Lấy ra danh sách DonateItem từ các BorrowRequest đã Approved
+            var approvedItems = approvedRequests
+                .Where(x => x.Item != null)
+                .Select(x => x.Item)
+                .Distinct() // Nếu một item được duyệt nhiều lần thì chỉ lấy 1 lần
+                .ToList();
+
+            var approvedItemDTOs = _mapper.Map<IEnumerable<DonateItemReadDTO>>(approvedItems);
+            return Ok(ResultModel.Success(approvedItemDTOs, "Danh sách laptop đã được duyệt mượn"));
+        }
+
+
     }
 
 }

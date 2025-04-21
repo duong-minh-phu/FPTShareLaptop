@@ -11,8 +11,10 @@ using Microsoft.OpenApi.Models;
 using Service.IService;
 using Service.Service;
 using Service.Utils.MapperProfiles;
-
+using DotNetEnv;
 var builder = WebApplication.CreateBuilder(args);
+
+var openaiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 //-----------------------------------------DB-----------------------------------------
 builder.Services.AddDbContext<Sep490Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -34,7 +36,6 @@ builder.Services.AddSingleton<GlobalExceptionMiddleware>();
 //-----------------------------------------SERVICES-----------------------------------------
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient<OpenAIService>();
-builder.Services.AddScoped<OpenAIService>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IJWTService, JWTService>();
