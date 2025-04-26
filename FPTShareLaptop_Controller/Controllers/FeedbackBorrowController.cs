@@ -22,7 +22,7 @@ namespace FPTShareLaptop_Controller.Controllers
 
         // Lấy tất cả feedbacks
         [HttpGet]
-        [Route("get")]
+        [Route("get-all")]
         public async Task<IActionResult> GetAllFeedbacks()
         {
             var result = await _feedbackBorrowService.GetAllFeedbacks();
