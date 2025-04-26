@@ -55,25 +55,56 @@ namespace FPTShareLaptop_Controller.Controllers
             await _unitOfWork.SaveAsync();
 
             var deposit = await _unitOfWork.DepositTransaction.GetByIdAsync(transaction.DepositTransactionId);
+            decimal usedDepositAmount = 0;
+            decimal extraPaymentRequired = 0;
+            decimal refundAmount = 0;
 
-            // Nếu không có thiệt hại, hoàn lại toàn bộ tiền cọc
-            decimal refundAmount = transaction.CompensationAmount == 0 ? deposit.Amount : transaction.CompensationAmount;
+            // Xác định số tiền bồi thường
+            if (transaction.CompensationAmount == 0)
+            {
+                // Không có thiệt hại -> hoàn toàn bộ tiền cọc
+                refundAmount = deposit.Amount;
+            }
+            else if (transaction.CompensationAmount < deposit.Amount)
+            {
+                // Thiệt hại nhỏ hơn tiền cọc -> trừ vào tiền cọc, trả lại phần dư
+                usedDepositAmount = transaction.CompensationAmount;
+                refundAmount = deposit.Amount - usedDepositAmount;
+            }
+            else if (transaction.CompensationAmount == deposit.Amount)
+            {
+                // Thiệt hại đúng bằng tiền cọc -> dùng hết tiền cọc, không hoàn lại
+                usedDepositAmount = deposit.Amount;
+                refundAmount = 0;
+            }
+            else
+            {
+                // Thiệt hại lớn hơn tiền cọc -> lấy hết tiền cọc + khách phải trả thêm
+                usedDepositAmount = deposit.Amount;
+                extraPaymentRequired = transaction.CompensationAmount - deposit.Amount;
+                refundAmount = 0;
+            }
+
+            // Lưu log giao dịch
             var log = new TransactionLog
             {
                 UserId = transaction.UserId,
                 TransactionType = "Compensation",
                 Amount = refundAmount,
-                ExtraPaymentRequired = transactionDTO.ExtraPaymentRequired,
-                UsedDepositAmount = transactionDTO.UsedDepositAmount,
+                ExtraPaymentRequired = extraPaymentRequired,
+                UsedDepositAmount = usedDepositAmount,
                 CreatedDate = DateTime.UtcNow,
-                Note = $"Compensation transaction created for contract {transaction.ContractId}, amount: {transaction.CompensationAmount}, used deposit: {transaction.UsedDepositAmount}, extra payment required: {transaction.ExtraPaymentRequired}",
+                Note = $"Compensation transaction created for contract {transaction.ContractId}, " +
+                       $"compensation amount: {transaction.CompensationAmount}, " +
+                       $"used deposit: {usedDepositAmount}, extra payment required: {extraPaymentRequired}",
                 ReferenceId = transaction.CompensationId,
                 SourceTable = "CompensationTransaction"
             };
 
             await _unitOfWork.TransactionLog.AddAsync(log);
             await _unitOfWork.SaveAsync();
-            
+
+
 
             var result = _mapper.Map<CompensationTransactionDTO>(transaction);
             return Ok(ResultModel.Created(result, "Tạo giao dịch bồi thường thành công"));
