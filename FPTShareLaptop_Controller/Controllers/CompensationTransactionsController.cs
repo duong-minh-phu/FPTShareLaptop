@@ -90,7 +90,7 @@ namespace FPTShareLaptop_Controller.Controllers
             {
                 UserId = transaction.UserId,
                 TransactionType = "Compensation",
-                Amount = refundAmount,
+                Amount = transaction.CompensationAmount,
                 ExtraPaymentRequired = extraPaymentRequired,
                 UsedDepositAmount = usedDepositAmount,
                 CreatedDate = DateTime.UtcNow,
