@@ -28,7 +28,7 @@ namespace Service.Service
         {
             _configuration = configuration;
             _mapper = mapper; // ✅ Gán mapper
-            _httpClient = httpClient; // Không cần tạo HttpClient mới nữa, sử dụng DI HttpClient.
+            _httpClient = new HttpClient();
             _cache = new Dictionary<string, (string, DateTime)>();
             _dailyRequestCount = 0;
             _lastReset = DateTime.UtcNow.Date;
@@ -51,22 +51,16 @@ namespace Service.Service
                 return System.Text.Json.JsonSerializer.Deserialize<LaptopSuggestionResultDTO>(_cache[major].result)!;
             }
 
-            // Lấy API key từ môi trường (Environment Variable)
-            var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-            if (string.IsNullOrEmpty(apiKey))
-            {
-                throw new Exception("API key không hợp lệ hoặc chưa được cấu hình.");
-            }
-
+            var apiKey = "sk-proj-"+_configuration["OpenAI:ApiKeyPart1"] +"R"+ _configuration["OpenAI:ApiKeyPart2"];
             var url = "https://api.openai.com/v1/chat/completions";
 
             var request = new
             {
                 model = "gpt-3.5-turbo",
                 messages = new[] {
-                new { role = "system", content = "Bạn là một chuyên gia tư vấn laptop." },
-                new { role = "user", content = $"Tôi học ngành {major}, hãy gợi ý cấu hình laptop tập trung vào CPU và RAM." }
-            },
+            new { role = "system", content = "Bạn là một chuyên gia tư vấn laptop." },
+            new { role = "user", content = $"Tôi học ngành {major}, hãy gợi ý cấu hình laptop tập trung vào CPU và RAM." }
+        },
                 temperature = 0.7
             };
 
