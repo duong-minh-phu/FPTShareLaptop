@@ -28,24 +28,38 @@ namespace Service.Service
             _walletService = walletService;
         }
 
-        public async Task<bool> UpdatePaymentAsync(int paymentId)
+        public async Task ProcessPaymentCallback(PayOSWebhookModel callbackData)
         {
-            var currPayment = await _unitOfWork.Payment.GetByIdAsync(paymentId);
-            if (currPayment == null)
+            var transactionCode = callbackData.TransactionCode;
+            var status = callbackData.Status;
+
+            // Lấy thanh toán từ DB
+            var payment = await _unitOfWork.Payment.FirstOrDefaultAsync(p => p.TransactionCode == transactionCode);
+            if (payment == null) throw new Exception("Payment not found.");
+
+            var order = await _unitOfWork.Order.GetByIdAsync(payment.OrderId);
+            if (order == null) throw new Exception("Order not found.");
+
+            // Xử lý trạng thái thanh toán
+            if (status == "PAID")
             {
-                throw new ApiException(HttpStatusCode.NotFound, "Payment does not exist");
+                payment.Status = "Paid";
+                order.Status = "Success";
+            }
+            else if (status == "CANCELLED")
+            {
+                payment.Status = "Cancelled";
+                order.Status = "Cancelled";
+            }
+            else
+            {
+                throw new Exception("Unknown payment status.");
             }
 
-            if (currPayment.Status == "Paid")
-            {
-                throw new ApiException(HttpStatusCode.BadRequest, "The payment has already been confirmed");
-            }
-            
-            currPayment.Status = "Paid";
-            _unitOfWork.Payment.Update(currPayment);
+            // Cập nhật lại thông tin thanh toán và đơn hàng
+            _unitOfWork.Payment.Update(payment);
+            _unitOfWork.Order.Update(order);
             await _unitOfWork.SaveAsync();
-            await _walletService.DisburseToManagerAsync(currPayment.Amount);
-            return true;
         }
 
         public async Task<PaymentViewResModel> CreatePaymentAsync(string token, int orderId, int paymentMethodId)
@@ -74,7 +88,7 @@ namespace Service.Service
                 Amount = order.TotalPrice,  
                 PaymentDate = DateTime.UtcNow, 
                 Status = "Unpaid",
-                TransactionCode = Guid.NewGuid().ToString() 
+                TransactionCode = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(),
             };
 
             await _unitOfWork.Payment.AddAsync(newPayment);
@@ -136,7 +150,7 @@ namespace Service.Service
 
             PayOSReqModel payOSReqModel = new PayOSReqModel
             {
-                OrderId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                OrderId = long.Parse(currPayment.TransactionCode),
                 ProductName = "Thanh toán đơn hàng",
                 Amount = currPayment.Amount/1000,
                 RedirectUrl = redirectUrl,
