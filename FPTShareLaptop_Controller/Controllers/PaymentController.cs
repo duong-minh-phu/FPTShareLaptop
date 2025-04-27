@@ -5,6 +5,7 @@ using DataAccess.ResultModel;
 using System.Net;
 using System.Threading.Tasks;
 using Net.payOS.Types;
+using DataAccess.PayOSDTO;
 
 namespace FPTShareLaptop_Controller.Controllers
 {
@@ -85,19 +86,17 @@ namespace FPTShareLaptop_Controller.Controllers
         }
 
         /// Xác nhận thanh toán
-        [HttpPost("{paymentId}/confirm")]
-        public async Task<IActionResult> UpdatePayment(int paymentId)
+        [HttpPost("webhook")]
+        public async Task<IActionResult> PaymentCallback([FromBody] PayOSWebhookModel callbackData)
         {
-            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            var result = await _paymentService.UpdatePaymentAsync(paymentId);
-            var response = new ResultModel
-            {
-                IsSuccess = true,
-                Code = (int)HttpStatusCode.OK,
-                Message = "Payment confirmation successful.",
-                Data = result
-            };
-            return StatusCode(response.Code, response);
+                await _paymentService.ProcessPaymentCallback(callbackData);
+                var response = new ResultModel
+                {
+                    IsSuccess = true,
+                    Code = (int)HttpStatusCode.OK,
+                    Message = "Payment processed successfully."
+                };
+                return StatusCode(response.Code, response);
         }
     }
 }
