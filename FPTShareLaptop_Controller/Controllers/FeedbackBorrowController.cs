@@ -83,7 +83,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> UpdateFeedback(int id, [FromBody] UpdateFeedbackBorrowReqModel model)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _feedbackBorrowService.UpdateFeedback(id, model, token);
+            await _feedbackBorrowService.UpdateFeedback(id, model);
 
             return Ok(new ResultModel
             {
@@ -99,7 +99,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> DeleteFeedback(int id)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _feedbackBorrowService.DeleteFeedback(token, id);
+            await _feedbackBorrowService.DeleteFeedback(id);
             return Ok(new ResultModel
             {
                 IsSuccess = true,

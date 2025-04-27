@@ -25,8 +25,6 @@ public partial class BorrowContract
 
     public DateTime ExpectedReturnDate { get; set; }
 
-    public int? BorrowContractId { get; set; }
-
     public virtual ICollection<CompensationTransaction> CompensationTransactions { get; set; } = new List<CompensationTransaction>();
 
     public virtual ICollection<ContractImage> ContractImages { get; set; } = new List<ContractImage>();
