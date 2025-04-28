@@ -215,6 +215,9 @@ namespace Service.Service
                 await _unitOfWork.TransactionLog.AddAsync(log);
             }
 
+            _unitOfWork.Payment.Update(payment);
+            _unitOfWork.Order.Update(order);
+            await _unitOfWork.SaveAsync();
         }
     }
 }
