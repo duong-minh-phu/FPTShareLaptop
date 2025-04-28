@@ -34,5 +34,42 @@ namespace FPTShareLaptop_Controller.Controllers
 
             return StatusCode(response.Code, response);
         }
+
+        [HttpPost("confirm-webhook")]
+        public async Task<IActionResult> ConfirmWebhookAsync([FromBody] string webhookUrl)
+        {
+            if (string.IsNullOrEmpty(webhookUrl))
+            {
+                return BadRequest(new { message = "Webhook URL is required." });
+            }
+
+            try
+            {
+                PayOS payOS = new PayOS(_config["PayOS:ClientID"], _config["PayOS:ApiKey"], _config["PayOS:ChecksumKey"]);
+
+                var confirmationResult = await payOS.confirmWebhook(webhookUrl);
+
+                if (confirmationResult != null)
+                {
+                    // Bạn có thể trả kèm dữ liệu confirmResult về cho dễ debug
+                    return Ok(new { message = "Webhook URL has been successfully confirmed.", data = confirmationResult });
+                }
+                else
+                {
+                    return StatusCode(500, new { message = "Failed to confirm the webhook URL. PayOS returned an unexpected response." });
+                }
+            }
+            catch (Net.payOS.Errors.PayOSError payOSError)
+            {
+                return StatusCode(500, new { message = $"PayOS error occurred: {payOSError.Message}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
+            }
+        }
+
+
+
     }
 }
