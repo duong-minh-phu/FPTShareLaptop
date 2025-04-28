@@ -7,6 +7,7 @@ using DataAccess.PaymentDTO;
 using DataAccess.PayOSDTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Net.payOS.Types;
 
 namespace Service.IService
 {
@@ -16,7 +17,8 @@ namespace Service.IService
         Task<PaymentViewResModel> GetPaymentByIdAsync(int paymentId);
         Task<PaymentViewResModel> CreatePaymentAsync(string token, int orderId, int paymentMethodId);
         Task<string> GetPaymentUrlAsync(HttpContext context, int paymentId, string redirectUrl);
-        Task ProcessPaymentCallback(PayOSWebhookModel callbackData);
+        Task HandlePaymentWebhookAsync(WebhookType webhookBody);
+        Task UpdatePayment(string transactionCode, UpdatePaymentReqModel model);
 
     }
 }

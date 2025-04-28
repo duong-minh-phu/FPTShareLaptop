@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Net.payOS.Types;
 using DataAccess.PayOSDTO;
+using Newtonsoft.Json;
 
 namespace FPTShareLaptop_Controller.Controllers
 {
@@ -14,10 +15,13 @@ namespace FPTShareLaptop_Controller.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
+        private readonly ILogger<PaymentController> _logger;
 
-        public PaymentController(IPaymentService paymentService)
+
+        public PaymentController(IPaymentService paymentService, ILogger<PaymentController> logger)
         {
             _paymentService = paymentService;
+            _logger = logger;
         }
 
         // Lấy danh sách tất cả Payment
@@ -45,7 +49,7 @@ namespace FPTShareLaptop_Controller.Controllers
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Lấy thông tin thanh toán thành công.",
+                Message = "Payment detail  retrieved successfully.",
                 Data = result
             };
             return StatusCode(response.Code, response);
@@ -73,8 +77,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> CreatePaymentAsync(int orderID, int paymenMethodId)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            var result = await _paymentService.CreatePaymentAsync(token, orderID ,paymenMethodId);
-
+            var result = await _paymentService.CreatePaymentAsync(token, orderID, paymenMethodId);
             var response = new ResultModel
             {
                 IsSuccess = true,
@@ -85,18 +88,45 @@ namespace FPTShareLaptop_Controller.Controllers
             return StatusCode(response.Code, response);
         }
 
-        /// Xác nhận thanh toán
+        /// Xác nhận thanh toán webhook
         [HttpPost("webhook")]
-        public async Task<IActionResult> PaymentCallback([FromBody] PayOSWebhookModel callbackData)
+        public async Task<IActionResult> HandlePaymentWebhookAsync([FromBody] WebhookType webhookBody)
         {
-                await _paymentService.ProcessPaymentCallback(callbackData);
-                var response = new ResultModel
-                {
-                    IsSuccess = true,
-                    Code = (int)HttpStatusCode.OK,
-                    Message = "Payment processed successfully."
-                };
-                return StatusCode(response.Code, response);
+            try
+            {
+                _logger.LogInformation($"Received webhook: {JsonConvert.SerializeObject(webhookBody)}");
+                await _paymentService.HandlePaymentWebhookAsync(webhookBody);
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi ở đây
+                _logger.LogError(ex, "An error occurred while processing the payment webhook.");
+            }
+
+            // Trả kèm dữ liệu webhook nhận được
+            return Ok(new
+            {
+                message = "Webhook received successfully.",
+                receivedData = webhookBody
+            });
+        }
+
+        [HttpPut("update/{transactionCode}")]
+        public async Task<IActionResult> UpdatePaymentAsync(string transactionCode, [FromBody] UpdatePaymentReqModel model)
+        {
+            // Gọi service để cập nhật trạng thái thanh toán
+            await _paymentService.UpdatePayment(transactionCode, model);
+
+            // Trả về kết quả thành công
+            var response = new ResultModel
+            {
+                IsSuccess = true,
+                Code = (int)HttpStatusCode.OK,
+                Message = "Payment status updated successfully."
+            };
+
+            return StatusCode(response.Code, response);
+
         }
     }
 }

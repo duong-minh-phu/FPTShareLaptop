@@ -9,8 +9,9 @@ using Net.payOS.Types;
 
 namespace Service.IService
 {
-   public interface IPayOSService
+    public interface IPayOSService
     {
         Task<CreatePaymentResult> CreatePaymentUrl(PayOSReqModel payOSReqModel);
+        Task<WebhookData> VerifyPaymentWebhookData(WebhookType webhookBody);      
     }
 }

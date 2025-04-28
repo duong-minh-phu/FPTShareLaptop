@@ -1,11 +1,14 @@
 ﻿using System.Linq.Expressions;
 using System.Net;
+using System.Transactions;
 using AutoMapper;
 using BusinessObjects.Models;
 using DataAccess.PaymentDTO;
 using DataAccess.PayOSDTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Net.payOS.Types;
+using Newtonsoft.Json;
 using Service.IService;
 using Service.Utils.CustomException;
 
@@ -28,39 +31,34 @@ namespace Service.Service
             _walletService = walletService;
         }
 
-        public async Task ProcessPaymentCallback(PayOSWebhookModel callbackData)
+        public async Task HandlePaymentWebhookAsync(WebhookType webhookBody)
         {
-            var transactionCode = callbackData.TransactionCode;
-            var status = callbackData.Status;
+            // 1. Xác thực webhook
+            var webhookData = await _payOSService.VerifyPaymentWebhookData(webhookBody);
 
-            // Lấy thanh toán từ DB
+            // 2. Lấy TransactionCode từ webhookData (chính là orderCode)
+            var transactionCode = webhookData.orderCode.ToString();
+
+            // 3. Tìm Payment theo TransactionCode
             var payment = await _unitOfWork.Payment.FirstOrDefaultAsync(p => p.TransactionCode == transactionCode);
-            if (payment == null) throw new Exception("Payment not found.");
+            if (payment == null) throw new ApiException(HttpStatusCode.NotFound, "Payment not found.");
 
+            // 4. Tìm Order theo Payment
             var order = await _unitOfWork.Order.GetByIdAsync(payment.OrderId);
-            if (order == null) throw new Exception("Order not found.");
+            if (order == null) throw new ApiException(HttpStatusCode.NotFound, "Order not found.");
 
-            // Xử lý trạng thái thanh toán
-            if (status == "PAID")
+            // 5. Cập nhật trạng thái
+            if (webhookBody.success)
             {
                 payment.Status = "Paid";
                 order.Status = "Success";
             }
-            else if (status == "CANCELLED")
-            {
-                payment.Status = "Cancelled";
-                order.Status = "Cancelled";
-            }
-            else
-            {
-                throw new Exception("Unknown payment status.");
-            }
-
-            // Cập nhật lại thông tin thanh toán và đơn hàng
+            
             _unitOfWork.Payment.Update(payment);
             _unitOfWork.Order.Update(order);
             await _unitOfWork.SaveAsync();
         }
+
 
         public async Task<PaymentViewResModel> CreatePaymentAsync(string token, int orderId, int paymentMethodId)
         {
@@ -160,6 +158,30 @@ namespace Service.Service
             var result = await _payOSService.CreatePaymentUrl(payOSReqModel);
 
             return result.checkoutUrl;
+        }
+
+        public async Task UpdatePayment(string transactionCode, UpdatePaymentReqModel model)
+        {
+            var payment = await _unitOfWork.Payment.FirstOrDefaultAsync(p => p.TransactionCode == transactionCode);
+            if (payment == null) throw new ApiException(HttpStatusCode.NotFound, "Payment not found.");
+
+            
+            var order = await _unitOfWork.Order.GetByIdAsync(payment.OrderId);
+            if (order == null) throw new ApiException(HttpStatusCode.NotFound, "Order not found.");
+
+            var status = model.Status;
+
+            if (status == "CANCELLED")
+            {                
+                payment.Status = "Cancelled";
+                order.Status = "Cancelled";
+            }
+            else if (status == "FAILED")
+            {
+                payment.Status = "Failed";
+                order.Status = "Failed";
+            }
+
         }
     }
 }

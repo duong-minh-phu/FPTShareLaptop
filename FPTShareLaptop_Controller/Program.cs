@@ -12,6 +12,7 @@ using Service.IService;
 using Service.Service;
 using Service.Utils.MapperProfiles;
 using DotNetEnv;
+using Microsoft.Extensions.Logging;
 var builder = WebApplication.CreateBuilder(args);
 
 var openaiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
@@ -122,6 +123,13 @@ builder.Services.AddSwaggerGen(options =>
      });
 
 });
+
+builder.Services.AddLogging(options =>
+{
+    options.AddConsole(); // Log to console
+    options.AddDebug();   // Log to Debug  
+});
+
 
 var app = builder.Build();
 // Sử dụng CORS
