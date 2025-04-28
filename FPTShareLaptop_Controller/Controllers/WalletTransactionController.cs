@@ -20,7 +20,7 @@ namespace API.Controllers
         }
 
         // Lấy danh sách giao dịch của user từ JWT
-        [HttpGet("list")]
+        [HttpGet("list-user")]
         public async Task<IActionResult> GetTransactionsByUser()
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
@@ -38,7 +38,7 @@ namespace API.Controllers
         }
 
         // Lấy danh tất cả sách giao dịch của 
-        [HttpGet("wallet-transactions")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAllWalletTransactions()
         {
             var result = await _walletTransactionService.GetAllTransactions();

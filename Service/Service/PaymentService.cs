@@ -53,6 +53,9 @@ namespace Service.Service
                 payment.Status = "Paid";
                 order.Status = "Success";
             }
+
+            await _walletService.DisburseToManagerAsync(payment.Amount);
+
             var log = new TransactionLog
             {
                 UserId = order.UserId, 
@@ -191,8 +194,7 @@ namespace Service.Service
             else if (status == "FAILED")
             {
                 payment.Status = "Failed";
-                order.Status = "Failed";
-              
+                order.Status = "Failed";              
             }
 
             _unitOfWork.Payment.Update(payment);
