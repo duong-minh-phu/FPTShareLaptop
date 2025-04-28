@@ -46,14 +46,25 @@ namespace Service.Service
             // 4. Tìm Order theo Payment
             var order = await _unitOfWork.Order.GetByIdAsync(payment.OrderId);
             if (order == null) throw new ApiException(HttpStatusCode.NotFound, "Order not found.");
-
+            
             // 5. Cập nhật trạng thái
             if (webhookBody.success)
             {
                 payment.Status = "Paid";
                 order.Status = "Success";
             }
-            
+            var log = new TransactionLog
+            {
+                UserId = order.UserId, 
+                TransactionType = "Payment",
+                Amount = payment.Amount, // Lấy số tiền từ Payment
+                CreatedDate = DateTime.UtcNow,
+                Note = $"Payment for Order #{order.OrderId} - Successful",
+                ReferenceId = payment.PaymentId, // PaymentId là referenceId
+                SourceTable = "Payment"
+            };
+            await _unitOfWork.TransactionLog.AddAsync(log);
+
             _unitOfWork.Payment.Update(payment);
             _unitOfWork.Order.Update(order);
             await _unitOfWork.SaveAsync();
@@ -175,11 +186,33 @@ namespace Service.Service
             {                
                 payment.Status = "Cancelled";
                 order.Status = "Cancelled";
+                var log = new TransactionLog
+                {
+                    UserId = order.UserId,
+                    TransactionType = "Payment",
+                    Amount = payment.Amount, // Lấy số tiền từ Payment
+                    CreatedDate = DateTime.UtcNow,
+                    Note = $"Payment for Order #{order.OrderId} - Failed",
+                    ReferenceId = payment.PaymentId, // PaymentId là referenceId
+                    SourceTable = "Payment"
+                };
+                await _unitOfWork.TransactionLog.AddAsync(log);
             }
             else if (status == "FAILED")
             {
                 payment.Status = "Failed";
                 order.Status = "Failed";
+                var log = new TransactionLog
+                {
+                    UserId = order.UserId, 
+                    TransactionType = "Payment",
+                    Amount = payment.Amount, // Lấy số tiền từ Payment
+                    CreatedDate = DateTime.UtcNow,
+                    Note = $"Payment for Order #{order.OrderId} - Failed",
+                    ReferenceId = payment.PaymentId, // PaymentId là referenceId
+                    SourceTable = "Payment"
+                };
+                await _unitOfWork.TransactionLog.AddAsync(log);
             }
 
         }
