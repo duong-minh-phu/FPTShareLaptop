@@ -186,33 +186,13 @@ namespace Service.Service
             {                
                 payment.Status = "Cancelled";
                 order.Status = "Cancelled";
-                var log = new TransactionLog
-                {
-                    UserId = order.UserId,
-                    TransactionType = "Payment",
-                    Amount = payment.Amount, // Lấy số tiền từ Payment
-                    CreatedDate = DateTime.UtcNow,
-                    Note = $"Payment for Order #{order.OrderId} - Failed",
-                    ReferenceId = payment.PaymentId, // PaymentId là referenceId
-                    SourceTable = "Payment"
-                };
-                await _unitOfWork.TransactionLog.AddAsync(log);
+             
             }
             else if (status == "FAILED")
             {
                 payment.Status = "Failed";
                 order.Status = "Failed";
-                var log = new TransactionLog
-                {
-                    UserId = order.UserId, 
-                    TransactionType = "Payment",
-                    Amount = payment.Amount, // Lấy số tiền từ Payment
-                    CreatedDate = DateTime.UtcNow,
-                    Note = $"Payment for Order #{order.OrderId} - Failed",
-                    ReferenceId = payment.PaymentId, // PaymentId là referenceId
-                    SourceTable = "Payment"
-                };
-                await _unitOfWork.TransactionLog.AddAsync(log);
+              
             }
 
             _unitOfWork.Payment.Update(payment);
