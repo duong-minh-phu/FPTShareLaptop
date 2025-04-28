@@ -63,16 +63,29 @@ namespace Service.Service
         }
 
         public async Task DisburseToManagerAsync(decimal amount)
-        {        
+        {
             var managerWallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.Type == "Manager");
             if (managerWallet == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Manager wallet not found.");
 
+            // Cộng tiền vào ví
             managerWallet.Balance += amount;
-
             _unitOfWork.Wallet.Update(managerWallet);
+
+            // Tạo WalletTransaction
+            var transaction = new WalletTransaction
+            {
+                WalletId = managerWallet.WalletId,
+                TransactionType = "Disbursement",
+                Amount = amount,
+                CreatedDate = DateTime.UtcNow,
+                Note = "Disbursement after successful payment"
+            };
+            await _unitOfWork.WalletTransaction.AddAsync(transaction);
+
             await _unitOfWork.SaveAsync();
         }
+
 
 
 

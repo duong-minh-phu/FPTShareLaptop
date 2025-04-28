@@ -60,8 +60,9 @@ namespace Service.Service
         public async Task<List<WalletTransactionResModel>> GetAllTransactions()
         {
             var transactions = await _unitOfWork.WalletTransaction.GetAllAsync();
-            var result = _mapper.Map<List<WalletTransactionResModel>>(transactions);
-            return result;
+            if (transactions == null)
+                throw new ApiException(HttpStatusCode.NotFound, "Transaction not found.");
+            return _mapper.Map<List<WalletTransactionResModel>>(transactions);
         }
     }
 }
