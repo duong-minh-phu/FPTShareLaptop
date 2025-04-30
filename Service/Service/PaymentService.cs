@@ -46,32 +46,36 @@ namespace Service.Service
             // 4. Tìm Order theo Payment
             var order = await _unitOfWork.Order.GetByIdAsync(payment.OrderId);
             if (order == null) throw new ApiException(HttpStatusCode.NotFound, "Order not found.");
-            
+
             // 5. Cập nhật trạng thái
             if (webhookBody.success)
-            {
+            {          
                 payment.Status = "Paid";
                 order.Status = "Success";
+          
             }
 
             await _walletService.DisburseToManagerAsync(payment.Amount);
 
             var log = new TransactionLog
             {
-                UserId = order.UserId, 
+                UserId = order.UserId,
                 TransactionType = "Payment",
-                Amount = payment.Amount, // Lấy số tiền từ Payment
+                Amount = payment.Amount,
                 CreatedDate = DateTime.UtcNow,
                 Note = $"Payment for Order #{order.OrderId} - Successful",
-                ReferenceId = payment.PaymentId, // PaymentId là referenceId
+                ReferenceId = payment.PaymentId,
                 SourceTable = "Payment"
             };
             await _unitOfWork.TransactionLog.AddAsync(log);
 
             _unitOfWork.Payment.Update(payment);
             _unitOfWork.Order.Update(order);
+
             await _unitOfWork.SaveAsync();
+
         }
+
 
 
         public async Task<PaymentViewResModel> CreatePaymentAsync(string token, int orderId, int paymentMethodId)
@@ -105,19 +109,7 @@ namespace Service.Service
 
             await _unitOfWork.Payment.AddAsync(newPayment);
             await _unitOfWork.SaveAsync();
-
-            var log = new TransactionLog
-            {
-                UserId = user.UserId,
-                TransactionType = "Payment",
-                Amount = newPayment.Amount,
-                CreatedDate = DateTime.UtcNow,
-                Note = $"Payment for Order #{order.OrderId}",
-                ReferenceId = newPayment.PaymentId,
-                SourceTable = "Payment"
-            };
-
-            await _unitOfWork.TransactionLog.AddAsync(log);
+       
 
             await _unitOfWork.SaveAsync();
 
