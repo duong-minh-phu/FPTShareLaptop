@@ -5,6 +5,7 @@ using DataAccess.ResultModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
+using Service.Service;
 
 namespace FPTShareLaptop_Controller.Controllers
 {
@@ -14,11 +15,13 @@ namespace FPTShareLaptop_Controller.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IWalletService _walletService;
 
-        public DepositTransactionController(IUnitOfWork unitOfWork, IMapper mapper)
+        public DepositTransactionController(IUnitOfWork unitOfWork, IMapper mapper, IWalletService walletService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _walletService = walletService;
         }
 
         // GET: api/deposit-transactions
@@ -57,6 +60,7 @@ namespace FPTShareLaptop_Controller.Controllers
             await _unitOfWork.DepositTransaction.AddAsync(transaction);
             await _unitOfWork.SaveAsync();
 
+            await _walletService.DisburseToManagerAsync(transaction.Amount);
             var log = new TransactionLog
             {
                 UserId = transaction.UserId, // Ghi nhận UserId từ token
