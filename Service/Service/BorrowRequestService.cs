@@ -85,8 +85,7 @@ public class BorrowRequestService : IBorrowRequestService
             throw new ApiException(HttpStatusCode.NotFound, "Laptop not found.");
         
         var existingRequest = await _unitOfWork.BorrowRequest.FirstOrDefaultAsync(br =>
-        br.UserId == int.Parse(userId) &&
-        br.ItemId == requestModel.ItemId &&
+        br.UserId == int.Parse(userId) &&      
         (br.Status == DonateStatus.Pending.ToString()));
 
         if (existingRequest != null)

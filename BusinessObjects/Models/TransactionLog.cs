@@ -25,5 +25,7 @@ public partial class TransactionLog
 
     public decimal? ExtraPaymentRequired { get; set; }
 
+    public decimal? RefundAmount { get; set; }
+
     public virtual User User { get; set; } = null!;
 }

@@ -27,5 +27,7 @@ namespace DataAccess.TransactionLogDTO
         public decimal? UsedDepositAmount { get; set; }
 
         public decimal? ExtraPaymentRequired { get; set; }
+
+        public decimal? RefundAmount { get; set; }
     }
 }

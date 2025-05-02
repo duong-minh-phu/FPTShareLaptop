@@ -78,7 +78,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> UpdateDonation(int id, [FromBody] UpdateDonateFormReqModel request)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _donationFormService.UpdateDonationAsync(token, id, request);
+            await _donationFormService.UpdateDonationAsync(id, request);
 
             ResultModel response = new ResultModel
             {

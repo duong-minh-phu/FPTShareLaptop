@@ -1,10 +1,13 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
+using BusinessObjects.Enums;
 using BusinessObjects.Models;
 using DataAccess.CompensationTransactionDTO;
 using DataAccess.ResultModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
+using Service.Utils.CustomException;
 
 namespace FPTShareLaptop_Controller.Controllers
 {
@@ -93,18 +96,39 @@ namespace FPTShareLaptop_Controller.Controllers
                 Amount = transaction.CompensationAmount,
                 ExtraPaymentRequired = extraPaymentRequired,
                 UsedDepositAmount = usedDepositAmount,
+                RefundAmount=refundAmount,
                 CreatedDate = DateTime.UtcNow,
-                Note = $"Compensation transaction created for contract {transaction.ContractId}, " +
-                       $"compensation amount: {transaction.CompensationAmount}, " +
-                       $"used deposit: {usedDepositAmount}, extra payment required: {extraPaymentRequired}",
+                Note = $"refund amount: {refundAmount}",
                 ReferenceId = transaction.CompensationId,
                 SourceTable = "CompensationTransaction"
             };
-
+          
             await _unitOfWork.TransactionLog.AddAsync(log);
             await _unitOfWork.SaveAsync();
 
+            var report = await _unitOfWork.ReportDamage.GetByIdAsync(transaction.ReportDamageId);
 
+            if (report == null)
+            {
+                throw new ApiException(HttpStatusCode.NotFound, "Report damage not found.");
+            }
+
+            int itemId = report.ItemId;
+
+            var borrowRequest = await _unitOfWork.BorrowRequest.FirstOrDefaultAsync(br =>
+                     br.UserId == transaction.UserId && br.ItemId == itemId &&
+                     br.Status == BorrowRequestStatus.Approved.ToString());
+
+            if (borrowRequest != null)
+            {
+                borrowRequest.Status = BorrowRequestStatus.Done.ToString();
+                _unitOfWork.BorrowRequest.Update(borrowRequest);
+                await _unitOfWork.SaveAsync();
+            }
+            else
+            {
+                throw new ApiException(HttpStatusCode.NotFound, "Borrow request not found or not approved.");
+            }
 
             var result = _mapper.Map<CompensationTransactionDTO>(transaction);
             return Ok(ResultModel.Created(result, "Tạo giao dịch bồi thường thành công"));

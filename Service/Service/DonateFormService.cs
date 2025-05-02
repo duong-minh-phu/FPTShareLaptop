@@ -13,14 +13,12 @@ namespace Service.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly Cloudinary _cloudinary;
-        private readonly IJWTService _jwtService;
         private readonly IEmailService _emailService;
 
-        public DonationFormService(IUnitOfWork unitOfWork, Cloudinary cloudinary, IJWTService jWTService, IEmailService emailService)
+        public DonationFormService(IUnitOfWork unitOfWork, Cloudinary cloudinary,IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
-            _cloudinary = cloudinary;
-            _jwtService = jWTService;
+            _cloudinary = cloudinary;           
             _emailService = emailService;
         }
 
@@ -113,19 +111,12 @@ namespace Service.Service
         }
 
 
-        public async Task UpdateDonationAsync(string token, int id, UpdateDonateFormReqModel request)
+        public async Task UpdateDonationAsync(int id, UpdateDonateFormReqModel request)
         {
-            var userId = _jwtService.decodeToken(token, "userId");
-            var user = await _unitOfWork.Users.GetByIdAsync(userId);
-            if (user == null)
-                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
-
+           
             var donation = await _unitOfWork.DonateForm.GetByIdAsync(id);
             if (donation == null) throw new ApiException(HttpStatusCode.BadRequest, "Donation not found");
-
-
             donation.Status = request.Status;          
-
             _unitOfWork.DonateForm.Update(donation);
             await _unitOfWork.SaveAsync();
         }

@@ -12,7 +12,7 @@ namespace Service.IService
 
         Task<DonateFormResModel> CreateDonationAsync(CreateDonateFormReqModel request);
 
-        Task UpdateDonationAsync(string token, int id, UpdateDonateFormReqModel request);
+        Task UpdateDonationAsync(int id, UpdateDonateFormReqModel request);
 
         Task DeleteDonationAsync(int id);
     }
