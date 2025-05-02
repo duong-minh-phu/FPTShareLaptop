@@ -11,6 +11,7 @@ using Net.payOS.Types;
 using Newtonsoft.Json;
 using Service.IService;
 using Service.Utils.CustomException;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Service.Service
 {
@@ -63,7 +64,7 @@ namespace Service.Service
                 TransactionType = "Payment",
                 Amount = payment.Amount,
                 CreatedDate = DateTime.UtcNow,
-                Note = $"Payment for Order #{order.OrderId} - Successful",
+                Note = $"Payment for Order #{order.OrderId} - Successful, amount: {payment.Amount}",
                 ReferenceId = payment.PaymentId,
                 SourceTable = "Payment"
             };
