@@ -98,6 +98,7 @@ public partial class Sep490Context : DbContext
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer(GetConnectionString());
 
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BorrowContract>(entity =>
@@ -835,6 +836,7 @@ public partial class Sep490Context : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.ExtraPaymentRequired).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Note).HasMaxLength(255);
+            entity.Property(e => e.RefundAmount).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.SourceTable).HasMaxLength(100);
             entity.Property(e => e.TransactionType).HasMaxLength(50);
             entity.Property(e => e.UsedDepositAmount).HasColumnType("decimal(18, 2)");
