@@ -116,7 +116,7 @@ namespace FPTShareLaptop_Controller.Controllers
             int itemId = report.ItemId;
 
             var borrowRequest = await _unitOfWork.BorrowRequest.FirstOrDefaultAsync(br =>
-                     br.UserId == transaction.UserId && br.ItemId == itemId &&
+                     br.ItemId == itemId &&
                      br.Status == BorrowRequestStatus.Approved.ToString());
 
             if (borrowRequest != null)
