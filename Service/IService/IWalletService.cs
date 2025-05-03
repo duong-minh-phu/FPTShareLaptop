@@ -13,7 +13,7 @@ namespace Service.IService
         Task<WalletResModel> GetWalletById(int walletId);
         Task<WalletResModel> CreateWallet(string token, WalletReqModel model);
         Task DisburseToManagerAsync(decimal amount);
-        Task TransferFromManagerToShopAsync(string token, decimal amount, decimal feeRate);
+        Task TransferFromManagerToShopsAsync(string token, List<ShopTransferReqModel> transfers, decimal feeRate);
         Task WithdrawFromManagerAsync(decimal amount);
     }
 }
