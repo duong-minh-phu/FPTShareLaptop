@@ -86,7 +86,8 @@ public class BorrowRequestService : IBorrowRequestService
         
         var existingRequest = await _unitOfWork.BorrowRequest.FirstOrDefaultAsync(br =>
         br.UserId == int.Parse(userId) &&      
-        (br.Status == DonateStatus.Pending.ToString()));
+        (br.Status == DonateStatus.Pending.ToString() ||
+        br.Status == DonateStatus.Approved.ToString()));
 
         if (existingRequest != null)
         {
