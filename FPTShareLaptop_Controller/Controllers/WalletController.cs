@@ -84,10 +84,10 @@ namespace FPTShareLaptop_Controller.Controllers
 
         //Manager chuyển tiền cho Shop sau khi trừ phí
         [HttpPost("transfer-to-shop")]
-        public async Task<IActionResult> TransferToShop([FromQuery] decimal amount, [FromQuery] decimal feeRate)
+        public async Task<IActionResult> TransferToShop([FromBody] List<ShopTransferReqModel> transfers, [FromQuery] decimal feeRate)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _walletService.TransferFromManagerToShopAsync(token, amount, feeRate);
+            await _walletService.TransferFromManagerToShopsAsync(token, transfers, feeRate);
             var response = new ResultModel
             {
                 IsSuccess = true,
