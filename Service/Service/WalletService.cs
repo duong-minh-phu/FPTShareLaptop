@@ -87,6 +87,32 @@ namespace Service.Service
         }
 
 
+        public async Task WithdrawFromManagerAsync(decimal amount)
+        {
+            var managerWallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.Type == "Manager");
+            if (managerWallet == null)
+                throw new ApiException(HttpStatusCode.NotFound, "Manager wallet not found.");
+
+            if (managerWallet.Balance < amount)
+                throw new ApiException(HttpStatusCode.BadRequest, "Manager wallet does not have enough balance.");
+
+            // Trừ tiền từ ví
+            managerWallet.Balance -= amount;
+            _unitOfWork.Wallet.Update(managerWallet);
+
+            // Ghi log giao dịch trừ tiền
+            var transaction = new WalletTransaction
+            {
+                WalletId = managerWallet.WalletId,
+                TransactionType = "Refund",
+                Amount = -amount,
+                CreatedDate = DateTime.UtcNow,
+                Note = "Refund from compensation"
+            };
+            await _unitOfWork.WalletTransaction.AddAsync(transaction);
+
+            await _unitOfWork.SaveAsync();
+        }
 
 
         public async Task TransferFromManagerToShopAsync(string token, decimal amount, decimal feeRate)

@@ -14,5 +14,6 @@ namespace Service.IService
         Task<WalletResModel> CreateWallet(string token, WalletReqModel model);
         Task DisburseToManagerAsync(decimal amount);
         Task TransferFromManagerToShopAsync(string token, decimal amount, decimal feeRate);
+        Task WithdrawFromManagerAsync(decimal amount);
     }
 }
