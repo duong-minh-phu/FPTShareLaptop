@@ -124,7 +124,7 @@ namespace Service.Service
             if (item == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Laptop not found.");
 
-            item.Status = "Borrwing";
+            item.Status = "Borrowing";
             _unitOfWork.DonateItem.Update(item);
             await _unitOfWork.SaveAsync();
 
