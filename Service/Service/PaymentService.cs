@@ -5,6 +5,7 @@ using AutoMapper;
 using BusinessObjects.Models;
 using DataAccess.PaymentDTO;
 using DataAccess.PayOSDTO;
+using DataAccess.WalletDTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Net.payOS.Types;
@@ -69,7 +70,41 @@ namespace Service.Service
                 SourceTable = "Payment"
             };
             await _unitOfWork.TransactionLog.AddAsync(log);
+                                 
+            var orderDetails = await _unitOfWork.OrderDetail.GetAllAsync(od => od.OrderId == order.OrderId);
+            if (orderDetails == null || !orderDetails.Any())
+                throw new ApiException(HttpStatusCode.NotFound, "Order details not found.");
 
+            // 8. Tính toán số tiền cần chuyển cho mỗi shop
+            var transfers = new List<ShopTransferReqModel>();
+
+            decimal feeRate = 0.05m; // Giả sử phí 5%, có thể lấy từ webhook hoặc cấu hình.
+
+            foreach (var orderDetail in orderDetails)
+            {
+                var product = await _unitOfWork.Product.GetByIdAsync(orderDetail.ProductId);
+                if (product == null)
+                    throw new ApiException(HttpStatusCode.NotFound, $"Product with ID {orderDetail.ProductId} not found.");
+
+                // Tính số tiền cần chuyển cho shop
+                var existingTransfer = transfers.FirstOrDefault(t => t.ShopId == product.ShopId);
+                if (existingTransfer == null)
+                {
+                    transfers.Add(new ShopTransferReqModel
+                    {
+                        ShopId = product.ShopId,
+                        Amount = orderDetail.PriceItem * orderDetail.Quantity * (1 - feeRate)  // Áp dụng phí
+                    });
+                }
+                else
+                {
+                    existingTransfer.Amount += orderDetail.PriceItem * orderDetail.Quantity * (1 - feeRate);  // Thêm vào số tiền đã có
+                }
+            }
+
+
+            // Gọi hàm tự động transfer cho từng Shop
+            await _walletService.TransferFromManagerToShopsAsync(transfers, feeRate);            
             _unitOfWork.Payment.Update(payment);
             _unitOfWork.Order.Update(order);
 
