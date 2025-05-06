@@ -8,7 +8,7 @@ namespace DataAccess.WalletDTO
 {
     public class ShopTransferReqModel
     {
-        public int ShopUserId { get; set; }
+        public int ShopId { get; set; }
         public decimal Amount { get; set; }
     }
 }
