@@ -39,21 +39,52 @@ namespace Service.Service
             if (user == null)
                 throw new ApiException(HttpStatusCode.NotFound, "User not found.");
 
-            var existingWallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.UserId == userId);
-            if (existingWallet != null)
-                throw new ApiException(HttpStatusCode.BadRequest, "User already has a wallet.");
+            // Kiểm tra nếu người dùng là shop
+            if (user.RoleId == 6)
+            {
+                // Lấy ShopId từ bảng Shops (giả sử bảng Shops có trường ShopId liên kết với UserId)
+                var shop = await _unitOfWork.Shop.FirstOrDefaultAsync(s => s.UserId == userId);
+                if (shop == null)
+                    throw new ApiException(HttpStatusCode.NotFound, "Shop not found.");
 
-            var wallet = _mapper.Map<Wallet>(model);
-            wallet.UserId = user.UserId;
-            wallet.Balance = 0;
-            wallet.Status = WalletEnum.Active.ToString();
-            wallet.CreatedDate = DateTime.UtcNow;
+                // Kiểm tra nếu shop đã có ví
+                var existingShopWallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.UserId == userId);
+                if (existingShopWallet != null)
+                    throw new ApiException(HttpStatusCode.BadRequest, "Shop already has a wallet.");
 
-            await _unitOfWork.Wallet.AddAsync(wallet);
-            await _unitOfWork.SaveAsync();
+                // Tạo ví cho shop
+                var shopWallet = _mapper.Map<Wallet>(model);
+                shopWallet.UserId = user.UserId;
+                shopWallet.ShopId = shop.ShopId;  // Gán ShopId vào ví của shop
+                shopWallet.Balance = 0;
+                shopWallet.Status = WalletEnum.Active.ToString();
+                shopWallet.CreatedDate = DateTime.UtcNow;
 
-            return _mapper.Map<WalletResModel>(wallet);
+                await _unitOfWork.Wallet.AddAsync(shopWallet);
+                await _unitOfWork.SaveAsync();
+
+                return _mapper.Map<WalletResModel>(shopWallet);
+            }
+            else
+            {
+                // Tạo ví cho user bình thường
+                var existingWallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.UserId == userId);
+                if (existingWallet != null)
+                    throw new ApiException(HttpStatusCode.BadRequest, "User already has a wallet.");
+
+                var wallet = _mapper.Map<Wallet>(model);
+                wallet.UserId = user.UserId;
+                wallet.Balance = 0;
+                wallet.Status = WalletEnum.Active.ToString();
+                wallet.CreatedDate = DateTime.UtcNow;
+
+                await _unitOfWork.Wallet.AddAsync(wallet);
+                await _unitOfWork.SaveAsync();
+
+                return _mapper.Map<WalletResModel>(wallet);
+            }
         }
+
 
 
         public async Task<List<WalletResModel>> GetAllWallets()
