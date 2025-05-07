@@ -51,7 +51,6 @@ builder.Services.AddScoped<IItemConditionService, ItemConditionService>();
 builder.Services.AddScoped<IBorrowContractService, BorrowContractService>();
 builder.Services.AddScoped<IFeedbackBorrowService, FeedbackBorrowService>();
 builder.Services.AddScoped<IWalletService, WalletService>();
-builder.Services.AddScoped<IWalletTransactionService, WalletTransactionService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();

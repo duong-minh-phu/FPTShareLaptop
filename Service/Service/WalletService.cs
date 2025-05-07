@@ -71,84 +71,155 @@ namespace Service.Service
             // Cộng tiền vào ví
             managerWallet.Balance += amount;
             _unitOfWork.Wallet.Update(managerWallet);
-
-            // Tạo WalletTransaction
-            var transaction = new WalletTransaction
-            {
-                WalletId = managerWallet.WalletId,
-                TransactionType = "Disbursement",
-                Amount = amount,
-                CreatedDate = DateTime.UtcNow,
-                Note = "Disbursement after successful payment"
-            };
-            await _unitOfWork.WalletTransaction.AddAsync(transaction);
-
+         
             await _unitOfWork.SaveAsync();
         }
 
 
-
-
-        public async Task TransferFromManagerToShopAsync(string token, decimal amount, decimal feeRate)
+        public async Task WithdrawFromManagerAsync(decimal amount)
         {
-            var userId = _jwtService.decodeToken(token, "userId");
-            var user = await _unitOfWork.Users.GetByIdAsync(userId);
-            if (user == null)
-                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
-
-            // 1. Tìm ví Manager theo WalletType
             var managerWallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.Type == "Manager");
             if (managerWallet == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Manager wallet not found.");
 
-            // 2. Tìm ví Shop theo WalletType
-            var shopWallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.Type == "Shop");
-            if (shopWallet == null)
-                throw new ApiException(HttpStatusCode.NotFound, "Shop wallet not found.");
-
-            // 3. Kiểm tra số dư
             if (managerWallet.Balance < amount)
-                throw new ApiException(HttpStatusCode.BadRequest, "Manager wallet has insufficient balance.");
-            
-            //Chuyển feeRate từ phần trăm sang số thực
-            feeRate /= 100;
+                throw new ApiException(HttpStatusCode.BadRequest, "Manager wallet does not have enough balance.");
 
-            // 4. Tính phí và số tiền thực chuyển
-            var fee = Math.Round(amount * feeRate, 2); 
-            var transferAmount = amount - fee;
-
-            // 5. Cập nhật số dư ví
-            managerWallet.Balance -= transferAmount;  
-            shopWallet.Balance += transferAmount;  
-
+            // Trừ tiền từ ví
+            managerWallet.Balance -= amount;
             _unitOfWork.Wallet.Update(managerWallet);
-            _unitOfWork.Wallet.Update(shopWallet);
 
-            // 6. Ghi lịch sử giao dịch
-            var managerTransaction = new WalletTransaction
-            {
-                WalletId = managerWallet.WalletId,
-                TransactionType = "TransferOut",
-                Amount = -transferAmount,
-                CreatedDate = DateTime.UtcNow,
-                Note = $"Transferred {amount} to Shop (Fee: {fee})"
-            };
-
-            var shopTransaction = new WalletTransaction
-            {
-                WalletId = shopWallet.WalletId,
-                TransactionType = "TransferIn",
-                Amount = transferAmount,               
-                CreatedDate = DateTime.UtcNow,
-                Note = $"Received {transferAmount} from Manager (Fee deducted: {fee})"
-            };
-            Console.WriteLine($"Manager transaction: {System.Text.Json.JsonSerializer.Serialize(managerTransaction)}");
-            Console.WriteLine($"Shop transaction: {System.Text.Json.JsonSerializer.Serialize(shopTransaction)}");
-
-            await _unitOfWork.WalletTransaction.AddAsync(managerTransaction);
-            await _unitOfWork.WalletTransaction.AddAsync(shopTransaction);
 
             await _unitOfWork.SaveAsync();
         }
+
+        public async Task WithdrawFromShopAsync(string token, int shopId, decimal amount)
+        {
+            var userId = Convert.ToInt32(_jwtService.decodeToken(token, "userId"));
+            var user = await _unitOfWork.Users.GetByIdAsync(userId);
+            if (user == null)
+                throw new ApiException(HttpStatusCode.NotFound, "User not found.");
+
+            // 1. Lấy ví của Shop
+            var shopWallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.ShopId == shopId && w.Type == "Shop");
+            if (shopWallet == null)
+                throw new ApiException(HttpStatusCode.NotFound, "Shop wallet not found.");
+
+            if (shopWallet.UserId != userId)
+            {
+                throw new ApiException(HttpStatusCode.Unauthorized, "User does not have permission to withdraw from this shop wallet.");
+            }
+
+            // 2. Kiểm tra số dư
+            if (shopWallet.Balance < amount)
+                throw new ApiException(HttpStatusCode.BadRequest, "Shop wallet does not have enough balance.");
+
+            // 3. Trừ tiền từ ví Shop
+            shopWallet.Balance -= amount;
+            _unitOfWork.Wallet.Update(shopWallet);
+
+            // 4. Ghi log rút tiền (ShopWithdraw)
+            var shop = await _unitOfWork.Shop.FirstOrDefaultAsync(s => s.ShopId == shopId);
+            if (shop == null)
+                throw new ApiException(HttpStatusCode.NotFound, "Shop not found.");
+
+            var shopWithdrawLog = new TransactionLog
+            {
+                UserId = shopWallet.UserId,
+                TransactionType = "ShopWithdraw",
+                Amount = -amount,
+                CreatedDate = DateTime.UtcNow,
+                Note = $"Shop #{shopId} ({shop.ShopName}) withdrew {amount}",
+                ReferenceId = shopWallet.WalletId,
+                SourceTable = "Wallet"
+            };
+            await _unitOfWork.TransactionLog.AddAsync(shopWithdrawLog);
+
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task TransferFromManagerToShopsAsync(List<ShopTransferReqModel> transfers, decimal feeRate)
+        {
+           
+            var managerWallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w => w.Type == "Manager");
+            if (managerWallet == null)
+                throw new ApiException(HttpStatusCode.NotFound, "Manager wallet not found.");
+
+            feeRate /= 100;
+
+            decimal totalTransfer = 0;
+            var preparedTransfers = new List<(Wallet ShopWallet, decimal Amount, decimal Fee, decimal ActualAmount, int ShopId)>();
+
+            foreach (var transfer in transfers)
+            {
+                var shopWallet = await _unitOfWork.Wallet.FirstOrDefaultAsync(w =>
+                    w.ShopId == transfer.ShopId && w.Type == "Shop");
+
+                if (shopWallet == null)
+                    throw new ApiException(HttpStatusCode.NotFound, $"Shop wallet not found for ShopId {transfer.ShopId}.");
+
+                // Tính phí và số tiền thực nhận
+                var fee = Math.Round(transfer.Amount * feeRate, 2);
+                var actual = transfer.Amount - fee;
+
+                preparedTransfers.Add((shopWallet, transfer.Amount, fee, actual, transfer.ShopId));
+                totalTransfer += actual;
+            }
+
+            // Kiểm tra ví Manager có đủ số dư để thực hiện chuyển tiền không
+            if (managerWallet.Balance < totalTransfer)
+                throw new ApiException(HttpStatusCode.BadRequest, $"Manager wallet has insufficient balance (needs {totalTransfer}).");
+
+            // Thực hiện giao dịch
+            foreach (var (shopWallet, originalAmount, fee, actualAmount, shopId) in preparedTransfers)
+            {
+                // Trừ tiền từ ví Manager
+                managerWallet.Balance -= actualAmount;
+                _unitOfWork.Wallet.Update(managerWallet);
+
+                // Cộng tiền vào ví Shop
+                shopWallet.Balance += actualAmount;
+                _unitOfWork.Wallet.Update(shopWallet);
+
+                // Lấy thông tin shop
+                var shop = await _unitOfWork.Shop.FirstOrDefaultAsync(s => s.ShopId == shopId);
+                if (shop == null)
+                    throw new ApiException(HttpStatusCode.NotFound, "Shop not found.");
+
+                // Ghi log giao dịch từ Manager (TransferOut)
+                var managerTransactionLog = new TransactionLog
+                {
+                    UserId = managerWallet.UserId,
+                    TransactionType = "TransferOut",  
+                    Amount = -actualAmount,
+                    CreatedDate = DateTime.UtcNow,
+                    Note = $"Transferred {actualAmount} to Shop: {shop.ShopName} (Fee: {fee})",
+                    ReferenceId = shopWallet.WalletId,
+                    SourceTable = "Wallet"
+                };
+
+                var shopTransactionLog = new TransactionLog
+                {
+                    UserId = shopWallet.UserId,
+                    TransactionType = "TransferIn",  
+                    Amount = actualAmount,
+                    CreatedDate = DateTime.UtcNow,
+                    Note = $"Received {actualAmount} from Manager. Shop: {shop.ShopName} (Fee deducted: {fee})",
+                    ReferenceId = managerWallet.WalletId,
+                    SourceTable = "Wallet"
+                };
+
+                // Thêm log giao dịch của Manager và Shop
+                await _unitOfWork.TransactionLog.AddAsync(managerTransactionLog);
+                await _unitOfWork.TransactionLog.AddAsync(shopTransactionLog);                         
+
+            }
+
+            // Lưu tất cả các thay đổi vào DB
+            await _unitOfWork.SaveAsync();
+        }
+
+
+
     }
 }

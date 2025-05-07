@@ -7,6 +7,7 @@ using DataAccess.ResultModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.IService;
+using Service.Service;
 using Service.Utils.CustomException;
 
 namespace FPTShareLaptop_Controller.Controllers
@@ -17,11 +18,13 @@ namespace FPTShareLaptop_Controller.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IWalletService _walletService;
 
-        public CompensationTransactionsController(IUnitOfWork unitOfWork, IMapper mapper)
+        public CompensationTransactionsController(IUnitOfWork unitOfWork, IMapper mapper, IWalletService walletService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _walletService = walletService;
         }
 
         // GET: api/compensation-transactions
@@ -88,6 +91,11 @@ namespace FPTShareLaptop_Controller.Controllers
                 refundAmount = 0;
             }
 
+            if (refundAmount > 0)
+            {
+                await _walletService.WithdrawFromManagerAsync(refundAmount);
+            }
+
             // Lưu log giao dịch
             var log = new TransactionLog
             {
@@ -116,7 +124,7 @@ namespace FPTShareLaptop_Controller.Controllers
             int itemId = report.ItemId;
 
             var borrowRequest = await _unitOfWork.BorrowRequest.FirstOrDefaultAsync(br =>
-                     br.UserId == transaction.UserId && br.ItemId == itemId &&
+                     br.ItemId == itemId &&
                      br.Status == BorrowRequestStatus.Approved.ToString());
 
             if (borrowRequest != null)

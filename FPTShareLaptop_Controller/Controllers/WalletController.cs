@@ -4,6 +4,7 @@ using Service.IService;
 using DataAccess.ResultModel;
 using DataAccess.WalletDTO;
 using System.Threading.Tasks;
+using Service.Utils.CustomException;
 
 namespace FPTShareLaptop_Controller.Controllers
 {
@@ -66,35 +67,30 @@ namespace FPTShareLaptop_Controller.Controllers
             };
             return StatusCode(response.Code, response);
         }
+      
 
-        //Chuyển tiền vào ví Manager sau khi Student thanh toán
-        [HttpPost("disburse")]
-        public async Task<IActionResult> DisburseToManager([FromQuery] decimal amount)
+        [HttpPost("withdraw-shop")]
+        public async Task<IActionResult> WithdrawToShop(int shopId, [FromQuery] decimal amount)
         {
-            await _walletService.DisburseToManagerAsync(amount);
-            var response = new ResultModel
-            {
-                IsSuccess = true,
-                Code = (int)HttpStatusCode.OK,
-                Message = "Disbursement to manager completed successfully."
-            };
-            return StatusCode(response.Code, response);
-        }
 
-
-        //Manager chuyển tiền cho Shop sau khi trừ phí
-        [HttpPost("transfer-to-shop")]
-        public async Task<IActionResult> TransferToShop([FromQuery] decimal amount, [FromQuery] decimal feeRate)
-        {
+            // Lấy token từ header để xác định người thực hiện (Manager)
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _walletService.TransferFromManagerToShopAsync(token, amount, feeRate);
+
+            // Thực hiện chuyển tiền từ Manager đến Shop
+            await _walletService.WithdrawFromShopAsync(token, shopId, amount);
+
+            // Log thông báo sau khi chuyển tiền hoàn tất
             var response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
                 Message = "Transfer to shop completed successfully."
             };
+
             return StatusCode(response.Code, response);
+
+
         }
+
     }
 }
