@@ -40,7 +40,7 @@ namespace FPTShareLaptop_Controller.Controllers
         }
 
         /// Lấy thông tin payment theo ID
-        [HttpGet("{paymentId}")]
+        [HttpGet("payment/{paymentId}")]
         public async Task<IActionResult> GetPaymentById(int paymentId)
         {
 
