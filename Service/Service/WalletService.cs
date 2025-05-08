@@ -177,10 +177,9 @@ namespace Service.Service
             if (managerWallet == null)
                 throw new ApiException(HttpStatusCode.NotFound, "Manager wallet not found.");
 
-            feeRate /= 100;
-
             decimal totalTransfer = 0;
-            var preparedTransfers = new List<(Wallet ShopWallet, decimal Amount, decimal Fee, decimal ActualAmount, int ShopId, int OrderId)>();
+            var preparedTransfers = new List<(Wallet ShopWallet, decimal Amount, decimal Fee, int ShopId, int OrderId)>();
+
 
             foreach (var transfer in transfers)
             {
@@ -190,12 +189,8 @@ namespace Service.Service
                 if (shopWallet == null)
                     throw new ApiException(HttpStatusCode.NotFound, $"Shop wallet not found for ShopId {transfer.ShopId}.");
 
-                // Tính phí và số tiền thực nhận
-                var fee = Math.Round(transfer.Amount * feeRate, 2);
-                var actual = transfer.Amount - fee;
-
-                preparedTransfers.Add((shopWallet, transfer.Amount, fee, actual, transfer.ShopId, transfer.OrderId));
-                totalTransfer += actual;
+                preparedTransfers.Add((shopWallet, transfer.Amount, transfer.Fee, transfer.ShopId, transfer.OrderId));
+                totalTransfer += transfer.Amount;
             }
 
             // Kiểm tra ví Manager có đủ số dư để thực hiện chuyển tiền không
@@ -203,7 +198,7 @@ namespace Service.Service
                 throw new ApiException(HttpStatusCode.BadRequest, $"Manager wallet has insufficient balance (needs {totalTransfer}).");
 
             // Thực hiện giao dịch
-            foreach (var (shopWallet, originalAmount, fee, actualAmount, shopId, orderId) in preparedTransfers)
+            foreach (var (shopWallet, actualAmount, fee, shopId, orderId) in preparedTransfers)
             {
                 // Trừ tiền từ ví Manager
                 managerWallet.Balance -= actualAmount;

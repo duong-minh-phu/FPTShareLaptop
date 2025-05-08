@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using System.Net;
+using System.Security.Cryptography.Xml;
 using System.Transactions;
 using AutoMapper;
 using BusinessObjects.Models;
@@ -77,7 +78,6 @@ namespace Service.Service
 
             // 8. Tính toán số tiền cần chuyển cho mỗi shop
             var transfers = new List<ShopTransferReqModel>();
-
             decimal feeRate = 0.05m; // Giả sử phí 5%, có thể lấy từ webhook hoặc cấu hình.
 
             foreach (var orderDetail in orderDetails)
@@ -86,21 +86,32 @@ namespace Service.Service
                 if (product == null)
                     throw new ApiException(HttpStatusCode.NotFound, $"Product with ID {orderDetail.ProductId} not found.");
 
-                // Tính số tiền cần chuyển cho shop
+                // Tính số tiền gốc (chưa trừ phí)
                 var existingTransfer = transfers.FirstOrDefault(t => t.ShopId == product.ShopId);
+                var rawAmount = orderDetail.PriceItem * orderDetail.Quantity;
+
                 if (existingTransfer == null)
                 {
                     transfers.Add(new ShopTransferReqModel
                     {
                         ShopId = product.ShopId,
-                        Amount = orderDetail.PriceItem * orderDetail.Quantity * (1 - feeRate),  // Áp dụng phí
-                        OrderId = order.OrderId
+                        Amount = rawAmount, // chưa trừ phí
+                        OrderId = order.OrderId,                
                     });
                 }
                 else
                 {
-                    existingTransfer.Amount += orderDetail.PriceItem * orderDetail.Quantity * (1 - feeRate);  // Thêm vào số tiền đã có
+                    existingTransfer.Amount += rawAmount; // cộng dồn gốc
                 }
+            }
+
+            // Trừ phí 1 lần duy nhất sau khi đã cộng tổng
+            foreach (var transfer in transfers)
+            {
+                var total = transfer.Amount;
+                var fee = Math.Round(total * feeRate, 2);
+                transfer.Fee = fee;
+                transfer.Amount = Math.Round(total - fee, 0); // Trừ phí tại đây
             }
 
             // Gọi hàm tự động transfer cho từng Shop
