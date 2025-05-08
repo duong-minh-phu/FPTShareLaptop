@@ -115,5 +115,58 @@ namespace Service.Service
             await smtp.DisconnectAsync(true);
         }
 
+        public async Task SendUnifiedAppointmentEmailToStudent(string studentName, string studentEmail)
+        {
+            var appointmentDate = DateTime.Today.AddDays(1).AddHours(9); // 9h sáng ngày hôm sau
+            string location = "Lô E2a-7, Đường D1, Khu Công nghệ cao, P. Long Thạnh Mỹ, TP. Thủ Đức, TP. Hồ Chí Minh";
+
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse(_config["SmtpSettings:Username"]));
+            email.To.Add(MailboxAddress.Parse(studentEmail));
+            email.Subject = "[FPT E-Laptop] - Xác nhận lịch hẹn nhận máy hoặc hỗ trợ giao hàng";
+
+            email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = $@"
+                        <!DOCTYPE html>
+                        <html lang='vi'>
+                        <head>
+                            <meta charset='UTF-8'>
+                            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                            <title>Xác nhận giao nhận laptop</title>
+                        </head>
+                        <body style='font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333;'>
+                            <div style='max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);'>
+                                <h2 style='color: #007bff; text-align: center;'>Xác nhận giao nhận laptop</h2>
+                                <p>Xin chào <strong>{studentName}</strong>,</p>
+                                <p>Cảm ơn bạn đã mượn máy của dự án <strong>FPT E-Laptop</strong>.</p>
+                                <p>Chúng tôi xin gửi đến bạn lịch hẹn nhận máy như sau:</p>
+
+                                <ul>
+                                    <li><strong>Thời gian:</strong> {appointmentDate:HH:mm dd/MM/yyyy}</li>
+                                    <li><strong>Địa điểm:</strong> {location}</li>
+                                </ul>
+
+
+                                <blockquote style='background-color: #f8f9fa; padding: 10px; border-left: 5px solid #007bff;'>
+                                    {location}<br/>
+                                    Liên hệ: 0987 654 321
+                                </blockquote>
+
+                                <p>Sau khi gửi hàng, vui lòng phản hồi email này với mã vận đơn hoặc ảnh biên nhận để chúng tôi tiện theo dõi.</p>
+                                <p>Trân trọng cảm ơn sự đồng hành của bạn!</p>
+                                <p><strong>Đội ngũ FPT E-Laptop</strong></p>
+                            </div>
+                        </body>
+                        </html>"
+            };
+
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(_config["SmtpSettings:Host"], 587, MailKit.Security.SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(_config["SmtpSettings:Username"], _config["SmtpSettings:Password"]);
+            await smtp.SendAsync(email);
+            await smtp.DisconnectAsync(true);
+        }
+
     }
 }
