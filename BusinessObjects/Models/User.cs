@@ -11,7 +11,7 @@ public partial class User
 
     public string FullName { get; set; } = null!;
 
-    public DateTime Dob { get; set; }
+    public string Dob { get; set; } = null!;
 
     public string Address { get; set; } = null!;
 
@@ -26,8 +26,6 @@ public partial class User
     public string Status { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
 
     public int RoleId { get; set; }
 
@@ -59,7 +57,11 @@ public partial class User
 
     public virtual Shop? Shop { get; set; }
 
+    public virtual ICollection<SponsorFund> SponsorFunds { get; set; } = new List<SponsorFund>();
+
     public virtual Student? Student { get; set; }
+
+    public virtual ICollection<TransactionLog> TransactionLogs { get; set; } = new List<TransactionLog>();
 
     public virtual ICollection<Wallet> Wallets { get; set; } = new List<Wallet>();
 

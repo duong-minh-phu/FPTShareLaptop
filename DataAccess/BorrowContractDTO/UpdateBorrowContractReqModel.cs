@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,10 +10,10 @@ namespace DataAccess.BorrowContractDTO
 {
     public class UpdateBorrowContractReqModel
     {
+        [Required(ErrorMessage = "Status is required.")]
+        [StringLength(50, ErrorMessage = "Status cannot be longer than 50 characters.")]
         public string Status { get; set; }
-        public string Terms { get; set; }
-        public string ConditionBorrow { get; set; }
-        public decimal? ItemValue { get; set; }
-        public DateTime? ExpectedReturnDate { get; set; }
+
+        //
     }
 }

@@ -5,23 +5,27 @@ namespace BusinessObjects.Models;
 
 public partial class RefundTransaction
 {
-    public int RefundId { get; set; }
+    public int RefundTransactionId { get; set; }
 
-    public int OrderId { get; set; }
+    public int UserId { get; set; }
 
-    public int PaymentId { get; set; }
+    public int DepositId { get; set; }
 
-    public int WalletId { get; set; }
+    public decimal RefundAmount { get; set; }
 
-    public decimal Amount { get; set; }
+    public string? RefundNote { get; set; }
+
+    public DateTime RefundDate { get; set; }
 
     public string Status { get; set; } = null!;
 
-    public DateTime CreatedDate { get; set; }
+    public int ContractId { get; set; }
 
-    public virtual Order Order { get; set; } = null!;
+    public int ReportId { get; set; }
 
-    public virtual Payment Payment { get; set; } = null!;
+    public virtual BorrowContract Contract { get; set; } = null!;
 
-    public virtual Wallet Wallet { get; set; } = null!;
+    public virtual DepositTransaction Deposit { get; set; } = null!;
+
+    public virtual ReportDamage Report { get; set; } = null!;
 }

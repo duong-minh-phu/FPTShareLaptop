@@ -10,7 +10,7 @@ namespace FPTShareLaptop_Controller.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+
     public class BorrowRequestController : ControllerBase
     {
         private readonly IBorrowRequestService _borrowRequestService;
@@ -64,13 +64,14 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> CreateBorrowRequest([FromBody] CreateBorrowRequestReqModel request)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _borrowRequestService.CreateBorrowRequest(token, request);
+            var result = await _borrowRequestService.CreateBorrowRequest(token, request);
 
             return Ok(new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Borrow request created successfully"
+                Message = "Borrow request created successfully",
+                Data = result
             });
         }
 
@@ -79,7 +80,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> UpdateBorrowRequest(int id, [FromBody] UpdateBorrowRequestReqModel request)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _borrowRequestService.UpdateBorrowRequest(token, id, request);
+            await _borrowRequestService.UpdateBorrowRequest(id, request);
 
             return Ok(new ResultModel
             {
@@ -94,7 +95,7 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> SoftDeleteBorrowRequest(int id)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _borrowRequestService.DeleteBorrowRequest(token, id);
+            await _borrowRequestService.DeleteBorrowRequest(id);
 
             return Ok(new ResultModel
             {

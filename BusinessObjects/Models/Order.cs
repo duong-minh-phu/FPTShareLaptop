@@ -11,7 +11,7 @@ public partial class Order
 
     public DateTime CreatedDate { get; set; }
 
-    public DateTime UpdatedDate { get; set; }
+    public DateTime? UpdatedDate { get; set; }
 
     public decimal TotalPrice { get; set; }
 
@@ -24,8 +24,6 @@ public partial class Order
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
-
-    public virtual ICollection<RefundTransaction> RefundTransactions { get; set; } = new List<RefundTransaction>();
 
     public virtual ICollection<SettlementTransaction> SettlementTransactions { get; set; } = new List<SettlementTransaction>();
 

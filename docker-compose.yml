@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sql_server_fptshare
+    environment:
+      SA_PASSWORD: "Your_password123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - fptnet
+
+  webapi:
+    build:
+      context: .
+      dockerfile: FPTShareLaptop_Controller/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+    networks:
+      - fptnet
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnectionString=Server=FPTShareLaptopSP.mssql.somee.com;Database=FPTShareLaptopSP;User Id=phudmse161044_SQLLogin_1;Password=lowlzu76pd;TrustServerCertificate=True;MultipleActiveResultSets=true;
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+networks:
+  fptnet:
+    driver: bridge

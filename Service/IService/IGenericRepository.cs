@@ -19,6 +19,7 @@ namespace Service.IService
         Task<User> GetByEmailAsync(string email);
         Task<RefreshToken?> GetByTokenAsync(string refreshToken);
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
+        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
         Task AddAsync(T entity);
         void Update(T entity);
         void Delete(T entity);

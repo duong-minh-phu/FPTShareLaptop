@@ -1,4 +1,5 @@
 ﻿using DataAccess.BorrowContractDTO;
+using DataAccess.BorrowRequestDTO;
 using DataAccess.ResultModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,13 +24,14 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> GetAllBorrowContracts()
         {
             var result = await _borrowContractService.GetAllBorrowContracts();
-            return Ok(new ResultModel
+            ResultModel response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Get all borrow contracts successfully",
-                Data = result
-            });
+                Data = result,
+                Message = "Get borrow contract successfully"
+            };
+            return StatusCode(response.Code, response);
         }
 
         [HttpGet]
@@ -37,23 +39,14 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> GetBorrowContractById(int id)
         {
             var result = await _borrowContractService.GetBorrowContractById(id);
-            if (result == null)
-            {
-                return NotFound(new ResultModel
-                {
-                    IsSuccess = false,
-                    Code = (int)HttpStatusCode.NotFound,
-                    Message = "Borrow contract not found"
-                });
-            }
-
-            return Ok(new ResultModel
+            ResultModel response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Get borrow contract successfully",
-                Data = result
-            });
+                Data = result,
+                Message = "Get borrow contract successfully"
+            };
+            return StatusCode(response.Code, response);
         }
 
         [HttpPost]
@@ -61,14 +54,16 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> CreateBorrowContract([FromBody] CreateBorrowContractReqModel request)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _borrowContractService.CreateBorrowContract(token, request);
+            var result = await _borrowContractService.CreateBorrowContract(request);
 
-            return Ok(new ResultModel
+            ResultModel response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
-                Message = "Borrow contract created successfully"
-            });
+                Message = "Borrow contract created successfully",
+                Data = result
+            };
+            return StatusCode(response.Code, response);
         }
       
         [HttpPut]
@@ -76,14 +71,15 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> UpdateBorrowContract(int id, [FromBody] UpdateBorrowContractReqModel request)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _borrowContractService.UpdateBorrowContract(token, id, request);
+            await _borrowContractService.UpdateBorrowContract(id, request);
 
-            return Ok(new ResultModel
+            ResultModel response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
                 Message = "Borrow contract updated successfully"
-            });
+            };
+            return StatusCode(response.Code, response);
         }
        
         [HttpDelete]
@@ -91,14 +87,34 @@ namespace FPTShareLaptop_Controller.Controllers
         public async Task<IActionResult> DeleteBorrowContract(int id)
         {
             var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
-            await _borrowContractService.DeleteBorrowContract(token, id);
+            await _borrowContractService.DeleteBorrowContract(id);
 
-            return Ok(new ResultModel
+            ResultModel response = new ResultModel
             {
                 IsSuccess = true,
                 Code = (int)HttpStatusCode.OK,
                 Message = "Borrow contract deleted successfully"
-            });
+            };
+            return StatusCode(response.Code, response);
         }
+
+        [HttpPost("upload-image/{contractId}")]
+        [Authorize]
+        public async Task<IActionResult> UploadSignedContractImage(int contractId, [FromForm] UploadBorrowContractReqModel request)
+        {
+            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
+
+            await _borrowContractService.UploadSignedContractImage(contractId, request);
+
+            ResultModel response = new ResultModel
+            {
+                IsSuccess = true,
+                Code = (int)HttpStatusCode.OK,
+                Message = "Signed contract image uploaded successfully."
+            };
+
+            return StatusCode(response.Code, response);
+        }
+
     }
 }

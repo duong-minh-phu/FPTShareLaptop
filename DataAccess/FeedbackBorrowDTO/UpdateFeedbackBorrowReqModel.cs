@@ -10,7 +10,9 @@ namespace DataAccess.FeedbackBorrowDTO
 {
     public class UpdateFeedbackBorrowReqModel
     {
-        public int Rating { get; set; } 
+        [Required(ErrorMessage = "Rating is required.")]
+        public int Rating { get; set; }
+        [Required(ErrorMessage = "Comments is required.")]
         public string Comments { get; set; } 
         public bool IsAnonymous { get; set; } 
     }

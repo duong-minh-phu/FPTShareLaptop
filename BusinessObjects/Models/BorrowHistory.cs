@@ -17,6 +17,8 @@ public partial class BorrowHistory
 
     public DateTime ReturnDate { get; set; }
 
+    public string Status { get; set; } = null!;
+
     public virtual ICollection<FeedbackBorrow> FeedbackBorrows { get; set; } = new List<FeedbackBorrow>();
 
     public virtual DonateItem Item { get; set; } = null!;

@@ -66,8 +66,27 @@ namespace Service.Service
         public IGenericRepository<Student> Student => Repository<Student>();
 
         public IGenericRepository<RefreshToken> RefreshToken => Repository<RefreshToken>();
-
+        public IGenericRepository<ReportDamage> ReportDamage => Repository<ReportDamage>();
+        public IGenericRepository<DepositTransaction> DepositTransaction => Repository<DepositTransaction>();
+        public IGenericRepository<CompensationTransaction> CompensationTransaction => Repository<CompensationTransaction>();
         public IGenericRepository<ItemCondition> ItemCondition => Repository<ItemCondition>();
+
+        public IGenericRepository<Wallet> Wallet => Repository<Wallet>();
+        public IGenericRepository<WalletTransaction> WalletTransaction => Repository<WalletTransaction>();
+        public IGenericRepository<RefundTransaction> RefundTransaction => Repository<RefundTransaction>();
+        public IGenericRepository<Payment> Payment => Repository<Payment>();
+        public IGenericRepository<PaymentMethod> PaymentMethod => Repository<PaymentMethod>();
+        public IGenericRepository<Shipment> Shipment => Repository<Shipment>();
+        public IGenericRepository<TrackingInfo> TrackingInfo => Repository<TrackingInfo>();
+
+        public IGenericRepository<SettlementTransaction> SettlementTransaction => Repository<SettlementTransaction>();
+        public IGenericRepository<FeedbackProduct> FeedbackProduct => Repository<FeedbackProduct>();
+        public IGenericRepository<Major> Major => Repository<Major>();
+        public IGenericRepository<SponsorFund> SponsorFund => Repository<SponsorFund>();
+        public IGenericRepository<PurchasedLaptop> PurchasedLaptop => Repository<PurchasedLaptop>();
+
+        public IGenericRepository<TransactionLog> TransactionLog => Repository<TransactionLog>();
+
 
         public async Task<int> SaveAsync()
         {
