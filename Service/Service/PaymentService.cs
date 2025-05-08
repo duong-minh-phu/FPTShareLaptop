@@ -93,7 +93,8 @@ namespace Service.Service
                     transfers.Add(new ShopTransferReqModel
                     {
                         ShopId = product.ShopId,
-                        Amount = orderDetail.PriceItem * orderDetail.Quantity * (1 - feeRate)  // Áp dụng phí
+                        Amount = orderDetail.PriceItem * orderDetail.Quantity * (1 - feeRate),  // Áp dụng phí
+                        OrderId = order.OrderId
                     });
                 }
                 else
@@ -101,7 +102,6 @@ namespace Service.Service
                     existingTransfer.Amount += orderDetail.PriceItem * orderDetail.Quantity * (1 - feeRate);  // Thêm vào số tiền đã có
                 }
             }
-
 
             // Gọi hàm tự động transfer cho từng Shop
             await _walletService.TransferFromManagerToShopsAsync(transfers, feeRate);            

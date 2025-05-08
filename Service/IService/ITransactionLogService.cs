@@ -10,7 +10,7 @@ namespace Service.IService
 {
     public interface ITransactionLogService
     {
-        Task<List<TransactionLogResModel>> GetAllTransactionLogsAsync();
+        Task<List<TransactionLogResModel>> GetAllTransactionLogsAsync(string token);
     }
 
 }
