@@ -3,6 +3,7 @@ using AutoMapper;
 using BusinessObjects.Enums;
 using BusinessObjects.Models;
 using DataAccess.WalletDTO;
+using MailKit.Search;
 using Service.IService;
 using Service.Utils.CustomException;
 
@@ -126,7 +127,7 @@ namespace Service.Service
 
         public async Task WithdrawFromShopAsync(string token, int shopId, decimal amount)
         {
-            var userId = Convert.ToInt32(_jwtService.decodeToken(token, "userId"));
+            var userId = int.Parse(_jwtService.decodeToken(token, "userId"));
             var user = await _unitOfWork.Users.GetByIdAsync(userId);
             if (user == null)
                 throw new ApiException(HttpStatusCode.NotFound, "User not found.");
@@ -160,7 +161,7 @@ namespace Service.Service
                 TransactionType = "ShopWithdraw",
                 Amount = -amount,
                 CreatedDate = DateTime.UtcNow,
-                Note = $"Shop #{shopId} ({shop.ShopName}) withdrew {amount}",
+                Note = $"Shop #{shopId} ({shop.ShopName}) withdraw {amount}",
                 ReferenceId = shopWallet.WalletId,
                 SourceTable = "Wallet"
             };
@@ -179,7 +180,7 @@ namespace Service.Service
             feeRate /= 100;
 
             decimal totalTransfer = 0;
-            var preparedTransfers = new List<(Wallet ShopWallet, decimal Amount, decimal Fee, decimal ActualAmount, int ShopId)>();
+            var preparedTransfers = new List<(Wallet ShopWallet, decimal Amount, decimal Fee, decimal ActualAmount, int ShopId, int OrderId)>();
 
             foreach (var transfer in transfers)
             {
@@ -193,7 +194,7 @@ namespace Service.Service
                 var fee = Math.Round(transfer.Amount * feeRate, 2);
                 var actual = transfer.Amount - fee;
 
-                preparedTransfers.Add((shopWallet, transfer.Amount, fee, actual, transfer.ShopId));
+                preparedTransfers.Add((shopWallet, transfer.Amount, fee, actual, transfer.ShopId, transfer.OrderId));
                 totalTransfer += actual;
             }
 
@@ -202,7 +203,7 @@ namespace Service.Service
                 throw new ApiException(HttpStatusCode.BadRequest, $"Manager wallet has insufficient balance (needs {totalTransfer}).");
 
             // Thực hiện giao dịch
-            foreach (var (shopWallet, originalAmount, fee, actualAmount, shopId) in preparedTransfers)
+            foreach (var (shopWallet, originalAmount, fee, actualAmount, shopId, orderId) in preparedTransfers)
             {
                 // Trừ tiền từ ví Manager
                 managerWallet.Balance -= actualAmount;
@@ -235,7 +236,7 @@ namespace Service.Service
                     TransactionType = "TransferIn",  
                     Amount = actualAmount,
                     CreatedDate = DateTime.UtcNow,
-                    Note = $"Received {actualAmount} from Manager. Shop: {shop.ShopName} (Fee deducted: {fee})",
+                    Note = $"Received {actualAmount} from Manager for Order #{orderId}. Shop: {shop.ShopName} (Fee deducted: {fee})",
                     ReferenceId = managerWallet.WalletId,
                     SourceTable = "Wallet"
                 };

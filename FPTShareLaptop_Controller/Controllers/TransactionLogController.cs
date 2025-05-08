@@ -25,7 +25,8 @@ namespace FPTShareLaptop_Controller.Controllers
         [Route("get-all")]
         public async Task<IActionResult> GetAllTransactionLogs()
         {
-            var result = await _transactionLogService.GetAllTransactionLogsAsync();
+            var token = Request.Headers["Authorization"].ToString().Split(" ")[1];
+            var result = await _transactionLogService.GetAllTransactionLogsAsync(token);
             ResultModel response = new ResultModel
             {
                 IsSuccess = true,
