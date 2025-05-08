@@ -12,11 +12,13 @@ public class BorrowRequestService : IBorrowRequestService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJWTService _jwtService;
+    private readonly IEmailService _emailService;
 
-    public BorrowRequestService(IUnitOfWork unitOfWork, IJWTService jWTService)
+    public BorrowRequestService(IUnitOfWork unitOfWork, IJWTService jWTService, IEmailService emailService)
     {
         _unitOfWork = unitOfWork;
         _jwtService = jWTService;
+        _emailService = emailService;
     }
 
     // Lấy tất cả yêu cầu mượn
@@ -155,7 +157,17 @@ public class BorrowRequestService : IBorrowRequestService
         }
         
         _unitOfWork.BorrowRequest.Update(borrowRequest);
+        
         await _unitOfWork.SaveAsync();
+
+        if (borrowRequest.Status == DonateStatus.Approved.ToString())
+        {
+            var user = await _unitOfWork.Users.GetByIdAsync(borrowRequest.UserId);
+            if (user != null && !string.IsNullOrEmpty(user.Email))
+            {
+                await _emailService.SendUnifiedAppointmentEmailToStudent(user.FullName, user.Email);
+            }
+        }
     }
 
 
